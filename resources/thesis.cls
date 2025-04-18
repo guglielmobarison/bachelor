@@ -7,6 +7,7 @@
 % Standard class structure
 \ProvidesClass{thesis}[2017/05/24 version 0.2.5 Thesis class]
 \NeedsTeXFormat{LaTeX2e}
+\usepackage[utf8]{inputenc}    % Codifica dei caratteri
 
 % Read all declarations and pass onto article class
 % \makeatletter
@@ -52,6 +53,7 @@
 \newif\if@unsrt
 \@unsrtfalse
 \DeclareOption{unsrt}{\@unsrttrue}
+
 % \makeatother
 \newcommand*{\department}[1]{\gdef\@department{#1}}
 \newcommand*{\university}[1]{\gdef\@university{#1}}
@@ -63,7 +65,6 @@
 \PassOptionsToClass{\CurrentOption}{report}}
 
 \ProcessOptions \relax
-
 \LoadClass{report}
 
 \RequirePackage[a4paper,inner=4cm,outer=3cm,top=4cm,bottom=3.5cm,pdftex]{geometry}
@@ -421,32 +422,44 @@
                             #8}}%
                       \fi
                       \@xsect{#5}}
-\renewcommand{\maketitle}{
-    \begin{titlepage}
-        % \setcounter{page}{2}
-        %\vspace*{\stretch{1}}
-        \begin{center}
-            \Huge \bf \@title
-        \end{center}
-        \vspace*{\stretch{1}}
-        \begin{center}
-            A thesis submitted to \@university{} for the degree of Doctor of Philosophy
-        \end{center}
-        \vspace*{\stretch{1}}
-        \begin{center}
-            \Large \bf \@author
-        \end{center}
-        \vspace*{\stretch{1}}
-        \begin{center}
-            \@department
-        \end{center}
-        \vspace*{\stretch{1}}
-        \begin{center}
-            \monthyear\today
-        \end{center}
-        \vspace*{\stretch{2}}
-    \end{titlepage}
+
+\renewcommand{\maketitle}{%
+  \begin{titlepage}
+    \begin{figure}[!htb]
+      \centering
+      \includegraphics[keepaspectratio,scale=0.15]{resources/images/title/logo.png}
+    \end{figure}
+    \begin{center}
+      \LARGE\textsc{UNIVERSITÀ DEGLI STUDI DI PADOVA}\\[2.5mm]
+      \large\textsc{DIPARTIMENTO DI MATEMATICA}\\[2.5mm]
+      \begin{figure}[!htb]
+        \centering
+        \includegraphics[keepaspectratio,scale=0.6]{resources/images/title/logo2.png}
+      \end{figure}
+      \textsc{Corso di Laurea Triennale in Informatica}
+    \end{center}
+    \vspace{2cm}
+    \begin{center}
+      \textsc{Tesi di Laurea Triennale}\\
+      \Large\bfseries Sviluppo di un modulo per l'accesso a repository Aviation Data for Research - EUROCONTROL di dati sul traffico aereo e loro analisi
+      \vspace{2cm}
+    \end{center}
+    \vspace{10mm}
+    \begin{minipage}[t]{0.47\textwidth}
+      \large\textsc{Relatore}\\[1mm]
+      Prof. Luigi De Giovanni\\
+      \end{minipage}\hfill
+    \begin{minipage}[t]{0.47\textwidth}\raggedleft
+      \large\textsc{Laureando}\\
+      Barison Guglielmo
+    \end{minipage}
+    \begin{center}
+      \large ANNO ACCADEMICO 2022/2023\\
+      \small 10/09/2023
+    \end{center}
+  \end{titlepage}%
 }
+
 \newcommand{\startpreamble}[1]
     {\pagenumbering{alph}
     \setcounter{page}{0}
