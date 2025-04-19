@@ -480,45 +480,48 @@
 \advisor{Nome Relatore}
 \candidate{Nome Laureando}
 \academicyear{20XX/20XX}
-\graduationdate{gg/mm/aaaa}
 \department{Dipartimento di Esempio}
 \university{Università di Esempio}
 
 \renewcommand{\maketitle}{%
-  \begin{titlepage}
-    \begin{figure}[!htb]\centering
-      \includegraphics[keepaspectratio,scale=0.15]{\@titlelogoone}
-    \end{figure}
-    \begin{center}
-      \LARGE\textsc{\@university}\\[2.5mm]
-      \large\textsc{\@department}\\[2.5mm]
+  {
+    \newgeometry{top=4cm, bottom=3.5cm, left=3.5cm, right=3.5cm} % margini simmetrici
+    \begin{titlepage}
       \begin{figure}[!htb]\centering
-        \includegraphics[keepaspectratio,scale=0.6]{\@titlelogotwo}
+        \includegraphics[keepaspectratio,scale=0.15]{\@titlelogoone}
       \end{figure}
-      \textsc{\@degreeprogram}
-    \end{center}
-    \vspace{2cm}
-    \begin{center}
-      \textsc{\@thesistype}\\[4mm]
-      {\Large\bfseries \@thesistitle}
+      \begin{center}
+        \LARGE\textsc{\@university}\\[2.5mm]
+        \large\textsc{\@department}\\[2.5mm]
+        \begin{figure}[!htb]\centering
+          \includegraphics[keepaspectratio,scale=0.6]{\@titlelogotwo}
+        \end{figure}
+        \textsc{\@degreeprogram}
+      \end{center}
       \vspace{2cm}
-    \end{center}
-    \begin{minipage}[t]{0.47\textwidth}
-      \large\textsc{Relatore}\\[1mm]
-      \@advisor
-    \end{minipage}\hfill
-    \begin{minipage}[t]{0.47\textwidth}\raggedleft
-      \large\textsc{Laureando}\\
-      \@candidate
-       \vspace{1cm}
-    \end{minipage}
-       \noindent\rule{\linewidth}{0.5pt}
-    \begin{center}
-      \large ANNO ACCADEMICO \@academicyear\\
-      \small \@graduationdate
-    \end{center}
-  \end{titlepage}%
+      \begin{center}
+        \textsc{\@thesistype}\\[4mm]
+        {\Large\bfseries \@thesistitle}
+        \vspace{2cm}
+      \end{center}
+      \begin{minipage}[t]{0.47\textwidth}
+        \large\textsc{Relatore}\\[1mm]
+        \@advisor
+      \end{minipage}\hfill
+      \begin{minipage}[t]{0.47\textwidth}\raggedleft
+        \large\textsc{Laureando}\\
+        \@candidate
+        \vspace{1cm}
+      \end{minipage}
+      \noindent\rule{\linewidth}{0.5pt}
+      \begin{center}
+        \large ANNO ACCADEMICO \@academicyear\\
+      \end{center}
+    \end{titlepage}
+    \restoregeometry % ripristina i margini originali
+  }
 }
+
 
 \newcommand{\startpreamble}[1]
     {\pagenumbering{alph}
