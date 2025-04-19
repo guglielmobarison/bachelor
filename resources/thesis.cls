@@ -9,7 +9,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \usepackage[utf8]{inputenc}    % Codifica dei caratteri
 
-
 \usepackage{etoolbox}
 
 % creo il toggle 'punct'
@@ -116,6 +115,27 @@
 \RequirePackage{url}
 
 \RequirePackage[italian]{babel}
+
+% macro che restituisce “aprile 2025”, “maggio 2025”, ecc.
+\newcommand{\bibmonthyear}{%
+  \ifcase\month
+    \or gennaio%
+    \or febbraio%
+    \or marzo%
+    \or aprile%
+    \or maggio%
+    \or giugno%
+    \or luglio%
+    \or agosto%
+    \or settembre%
+    \or ottobre%
+    \or novembre%
+    \or dicembre%
+  \fi
+  \space\the\year
+}
+
+
 \RequirePackage{datetime}
 \newdateformat{monthyear}{\monthname[\THEMONTH] \THEYEAR}
 
