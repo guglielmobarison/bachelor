@@ -1,0 +1,65 @@
+% Document class and options
+\documentclass[a4paper,sourcesanspro,11pt,twoside,texglossaries]{resources/thesis}
+
+% Dedication and glossary input
+% \dedication{\emph{xxxxxx}}
+
+%glossary
+\input{resources/glossary.tex}
+\begin{document}
+
+    % Preamble start
+    \startpreamble
+        
+        \section*{Ringraziamenti}
+        Vorrei ringraziare le seguenti persone:
+        \begin{itemize}
+            \item Mario Rossi
+            \item Mario Verdi
+        \end{itemize}
+        \cleardoublepage
+
+        \section*{Abstract}      
+        Questo è il mio abstract.  
+        \newpage
+        
+        % Indice, figure, tabelle, nomenclatura
+        \tableofcontents
+        \listoffigures
+        \listoftables
+        \printnomenclature[2cm]
+
+    \stoppreamble
+
+    % Capitolo di prova
+    \chapter{This is a test}
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    \Glspl{gp} can be used for regression and classification.
+    The \gls{mse} statistic is used to measure the error and assess model performance.
+    \Gls{mse} can measure the \gls{gp} model performance.
+
+    % Sezione di esempio
+    \section{This is a section}
+        \citet{Knuth92} Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    \printgloss
+    \bibliography{resources/thesis.bib}
+
+\end{document}

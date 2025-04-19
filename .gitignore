@@ -1,0 +1,38 @@
+# LaTeX compiled files
+*.aux
+*.bbl
+*.blg
+*.brf
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex
+*.nav
+*.snm
+*.vrb
+*.xdv
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+*.sav
+
+# Output folders
+_build/
+build/
+output/
+
+# Editor and IDE files
+*.swp
+*.swo
+*~
+*.DS_Store
+*.idea/
+*.vscode/
+
