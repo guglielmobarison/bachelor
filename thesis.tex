@@ -1,42 +1,86 @@
+% Document class and options
 \documentclass[a4paper,sourcesanspro,11pt,twoside,texglossaries]{resources/thesis}
 
-% Titolo e autore
-\title{Esempio di Documento \LaTeX}
-\author{Mario Rossi}
-\university{Università di Esempio}
-\department{Dipartimento di Informatica}
-\date{\today}
+% University and department
+\university{UNIVERSIT\'A DEGLI STUDI DI PADOVA}
+\department{DIPARTIMENTO DI MATEMATICA}
 
-\dedication{\emph{...}}
-\input{resources/glossary.tex}  % glossario   
+% Title logos
+\titlelogoone{resources/images/title/logo.png}
+\titlelogotwo{resources/images/title/logo2.png}
 
+% Degree program and thesis details
+\degreeprogram{Corso di Laurea Triennale in Informatica}
+\thesistype{Tesi di Laurea Triennale}
+\thesistitle{Sviluppo di un modulo per l'accesso a repository Aviation Data for Research - EUROCONTROL di dati sul traffico aereo e loro analisi}
+
+% Advisor and candidate
+\advisor{Prof. Luigi De Giovanni}
+\candidate{Barison Guglielmo}
+
+% Academic year and graduation date
+\academicyear{2022/2023}
+\graduationdate{10/09/2023}
+
+% Dedication and glossary input
+\dedication{\emph{xxxxxx}}
+
+%glossary
+\input{resources/glossary.tex}
 \begin{document}
 
-\startpreamble
+    % Preamble start
+    \startpreamble
+        
+        \section*{Ringraziamenti}
+        Vorrei ringraziare le seguenti persone:
+        \begin{itemize}
+            \item Mario Rossi
+            \item Mario Verdi
+        \end{itemize}
+        \newpage
 
-\section*{Acknowledgements}
-    I'd like to thank the following people:
-\newpage
+        \section*{Abstract}        
+        \newpage
 
-\newpage
-\section*{Abstract}
-\newpage
+        % Indice, figure, tabelle, nomenclatura
+        \tableofcontents
+        \listoffigures
+        \listoftables
+        \printnomenclature[2cm]
 
-\tableofcontents
-\listoffigures
-\listoftables
-\printnomenclature[2cm]
-\stoppreamble
+    \stoppreamble
 
-\chapter{This is a test}
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    
-    \Glspl{gp} can be used for regression and classification. The \gls{mse} statistic is used to measure the error and assess model performance. \Gls{mse} can measure the \gls{gp} model performance.
+    % Capitolo di prova
+    \chapter{This is a test}
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-\section{This is a section}
-    \citet{Knuth92} Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-\printgloss
-\bibliography{resources/thesis.bib}
+    \Glspl{gp} can be used for regression and classification.
+    The \gls{mse} statistic is used to measure the error and assess model performance.
+    \Gls{mse} can measure the \gls{gp} model performance.
+
+    % Sezione di esempio
+    \section{This is a section}
+        \citet{Knuth92} Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    % Stampa glossario e bibliografia
+    \printgloss
+    \bibliography{resources/thesis.bib}
+
 \end{document}

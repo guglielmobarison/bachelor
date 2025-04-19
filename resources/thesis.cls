@@ -5,9 +5,41 @@
 % 2017-May-24 Andrew Hills (a.hills (at) sheffield.ac.uk)
 
 % Standard class structure
-\ProvidesClass{thesis}[2017/05/24 version 0.2.5 Thesis class]
+\ProvidesClass{thesis}[2025/04/19 version 0.2.5 Thesis class]
 \NeedsTeXFormat{LaTeX2e}
 \usepackage[utf8]{inputenc}    % Codifica dei caratteri
+
+
+\usepackage{etoolbox}
+
+% creo il toggle 'punct'
+\newtoggle{punct}
+% di default è attivo
+\toggletrue{punct}
+
+% comandi per disattivare/riattivare
+\newcommand{\DisablePunct}{\togglefalse{punct}}
+\newcommand{\EnablePunct}{\toggletrue{punct}}
+
+% non supporta itemize nested
+% usa \DisablePunct \EnablePunct per attivare/disattivare
+\AtBeginEnvironment{itemize}{%
+  \iftoggle{punct}{%
+    \def\itemizepunctuation{\def\itemizepunctuation{\ifhmode\unskip\fi;}}%
+    \pretocmd\item{\itemizepunctuation}{}{}%
+    \pretocmd\enditemize{\ifhmode\unskip\fi.}{}{}%
+  }{}%
+}
+\newenvironment{punctitemize}
+  {%
+    \itemize
+    \def\itemizepunctuation{\def\itemizepunctuation{\ifhmode\unskip\fi;}}%
+    \pretocmd\item{\itemizepunctuation}{}{}%
+    \pretocmd\enditemize{\ifhmode\unskip\fi.}{}{}%
+  }
+  {%
+    \enditemize
+  }
 
 % Read all declarations and pass onto article class
 % \makeatletter
@@ -423,39 +455,67 @@
                       \fi
                       \@xsect{#5}}
 
+
+% --- NUOVI COMANDI PARAMETRICI PER \maketitle ---
+\newcommand*{\titlelogoone}[1]{\gdef\@titlelogoone{#1}}
+\newcommand*{\titlelogotwo}[1]{\gdef\@titlelogotwo{#1}}
+
+\newcommand*{\degreeprogram}[1]{\gdef\@degreeprogram{#1}}
+\newcommand*{\thesistype}[1]{\gdef\@thesistype{#1}}
+\newcommand*{\thesistitle}[1]{\gdef\@thesistitle{#1}}
+
+\newcommand*{\advisor}[1]{\gdef\@advisor{#1}}
+\newcommand*{\candidate}[1]{\gdef\@candidate{#1}}
+
+\newcommand*{\academicyear}[1]{\gdef\@academicyear{#1}}
+\newcommand*{\graduationdate}[1]{\gdef\@graduationdate{#1}}
+
+% valoriali di default (se non ridefiniti dall’utente)
+\titlelogoone{resources/images/title/logo.png}
+\titlelogotwo{resources/images/title/logo2.png}
+
+\degreeprogram{Corso di Laurea Triennale in Esempio}
+\thesistype{Tesi di Laurea Triennale}
+\thesistitle{Titolo della tesi}
+\advisor{Nome Relatore}
+\candidate{Nome Laureando}
+\academicyear{20XX/20XX}
+\graduationdate{gg/mm/aaaa}
+\department{Dipartimento di Esempio}
+\university{Università di Esempio}
+
 \renewcommand{\maketitle}{%
   \begin{titlepage}
-    \begin{figure}[!htb]
-      \centering
-      \includegraphics[keepaspectratio,scale=0.15]{resources/images/title/logo.png}
+    \begin{figure}[!htb]\centering
+      \includegraphics[keepaspectratio,scale=0.15]{\@titlelogoone}
     \end{figure}
     \begin{center}
-      \LARGE\textsc{UNIVERSITÀ DEGLI STUDI DI PADOVA}\\[2.5mm]
-      \large\textsc{DIPARTIMENTO DI MATEMATICA}\\[2.5mm]
-      \begin{figure}[!htb]
-        \centering
-        \includegraphics[keepaspectratio,scale=0.6]{resources/images/title/logo2.png}
+      \LARGE\textsc{\@university}\\[2.5mm]
+      \large\textsc{\@department}\\[2.5mm]
+      \begin{figure}[!htb]\centering
+        \includegraphics[keepaspectratio,scale=0.6]{\@titlelogotwo}
       \end{figure}
-      \textsc{Corso di Laurea Triennale in Informatica}
+      \textsc{\@degreeprogram}
     \end{center}
     \vspace{2cm}
     \begin{center}
-      \textsc{Tesi di Laurea Triennale}\\
-      \Large\bfseries Sviluppo di un modulo per l'accesso a repository Aviation Data for Research - EUROCONTROL di dati sul traffico aereo e loro analisi
+      \textsc{\@thesistype}\\[4mm]
+      {\Large\bfseries \@thesistitle}
       \vspace{2cm}
     \end{center}
-    \vspace{10mm}
     \begin{minipage}[t]{0.47\textwidth}
       \large\textsc{Relatore}\\[1mm]
-      Prof. Luigi De Giovanni\\
-      \end{minipage}\hfill
+      \@advisor
+    \end{minipage}\hfill
     \begin{minipage}[t]{0.47\textwidth}\raggedleft
       \large\textsc{Laureando}\\
-      Barison Guglielmo
+      \@candidate
+       \vspace{1cm}
     \end{minipage}
+       \noindent\rule{\linewidth}{0.5pt}
     \begin{center}
-      \large ANNO ACCADEMICO 2022/2023\\
-      \small 10/09/2023
+      \large ANNO ACCADEMICO \@academicyear\\
+      \small \@graduationdate
     \end{center}
   \end{titlepage}%
 }
