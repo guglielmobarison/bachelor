@@ -16,6 +16,7 @@
 *.snm
 *.vrb
 *.xdv
+*.pdf
 
 # Temporary files
 *.tmp
