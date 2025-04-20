@@ -9,6 +9,12 @@
 \NeedsTeXFormat{LaTeX2e}
 \usepackage[utf8]{inputenc}    % Codifica dei caratteri
 
+\DeclareUnicodeCharacter{200B}{} % fix per
+% ! Package inputenc Error: Unicode char ​ (U+200B)
+% (inputenc)                not set up for use with LaTeX.
+% …
+% l.56 ...ntnoidxglossary[type=main,title=Glossario]
+
 \usepackage{etoolbox}
 
 % creo il toggle 'punct'
@@ -390,7 +396,6 @@
   \fi
 \makeatother
 
-% 3) Stile acronimo che registra anche nel glossario “main”
 \newacronymstyle{linkmain}{%
   \GlsUseAcrEntryDispStyle{long-short}%
   \ifglshasfield{glossterm}{\glslabel}{%
@@ -401,16 +406,12 @@
 }
 \setacronymstyle{linkmain}
 
-% 4) Il wrapper “one‑shot”
 \newcommand{\newdualentry}[4]{%
-  % #1 = chiave base, #2 = abbreviazione, #3 = forma estesa, #4 = descrizione
-  % voce “main”
   \newglossaryentry{#1@main}{%
     name        = {#2},%
     description = {#4}%
   }%
-  % acronimo che punta alla voce “main”
-  \newacronym[%
+   \newacronym[%
     glossterm   = {#1@main}
   ]{#1}{#2}{#3}%
 }
