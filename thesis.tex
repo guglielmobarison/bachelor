@@ -20,7 +20,7 @@
 
     % Preamble start
     \startpreamble
-        
+    
         \section*{Ringraziamenti}
         Vorrei ringraziare le seguenti persone:
         \begin{itemize}
@@ -29,7 +29,9 @@
         \cleardoublepage
 
         \section*{Abstract}      
+        Il presente documento descrive il lavoro svolto durante il periodo di stage dal laureando Guglielmo Barison presso l'\citet{math_unipd}. Lo stage è stato svolto al termine del percorso di studi della laurea triennale in Informatica, ed ha avuto la durata di circa trecento ore.\\
         L'obiettivo della stage è stato esplorare e analizzare i dati relativi al traffico e alla configurazione dello spazio aereo europeo, resi disponibili da \citet{eurocontrol2025} tramite il repository \Gls{adr}. La ricerca ha inizialmente coinvolto lo studio approfondito dei formati e delle caratteristiche dei dati \gls{adr}, ponendo particolare attenzione a informazioni rilevanti quali configurazioni spaziali, domanda di traffico e occupazione degli spazi aerei. 
+        Successivamente è stata progettata e implementata, mediante il linguaggio Python, una procedura per esportare tali dati nel formato richiesto dai modelli matematici utilizzati per affrontare il problema del \Gls{dac}. 
         \newpage
         
         % Indice, figure, tabelle, nomenclatura
@@ -40,7 +42,7 @@
 
     \stoppreamble
 
-    % Capitolo di prova
+    % Capitoli
     \chapter{Introduzione e contesto generale}
     \chapter{Obiettivi e pianificazione iniziale dello stage}
     \chapter{Caratteristiche dei dati ADR}
@@ -50,8 +52,9 @@
     \chapter{Implementazione operativa e analisi dei risultati}
     \chapter{Conclusioni e prospettive future}
             
+    \printnoidxglossary[type=main,title=Glossario]
+    \printnoidxglossary[type=\acronymtype,title=Acronimi]
 
-    \printgloss
     \bibliography{resources/thesis.bib}
 
 \end{document}

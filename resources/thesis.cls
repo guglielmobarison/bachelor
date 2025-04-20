@@ -372,18 +372,48 @@
 \RequirePackage{makeidx}
 \makeindex
 
-\RequirePackage[acronym,nomain,toc,numberedsection=autolabel]{glossaries}
+\RequirePackage[acronym,toc,numberedsection=autolabel]{glossaries}
 \renewcommand*{\glsautoprefix}{gl:}
+
+% 1) Registra la chiave addizionale “glossterm”
 \makeatletter
-    \renewcommand*{\@@glossarysecstar}{*}
-\if@texglossaries
-    \makenoidxglossaries
-    \def\printgloss{\printnoidxglossaries}
-\else
-    \makeglossaries
-    \def\printgloss{\printglossaries}
-\fi
+  \glsaddstoragekey{glossterm}{}{\glossterm}
 \makeatother
+
+% 2) Impostazioni glossaries (noidx o classica) e sezione non numerata
+\makeatletter
+  \renewcommand*{\@@glossarysecstar}{*}
+  \if@texglossaries
+    \makenoidxglossaries
+  \else
+    \makeglossaries
+  \fi
+\makeatother
+
+% 3) Stile acronimo che registra anche nel glossario “main”
+\newacronymstyle{linkmain}{%
+  \GlsUseAcrEntryDispStyle{long-short}%
+  \ifglshasfield{glossterm}{\glslabel}{%
+    \glsadd{\glscurrentfieldvalue}%
+  }{}%
+}{%
+  \GlsUseAcrStyleDefs{long-short}%
+}
+\setacronymstyle{linkmain}
+
+% 4) Il wrapper “one‑shot”
+\newcommand{\newdualentry}[4]{%
+  % #1 = chiave base, #2 = abbreviazione, #3 = forma estesa, #4 = descrizione
+  % voce “main”
+  \newglossaryentry{#1@main}{%
+    name        = {#2},%
+    description = {#4}%
+  }%
+  % acronimo che punta alla voce “main”
+  \newacronym[%
+    glossterm   = {#1@main}
+  ]{#1}{#2}{#3}%
+}
 
 \makeatletter
 
