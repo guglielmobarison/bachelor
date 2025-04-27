@@ -14,13 +14,29 @@
 % (inputenc)                not set up for use with LaTeX.
 % …
 % l.56 ...ntnoidxglossary[type=main,title=Glossario]
-
 \usepackage{etoolbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{patterns}
+\usetikzlibrary{babel}
+\usetikzlibrary{positioning, shapes, arrows.meta}
+\usepackage{tikz-3dplot}
+
+\newcommand{\condizione}[3]{%
+  \par\noindent\textbf{(#1)}\,\textbf{#2}\label{#3}\par%
+}
+
+\usepackage{newtxsf} 
+\usepackage{amsmath} 
+
+\usepackage{graphicx}
+\usepackage[percent]{overpic}   % <-- carica overpic con percentuali
 
 % creo il toggle 'punct'
 \newtoggle{punct}
 % di default è attivo
 \toggletrue{punct}
+
 
 % comandi per disattivare/riattivare
 \newcommand{\DisablePunct}{\togglefalse{punct}}
