@@ -19,8 +19,41 @@
 \usetikzlibrary{arrows.meta}
 \usetikzlibrary{patterns}
 \usetikzlibrary{babel}
-\usetikzlibrary{positioning, shapes, arrows.meta}
+\usetikzlibrary{positioning, shapes, arrows.meta, calc}
+\usetikzlibrary{decorations.pathreplacing}
 \usepackage{tikz-3dplot}
+\usetikzlibrary{intersections,calc}
+
+
+
+\tikzset{ % cancella se non ti serve, è un rimasuglio della mia tesi per gli stili dei miei grafici 
+  timeline/.style={-Latex, thick},
+  tick/.style={thin},
+  nodelab/.style={font=\footnotesize, anchor=north},
+  brace/.style={decorate, decoration={brace, amplitude=4pt}},
+  open endpoint/.style={draw, circle, fill=white, line width=0.6pt, inner sep=0pt, minimum size=4pt},
+  closed endpoint/.style={circle, fill=black, inner sep=0pt, minimum size=4pt},
+  region/.style={draw, rounded corners=2pt, fill=gray!20},
+  traj/.style={line width=1.1pt},                       
+  proj/.style={dashed, thin},                            
+  taxis/.style={-Latex, thick},                
+  tmark/in/.style={circle, fill=black, inner sep=1.2pt},
+  tmark/out/.style={circle, draw=black, fill=white, inner sep=1.2pt}, % tick fuori
+  openmark/.style={circle, draw=black, fill=white, inner sep=1.1pt},
+  rombo/.style={diamond, draw=black, fill=black, minimum size=6pt, inner sep=0pt},
+  note/.style={draw, fill=white, rounded corners=2pt, font=\scriptsize, inner sep=2pt}
+}
+
+\usepackage{xcolor}
+\definecolor{pyBg}{RGB}{250,250,250}
+\definecolor{pyFrame}{RGB}{210,210,210}
+\definecolor{pyKw}{RGB}{38,78,166}
+\definecolor{pyStr}{RGB}{0,128,0}
+\definecolor{pyNum}{RGB}{128,0,128}
+\definecolor{pyId}{RGB}{20,20,20}
+\definecolor{pyEmph}{RGB}{180,30,30}
+
+
 
 \newcommand{\condizione}[3]{%
   \par\noindent\textbf{(#1)}\,\textbf{#2}\label{#3}\par%
@@ -28,9 +61,14 @@
 
 \usepackage{newtxsf} 
 \usepackage{amsmath} 
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{arydshln}
+\usepackage{multirow}
+\usepackage{enumerate}
 
 \usepackage{graphicx}
-\usepackage[percent]{overpic}   % <-- carica overpic con percentuali
+\usepackage[percent]{overpic}  
 
 % creo il toggle 'punct'
 \newtoggle{punct}
@@ -174,6 +212,10 @@
 \DeclareMathOperator{\var}{Var}
 
 % Algorithms
+% Pseudocodice (NO pacchetto 'algorithm': il float è già definito sopra)
+\RequirePackage{algorithmicx}
+\RequirePackage{algpseudocode}
+
 \RequirePackage{float}
 \floatstyle{ruled}
 \newfloat{algorithm}{htbp}{loa}[chapter]
@@ -315,24 +357,58 @@
     \else
       \@restonecolfalse
     \fi
-    \chapter*{List of Algorithms}%
+    \chapter*{Elenco degli algoritmi}%
       \@mkboth{%
-          List of Algorithms}%
-         {List of Algorithms}%
+          Elenco degli algoritmi}%
+         {Elenco degli algoritmi}%
     \@starttoc{loa}%
     \if@restonecol\twocolumn\fi
     }
+    
+% Numerazione: azzera a ogni capitolo e stampa <capitolo>.<numero>
+\@addtoreset{algorithm}{chapter}
+\renewcommand\thealgorithm{%
+  \ifnum \c@chapter>\z@ \thechapter.\fi \@arabic\c@algorithm}
 
-\@addtoreset {algorithm}{chapter}
-\renewcommand \thealgorithm
-     {\ifnum \c@chapter>\z@ \thechapter.\fi \@arabic\c@algorithm}
+% Impostazioni del float 'algorithm'
 \def\fps@algorithm{tbp}
 \def\ftype@algorithm{2}
 \def\ext@algorithm{loa}
-% Bold float captions
-\def\fnum@algorithm{\textbf{Algorithm}\nobreakspace\textbf{\thealgorithm}}
-\def\fnum@table{\textbf{\tablename}\nobreakspace\textbf{\thetable}}
-\def\fnum@figure{\textbf{\figurename}\nobreakspace\textbf{\thefigure}}
+
+% NOME del float e intestazione della caption in italiano
+\floatname{algorithm}{Algoritmo}
+\def\fnum@algorithm{\textbf{Algoritmo}\nobreakspace\textbf{\thealgorithm}}
+    
+% Localizzazione di \Require / \Ensure
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+% Righe aggiuntive allineate a \Require / \Ensure
+\newcommand{\RequireItem}[1]{\Statex\hspace{\algorithmicindent}#1}
+\newcommand{\EnsureItem}[1]{\Statex\hspace{\algorithmicindent}#1}
+% Commento a fine riga (sobrio)
+\algrenewcommand\algorithmiccomment[1]{\hfill$\triangleright$~\textit{#1}}
+% (Opzionale) numeri di riga leggermente più piccoli
+\algrenewcommand\alglinenumber[1]{\footnotesize #1}
+% Supporto \autoref{...} → "Algoritmo <n>"
+\providecommand*{\algorithmautorefname}{Algoritmo}
+
+% --- Spazio verticale dopo il blocco di Output (manuale) ---
+\newcommand{\EnsureEndSkip}[1][.35\baselineskip]{%
+  \Statex\hspace*{0pt}\vspace{#1}%
+}
+
+% Blocchi di indentazione "muti" (non stampano testo)
+\algblock{Indent}{EndIndent}
+\algtext*{Indent}
+\algtext*{EndIndent}
+
+
+% --- Traduzioni per listings ---
+\AtBeginDocument{%
+  \renewcommand{\lstlistingname}{Codice}% oppure "Codice"
+  \renewcommand{\lstlistlistingname}{Elenco dei codici}% oppure "Elenco dei codici"
+  \captionsetup[lstlisting]{name=\lstlistingname}
+}
 
 % Change the default captions font
 \if@smallcaptions
@@ -377,6 +453,49 @@
 \RequirePackage{minitoc}
 \RequirePackage{ifpdf}
 \RequirePackage{nomencl}
+
+\usepackage{courier}
+\lstset{
+    basicstyle=\footnotesize\ttfamily, % Default font
+    numbers=left,              % Location of line numbers
+    numberstyle=\tiny,          % Style of line numbers
+    % stepnumber=2,              % Margin between line numbers
+    numbersep=5pt,              % Margin between line numbers and text
+    tabsize=2,                  % Size of tabs
+    extendedchars=true,
+    breaklines=true,            % Lines will be wrapped
+    keywordstyle=\color{red},
+    frame=b,
+    % keywordstyle=[1]\textbf,
+    % keywordstyle=[2]\textbf,
+    % keywordstyle=[3]\textbf,
+    % keywordstyle=[4]\textbf,   \sqrt{\sqrt{}}
+    stringstyle=\color{white}\ttfamily, % Color of strings
+    showspaces=false,
+    showtabs=false,
+    xleftmargin=17pt,
+    framexleftmargin=17pt,
+    framexrightmargin=5pt,
+    framexbottommargin=4pt,
+    % backgroundcolor=\color{lightgray},
+    showstringspaces=false
+}
+\lstloadlanguages{ % Check documentation for further languages ...
+     % [Visual]Basic,
+     % Pascal,
+     % C,
+     % C++,
+     % XML,
+     % HTML,
+     Python
+}
+% \DeclareCaptionFont{blue}{\color{blue}} 
+
+% \captionsetup[lstlisting]{singlelinecheck=false, labelfont={blue}, textfont={blue}}
+\usepackage{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
 
 \makenomenclature
 
