@@ -1,5 +1,5 @@
 % Document class and options
-\documentclass[a4paper,sourcesanspro,11pt,twoside,texglossaries]{resources/thesis}
+\documentclass[a4paper,11pt,twoside,texglossaries,palatino]{resources/thesis}
 
 \degreeprogram{Corso di Laurea Triennale in Informatica}
 \thesistype{Tesi di Laurea Triennale}
@@ -43,11 +43,12 @@
     \stoppreamble
 
     % Capitoli
-    \chapter{Introduzione e contesto generale}
+    \chapter{Introduzione e contesto generale}\label{ch:introduzione-contesto}
     \chapter{Obiettivi e pianificazione iniziale dello stage}
     \chapter{Caratteristiche dei dati \gls{adrr}}
     \chapter{Procedure tecniche di acquisizione e analisi preliminare}
     \chapter{Criticità riscontrate e generazione di istanze fittizie}
+    \input{chapters/ch5/ch5.tex}
     \chapter{Conclusioni e prospettive future}
     
     % TODO fix definitivo thesis.cls riga 12
