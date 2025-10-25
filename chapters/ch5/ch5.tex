@@ -5,3 +5,40 @@ Questo capitolo esplicita i limiti informativi dell'\acrfull{adrr} rispetto al p
 
     %TODO citare i vincoli anche se per mancanza di dati non tutti i vincoli possono essere rispettati (settori collassati)
   Nel seguito si formalizza l’impiego delle \gls{fir} quali ``mattoni'' geometrici per la definizione di configurazioni elementari e collassate; si introducono i criteri di assegnazione della capacità e i vincoli geometrici; infine, si illustra l’integrazione di tali configurazioni nella formulazione del \gls{dac}.
+  
+\section{Capacità}
+\label{sec:cap5-capacita}
+L'obiettivo è definire una capacità per ogni settore applicando una regola unica tanto ai settori elementari quanto alle loro unioni. Il traffico giornaliero \(N_R(d)\) di un settore elementare \(R\) alla data \(d\) si ricava dal \emph{throughput} (cfr.~\S\ref{subsec:throughput-teoria}) fissando \(W=\Delta=1\,\mathrm{h}\). In questo modo l'intervallo è suddiviso in 24 finestre contigue e non sovrapposte.
+
+    \subsection{Settore elementare}
+    \begin{algorithm}[H]
+      \caption{Capacità di un settore elementare.}
+      \label{alg:cap-elementare-naturale}
+      \begin{algorithmic}[1]
+        \Require Serie giornaliera $N_R(d)$ su un periodo $D$; settore elementare $E$.
+        \Ensure Capacità $C_{E}$ per il settore elementare $E$.
+        \State Considera la serie dei traffici giornalieri $N_R(d)$ sul periodo $D$.
+        \State Limita l’analisi ai valori compresi tra il decimo e il novantesimo percentile (di un giorno $x$).
+        \State Tra i valori rimasti, prendi il 75\% più alto e calcolane la media; questo è il valore di base.
+        \State Opzionalmente aggiungi o sottrai una piccola quantità aleatoria attorno a zero, quindi arrotonda all’intero più vicino. Il risultato è la capacità del settore elementare $C_E$.
+      \end{algorithmic}
+    \end{algorithm}
+    
+    \subsection{Settore collassato}
+    \begin{algorithm}[H]
+      \caption{Capacità di un settore collassato.}
+      \label{alg:cap-collassato-naturale}
+      \begin{algorithmic}[1]
+        \Require Collassato $G$; capacità elementari $\{C_E\}_{E \in G}$.
+        \Ensure Capacità $C_G$ per il collassato $G$.
+        \State Prendi il massimo tra le capacità elementari dei componenti di $G$; questo è il riferimento iniziale.
+        \State Aumenta la base di una percentuale prefissata (ad es.\ 10\%) per ciascun altro componente del collassato, cioè per ogni settore elementare oltre quello che determina il massimo.
+        \State Se è definito un upper bound complessivo (ad es.\ non oltre il 50\% rispetto alla base), non superarlo.
+        \State Arrotonda il valore finale all’intero più vicino. Il risultato è la capacità del settore elementare $C_G$.
+      \end{algorithmic}
+    \end{algorithm}
+    
+\paragraph{Nota di lettura.}
+Le soglie di trimming (10--90), la quota alta (75\%), l’incremento per accorpamento (ad es.\ 10\%) e l’eventuale tetto complessivo (ad es.\ 50\%) sono parametri configurabili. I valori qui riportati rappresentano i default adottati in questo lavoro; la perturbazione casuale è opzionale e serve unicamente a modellare incertezza residua mantenendo la riproducibilità tramite seme fissato.
+
+  
