@@ -3,9 +3,9 @@ Questo capitolo esplicita i limiti informativi dell'\acrfull{adrr} rispetto al p
 
     Per superare tale limite, adottiamo un’ipotesi di lavoro allineata all’unica componente geometrica effettivamente osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, una \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile). A partire da questa assunzione, costruiamo istanze coerenti con la geografia dei dati: le configurazioni ``elementari'' coincidono con singole \gls{fir}, mentre i ``collassati'' sono definiti come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini.
 
-    %TODO citare i vincoli anche se per mancanza di dati non tutti i vincoli possono essere rispettati (settori collassati)
-  Nel seguito si formalizza l’impiego delle \gls{fir} quali ``mattoni'' geometrici per la definizione di configurazioni elementari e collassate; si introducono i criteri di assegnazione della capacità e i vincoli geometrici; infine, si illustra l’integrazione di tali configurazioni nella formulazione del \gls{dac}.
-  
+    %TODO cambiare configurazioni elementari e collassate
+    Nel seguito si formalizza l’impiego delle \gls{fir} come ``mattoni'' geometrici per definire configurazioni elementari e collassate; si introducono i criteri di assegnazione della capacità e i corrispondenti vincoli geometrici; infine, si mostra come integrare tali configurazioni nella formulazione del \gls{dac}.
+
 \section{Capacità}
 \label{sec:cap5-capacita}
 L'obiettivo è definire una capacità per ogni settore applicando una regola unica tanto ai settori elementari quanto alle loro unioni. Il traffico giornaliero \(N_R(d)\) di un settore elementare \(R\) alla data \(d\) si ricava dal \emph{throughput} (cfr.~\S\ref{subsec:throughput-teoria}) fissando \(W=\Delta=1\,\mathrm{h}\). In questo modo l'intervallo è suddiviso in 24 finestre contigue e non sovrapposte.
@@ -36,9 +36,40 @@ L'obiettivo è definire una capacità per ogni settore applicando una regola uni
         \State Se è definito un upper bound complessivo (ad es.\ non oltre il 50\% rispetto alla base), non superarlo.
         \State Arrotonda il valore finale all’intero più vicino. Il risultato è la capacità del settore elementare $C_G$.
       \end{algorithmic}
-    \end{algorithm}
+    \end{algorithm}  
     
-\paragraph{Nota di lettura.}
-Le soglie di trimming (10--90), la quota alta (75\%), l’incremento per accorpamento (ad es.\ 10\%) e l’eventuale tetto complessivo (ad es.\ 50\%) sono parametri configurabili. I valori qui riportati rappresentano i default adottati in questo lavoro; la perturbazione casuale è opzionale e serve unicamente a modellare incertezza residua mantenendo la riproducibilità tramite seme fissato.
+\section{Geometria}
+\label{sec:geometria}
+%\paragraph{Connettività (vincolo imposto).}
+%Nel progetto la connettività dei settori collassati è gestita tramite un \emph{grafo di adiacenza} $\mathcal{G}=(V,\mathcal{E})$ costruito sui settori elementari: inseriamo un arco tra $E_i$ ed $E_j$ se (i) i loro confini sono a contatto ($\partial E_i \cap \partial E_j \neq \varnothing$) e (ii) gli intervalli di quota si sovrappongono almeno di un margine prefissato.\footnote{Il margine di sovrapposizione sui FL è un parametro impostabile.} I settori collassati $G$ vengono \emph{generati} come blocchi connessi tramite una BFS limitata alla taglia massima consentita, risultando dunque connessi \emph{per costruzione}; in aggiunta, ne \emph{verifichiamo} l’ammissibilità controllando che il sottografo indotto $\mathcal{G}[G]$ sia connesso. Lo stesso grafo è poi riutilizzato per la colorazione (greedy coloring) al fine di assegnare colori diversi a collassati adiacenti e per ridurre i costi computazionali restringendo i test di contiguità ai soli vicini. Questo è l’unico vincolo geometrico completamente verificabile con i dati \gls{adrr}.
 
-  
+%\paragraph{Rispetto dei confini (non verificabile).}
+%Il vincolo richiede buffer minimi rispetto ai confini degli \gls{acc} adiacenti (Fig.~\ref{fig:boundary}). 
+%Poiché \gls{adrr} non rende disponibili i perimetri degli \gls{acc} né le relative distanze operative, il controllo non è osservabile; pertanto non imponiamo questo vincolo e ne documentiamo l’assenza tra le limitazioni del dataset.
+
+%\paragraph{Convessità (non garantibile senza alterare la geometria).} Molte \gls{fir} non sono convesse e l’unione di più \gls{fir} raramente lo è (Fig.~\ref{fig:convexity}). Imporre convessità richiederebbe una convessificazione (ad es.\ inviluppo convesso) che deformerebbe i confini reali delle \gls{fir}; ciò sarebbe incoerente con l’assunzione di trattare le \gls{fir} come \emph{mattoni} atomici. Di conseguenza, \emph{non} forziamo la convessità e manteniamo la geometria osservata.
+
+Muovendosi dal quadro definitorio di Cap.~\ref{ch:introduzione-contesto} e, in particolare, da \S\ref{subsec:settore-collassato}, riprendiamo i vincoli che rendono attuabili le configurazioni collassate (cfr. Figg.~\ref{fig:constraints_ab}–\ref{fig:constraints_cd}) e ne specifichiamo la traducibilità operativa sui dati \gls{adrr}, nei quali le \gls{fir} sono le sole entità geometriche osservabili.
+
+\subsection{Vincoli imposti (osservabili e applicati)}
+\paragraph{Connettività.}
+Richiediamo che l’aggregazione tra settori elementari avvenga esclusivamente quando sono soddisfatte entrambe le seguenti condizioni:
+\begin{enumerate}\itemsep0.2em
+  \item \textbf{Contatto planimetrico:} i confini dei due settori sono a contatto, ossia \(\partial E_i \cap \partial E_j \neq \varnothing\).
+  \item \textbf{Compatibilità verticale:} gli intervalli di quota operativa si sovrappongono almeno di un margine prefissato, vale a dire \(\mathrm{overlap}_{FL}(E_i,E_j)\ge m_{\!FL}\).\footnote{Il margine \(m_{\!FL}\) è configurabile.}
+\end{enumerate}
+Nel seguito, consideriamo ammissibili soltanto quelle unioni di settori elementari per le quali esiste una catena di accostamenti che rispetta, passo dopo passo, entrambi i vincoli sopra elencati; in tal modo l’insieme risultante è connesso e coerente sia sul piano geometrico sia su quello altimetrico.
+
+\subsection{Vincoli non osservabili}
+Di seguito documentiamo i vincoli concettualmente previsti ma non verificabili operativamente in \gls{adrr}.
+\paragraph{Rispetto dei confini degli \gls{acc}.}
+Il vincolo prevede buffer minimi rispetto ai confini degli \gls{acc} adiacenti (cfr. Fig.~\ref{fig:boundary}). Poiché \gls{adrr} non rende disponibili né i perimetri degli \gls{acc} né le relative distanze operative, il controllo non è osservabile nel dataset e, di conseguenza, non è imponibile; ne documentiamo l’assenza tra le limitazioni.
+
+\paragraph{Convessità della geometria risultante.}
+Nel dataset considerato la convessità è l’eccezione: su 324 poligoni validi, 4 sono convessi (1.23\%) e 320 sono concavi (98.77\%). Imporre la convessità comporterebbe sostituire alterare i confini reali delle \gls{fir}contraddicendo l’assunzione di trattarle come ``mattoni'' atomici. Per questo motivo non imponiamo la convessità e manteniamo la geometria osservata.
+
+
+
+
+
+
