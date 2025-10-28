@@ -8,8 +8,7 @@ Questo capitolo esplicita i limiti informativi dell'\acrfull{adrr} rispetto al p
 
 \section{Capacità}
 \label{sec:cap5-capacita}
-L'obiettivo è definire una capacità per ogni settore applicando una regola unica tanto ai settori elementari quanto alle loro unioni. Il traffico giornaliero \(N_R(d)\) di un settore elementare \(R\) alla data \(d\) si ricava dal \emph{throughput} (cfr.~\S\ref{subsec:throughput-teoria}) fissando \(W=\Delta=1\,\mathrm{h}\). In questo modo l'intervallo è suddiviso in 24 finestre contigue e non sovrapposte.
-
+L'obiettivo è definire una capacità per ogni settore applicando una regola unica tanto ai settori elementari quanto alle loro unioni. Il traffico giornaliero \(N_R(d)\) di un settore elementare \(R\) alla data \(d\) si ricava dal \emph{throughput} (cfr.~\S\ref{subsec:throughput-teoria}) fissando \(W=5\,\mathrm{min}\) e \(\lambda=1\,\mathrm{h} \). In questo modo l'intervallo è suddiviso in 288 intervalli da 5 minuti, ognuno dei quali analizza l’andamento dell’ora successiva.
     \subsection{Settore elementare}
     \begin{algorithm}[H]
       \caption{Capacità di un settore elementare.}
@@ -68,8 +67,56 @@ Il vincolo prevede buffer minimi rispetto ai confini degli \gls{acc} adiacenti (
 \paragraph{Convessità della geometria risultante.}
 Nel dataset considerato la convessità è l’eccezione: su 324 poligoni validi, 4 sono convessi (1.23\%) e 320 sono concavi (98.77\%). Imporre la convessità comporterebbe sostituire alterare i confini reali delle \gls{fir}contraddicendo l’assunzione di trattarle come ``mattoni'' atomici. Per questo motivo non imponiamo la convessità e manteniamo la geometria osservata.
 
+\section{Generazione settori collassati}
+\label{subsec:algo-collassati}
+L'algoritmo genera settori collassati applicando una gls{dfs} modificata all'insieme dei settori elementari, nel rispetto dei vincoli geometrici (cfr. §\ref{sec:geometria}). La componente probabilistica regola la crescita delle configurazioni.
 
-
-
-
-
+    \begin{algorithm}[H]
+      \caption{Generazione di un settore collassato.}
+      \label{alg:collasso-dfs-prob}
+      \begin{algorithmic}[1]
+        \Require Tabella \gls{fir} (cfr.\ \S\ref{sec:table_fir})
+            \Ensure Insieme di settori collassati \(C\)
+    
+        \Statex
+        \For{ogni \gls{fir} \(F_i\) nella Tabella \gls{fir}}
+          \State Ordina i vertici \((\text{longitudine}, \text{latitudine})\) per numero di sequenza.
+          \If{il primo vertice \(\neq\) l'ultimo} \State aggiungi il primo vertice in coda \Comment{correzione della geometria} \EndIf
+          \State \(E_i \gets \mathrm{Poligono}(\text{vertici})\); \quad \(R_i \gets [\text{quota\_min}, \text{quota\_max}]\)
+          \State Memorizza \((E_i, R_i)\) e marca \(E_i\) come \emph{non visitato}.
+        \EndFor
+        
+        \State $C \gets \emptyset$
+        \For{ogni poligono $E_i$ non visitato}
+            \State Crea uno stack iniziale contenente solo $E_i$ \; ($\texttt{stack}\gets[\,E_i\,]$)
+            \State Crea un nuovo gruppo \; $G \gets \{\,E_i\,\}$
+            \State Segna $E_i$ come visitato \; ($\text{visited}[E_i]\gets\texttt{true}$)
+            \While{$\texttt{stack}\neq\emptyset$ \textbf{e} $|G|<N_{\max}$}
+                \State Estrai dallo stack l’ultimo poligono
+                \State Ottieni il suo intervallo verticale: $[\ell_c, u_c] \gets R(E_c)$
+                \State Costruisci l’insieme dei candidati \(V\) dei poligoni adiacenti a \(E_c\) e non ancora visitati:
+                \For{ogni \(E_n \in V\)}
+                    \State Ottieni il suo intervallo verticale: $[\ell_n, u_n] \gets R(E_n)$
+                    \State Verifica la sovrapposizione: $\max(\ell_c,\ell_n) \le \min(u_c,u_n)$
+                    \If{c'è sovrapposizione}
+                        \State Genera $u \sim \mathcal{U}(0,1)$ e calcola $p(|G|)$
+                        \If{$u < p$}
+                            \State Aggiungi $E_n$ al gruppo: $G \gets G \cup \{E_n\}$
+                            \State Inserisci $E_n$ nello stack:
+                            \State Segna $E_n$ come visitato: $\text{visited}[E_n]\gets\texttt{true}$
+                            \EndIf
+                    \EndIf
+                \EndFor
+            \EndWhile
+          \State Unisci tutti i poligoni del gruppo: $\widehat{E}_G \gets \bigcup_{E \in G} E$
+          \State Aggiungi il risultato a $C$
+        \EndFor
+        \end{algorithmic}
+    \end{algorithm}
+    
+\subsection{Logica probabilistica}
+In un contesto in cui \(N_{\text{max}}\) è piccolo (ad esempio, compreso tra 1 e 9), la probabilità di inclusione \(p\) decresce linearmente con la dimensione attuale del gruppo \(|G|\), secondo la relazione
+\[
+p(|G|) = \frac{N_{\text{max}} - |G| + 1}{N_{\text{max}} + 1}.
+\]
+Questa scelta genera tre effetti chiave. Innanzitutto, la crescita iniziale è molto rapida: quando \(|G|=1\), si ha \(p(1) = \frac{N_{\text{max}}}{N_{\text{max}}+1}\), che è prossima a 1 già per \(N_{\text{max}} \geq 3\), spingendo una veloce espansione nelle fasi iniziali. In secondo luogo, la decrescita di \(p\) è graduale e prevedibile: ogni nuovo elemento incluso riduce la probabilità di un valore costante \(\frac{1}{N_{\text{max}}+1}\), modulando così il tasso di crescita. Infine, il meccanismo è autoregolante: quando \(|G|\) si avvicina a \(N_{\text{max}}\), \(p\) tende a zero, arrestando naturalmente l’aggregazione.
