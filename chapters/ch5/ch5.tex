@@ -4,8 +4,7 @@ Questo capitolo esplicita i limiti informativi dell'\acrfull{adrr} rispetto al p
     Per superare tale limite, adottiamo un’ipotesi di lavoro allineata all’unica componente geometrica effettivamente osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, una \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile). A partire da questa assunzione, costruiamo istanze coerenti con la geografia dei dati: le configurazioni ``elementari'' coincidono con singole \gls{fir}, mentre i ``collassati'' sono definiti come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini.
 
     %TODO cambiare configurazioni elementari e collassate
-    Nel seguito si formalizza l’impiego delle \gls{fir} come ``mattoni'' geometrici per definire configurazioni elementari e collassate; si introducono i criteri di assegnazione della capacità e i corrispondenti vincoli geometrici; infine, si mostra come integrare tali configurazioni nella formulazione del \gls{dac}. Per una sintesi visiva si veda la Figura~\ref{fig:rassegna-collassati}.
-
+    Nel seguito si formalizza l’impiego delle \gls{fir} come ``mattoni'' geometrici per definire configurazioni elementari e collassate; si introducono i criteri di assegnazione della capacità e i corrispondenti vincoli geometrici. Per una sintesi visiva si veda la Figura~\ref{fig:rassegna-collassati}.
 
 \section{Capacità}
 \label{sec:cap5-capacita}
@@ -40,15 +39,6 @@ L'obiettivo è definire una capacità per ogni settore applicando una regola uni
     
 \section{Geometria}
 \label{sec:geometria}
-%\paragraph{Connettività (vincolo imposto).}
-%Nel progetto la connettività dei settori collassati è gestita tramite un \emph{grafo di adiacenza} $\mathcal{G}=(V,\mathcal{E})$ costruito sui settori elementari: inseriamo un arco tra $E_i$ ed $E_j$ se (i) i loro confini sono a contatto ($\partial E_i \cap \partial E_j \neq \varnothing$) e (ii) gli intervalli di quota si sovrappongono almeno di un margine prefissato.\footnote{Il margine di sovrapposizione sui FL è un parametro impostabile.} I settori collassati $G$ vengono \emph{generati} come blocchi connessi tramite una BFS limitata alla taglia massima consentita, risultando dunque connessi \emph{per costruzione}; in aggiunta, ne \emph{verifichiamo} l’ammissibilità controllando che il sottografo indotto $\mathcal{G}[G]$ sia connesso. Lo stesso grafo è poi riutilizzato per la colorazione (greedy coloring) al fine di assegnare colori diversi a collassati adiacenti e per ridurre i costi computazionali restringendo i test di contiguità ai soli vicini. Questo è l’unico vincolo geometrico completamente verificabile con i dati \gls{adrr}.
-
-%\paragraph{Rispetto dei confini (non verificabile).}
-%Il vincolo richiede buffer minimi rispetto ai confini degli \gls{acc} adiacenti (Fig.~\ref{fig:boundary}). 
-%Poiché \gls{adrr} non rende disponibili i perimetri degli \gls{acc} né le relative distanze operative, il controllo non è osservabile; pertanto non imponiamo questo vincolo e ne documentiamo l’assenza tra le limitazioni del dataset.
-
-%\paragraph{Convessità (non garantibile senza alterare la geometria).} Molte \gls{fir} non sono convesse e l’unione di più \gls{fir} raramente lo è (Fig.~\ref{fig:convexity}). Imporre convessità richiederebbe una convessificazione (ad es.\ inviluppo convesso) che deformerebbe i confini reali delle \gls{fir}; ciò sarebbe incoerente con l’assunzione di trattare le \gls{fir} come \emph{mattoni} atomici. Di conseguenza, \emph{non} forziamo la convessità e manteniamo la geometria osservata.
-
 Muovendosi dal quadro definitorio di Cap.~\ref{ch:introduzione-contesto} e, in particolare, da \S\ref{subsec:settore-collassato}, riprendiamo i vincoli che rendono attuabili le configurazioni collassate (cfr. Figg.~\ref{fig:constraints_ab}–\ref{fig:constraints_cd}) e ne specifichiamo la traducibilità operativa sui dati \gls{adrr}, nei quali le \gls{fir} sono le sole entità geometriche osservabili.
 
 \subsection{Vincoli imposti (osservabili e applicati)}
@@ -71,7 +61,7 @@ Nel dataset considerato la convessità è l’eccezione: su 324 poligoni validi,
 \clearpage
 \section{Generazione settori collassati}
 \label{subsec:algo-collassati}
-L'algoritmo genera settori collassati applicando una gls{dfs} modificata all'insieme dei settori elementari, nel rispetto dei vincoli geometrici (cfr. §\ref{sec:geometria}). La componente probabilistica regola la crescita delle configurazioni.
+L'algoritmo genera settori collassati applicando una \gls{dfs} modificata all'insieme dei settori elementari, nel rispetto dei vincoli geometrici (cfr. §\ref{sec:geometria}). La componente probabilistica regola la crescita delle configurazioni.
 
     \begin{algorithm}[H]
       \caption{Generazione di un settore collassato.}
