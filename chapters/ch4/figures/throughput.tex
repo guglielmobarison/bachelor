@@ -1,0 +1,70 @@
+\begin{figure}[H]
+\centering
+
+\tikzset{
+  region/.style={draw, rounded corners=2pt, fill=gray!20},
+  traj/.style={line width=0.5pt, -Latex},
+  proj/.style={dashed},
+  taxis/.style={-Latex, thick},
+  tmark/in/.style={circle, fill=black, inner sep=1.2pt},
+  tmark/out/.style={circle, draw=black, fill=white, inner sep=1.2pt},
+  openmark/.style={circle, draw=black, fill=white, inner sep=1.1pt},
+  rombo/.style={diamond, draw=black, fill=black, minimum size=6pt, inner sep=0pt},
+  note/.style={draw, fill=white, rounded corners=2pt, font=\scriptsize, inner sep=2pt}
+}
+
+\def\yaxis{-1.0}
+\def\tk{1.0}
+\def\tkW{4.0}
+
+\begin{subfigure}[t]{.48\textwidth}
+\centering
+\begin{tikzpicture}[x=0.9cm,y=0.9cm]
+  \def\yaxis{-1.2}
+  \def\tinA{2.2}
+  \draw[region] (0,0) rectangle (6,3);
+  \node[font=\small] at (6,3.5) {$R$};
+  \draw[traj] (-0.6,2.4) .. controls (1.2,2.1) and (3.2,1.8) .. (6.6,1.5);
+  %\node[rombo] at (2.2,1.95) {};
+  \fill[gray!20, draw=black!50] (\tk,\yaxis+0.22) rectangle (\tkW,\yaxis-0.22);
+  \coordinate (EinA) at (0,2.3);
+  \fill[red] (EinA) circle (1.6pt);
+  \node[font=\scriptsize, anchor=south west] at (EinA) {$t^{\mathrm{in}}_{R}=2.2$};
+  \draw[proj] (EinA) -- (\tinA,\yaxis);
+  \draw[taxis] (-0.2,\yaxis) -- (6.6,\yaxis);
+  \foreach \x in {0,...,6}{
+    \draw (\x,\yaxis+0.08) -- (\x,\yaxis-0.08);
+    \node[font=\scriptsize] at (\x,\yaxis-0.35) {\x.0};
+  }
+  \node[tmark/in] at (\tinA,\yaxis) {};
+\end{tikzpicture}
+\subcaption{Rotta A: ingresso \textbf{dentro} la finestra.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{.48\textwidth}
+\centering
+\begin{tikzpicture}[x=0.9cm,y=0.9cm]
+  \def\yaxis{-1.2}
+  \def\tinB{4.8}
+  \draw[region] (0,0) rectangle (6,3);
+  \node[font=\small] at (6,3.5) {$R$};
+  \draw[traj] (-0.6,0.7) .. controls (1.0,1.3) and (3.5,2.5) .. (6.6,2.8);
+  %\node[rombo] at (4.8,2.2) {};
+  \fill[gray!20, draw=black!50] (\tk,\yaxis+0.22) rectangle (\tkW,\yaxis-0.22);
+  \coordinate (EinB) at (0,0.9);
+  \fill[red] (EinB) circle (1.6pt);
+  \node[font=\scriptsize, anchor=south west, yshift=0.5cm] at (EinB) {$t^{\mathrm{in}}_{R}=4.8$};
+  \draw[proj] (EinB) -- (\tinB,\yaxis);
+  \draw[taxis] (-0.2,\yaxis) -- (6.6,\yaxis);
+  \foreach \x in {0,...,6}{
+    \draw (\x,\yaxis+0.08) -- (\x,\yaxis-0.08);
+    \node[font=\scriptsize] at (\x,\yaxis-0.35) {\x.0};
+  }
+  \node[tmark/in] at (\tinB,\yaxis) {};
+\end{tikzpicture}
+\subcaption{Rotta B: ingresso \textbf{fuori} dalla finestra.}
+\end{subfigure}
+
+\caption{Throughput $T_R(I_k)$ per la regione $R$ come conteggio degli ingressi che cadono nella finestra $[t_k,t_k{+}W)$.}
+\label{fig:throughput-subfig}
+\end{figure}

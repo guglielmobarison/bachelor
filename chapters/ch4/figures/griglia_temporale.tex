@@ -1,0 +1,35 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % Parametri (solo per disegno)
+  \def\tauZero{0}
+  \def\tauOne{10}
+  \def\DeltaLen{1.4}
+
+  % Asse temporale
+  \draw[timeline] (\tauZero-0.6,0) -- (\tauOne+0.6,0);
+
+  % Estremi dell'orizzonte [tau0, tau1)
+  \fill (\tauZero,0) circle (2pt) node[below=2pt] {$\tau_0$};
+  \draw[open endpoint] (\tauOne,0) circle (2pt) node[below=2pt] {$\tau_1$};
+
+  % Nodi t_k equispaziati: k = 0,1,...,K (qui K=6 per illustrazione)
+  \foreach \k in {0,...,6}{
+    \draw[tick] ({\tauZero + \k*\DeltaLen},-0.12) -- ({\tauZero + \k*\DeltaLen},0.12);
+  }
+  % Etichette: t_0, t_1, t_2, ..., t_K
+  \node[nodelab] at (\tauZero, -0.45) {$t_0$};
+  \node[nodelab] at ({\tauZero + 1*\DeltaLen}, -0.45) {$t_1$};
+  \node[nodelab] at ({\tauZero + 2*\DeltaLen}, -0.45) {$t_2$};
+  \node at ({\tauZero + 3.2*\DeltaLen}, -0.45) {$\cdots$};
+  \node[nodelab] at ({\tauZero + 6*\DeltaLen}, -0.45) {$t_K$};
+
+  % Braccetto che mostra \Delta tra due nodi consecutivi
+  \draw[brace] ({\tauZero + 2*\DeltaLen},0.6) -- node[above=6pt] {$\lambda$} ({\tauZero + 3*\DeltaLen},0.6);
+
+  % Braccio che evidenzia l'orizzonte [tau0, tau1)
+  \draw[brace] (\tauZero,1.5) -- node[above=6pt] {$T=[\tau_0,\tau_1)$} (\tauOne,1.5);
+\end{tikzpicture}
+\caption{Griglia temporale su \([\tau_0,\tau_1)\). L’estremo destro è aperto.}
+\label{fig:griglia-temporale}
+\end{figure}

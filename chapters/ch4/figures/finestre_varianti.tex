@@ -1,0 +1,54 @@
+\begin{figure}[H]
+  \centering
+  % --- (B) W = Δ ---
+  \begin{subfigure}{\linewidth}
+    \centering
+    \begin{tikzpicture}[x=1cm,y=1cm]
+      \def\tauZero{0}\def\tauOne{10}\def\DeltaLen{1.6}\def\h{0.6}\def\winfill{black!25}\def\Wlen{1.6}
+      \draw[timeline] (\tauZero-0.6,0) -- (\tauOne+0.6,0);
+      \foreach \k in {0,1,2,3,4,5}{
+        \coordinate (tkB\k) at ({\tauZero + \k*\DeltaLen},0);
+        \draw[tick] (tkB\k)++(0,-0.12) -- +(0,0.24);
+        \node[nodelab, yshift=-6pt] at (tkB\k) {$t_{\k}$};
+      }
+      \foreach \k in {0,1,2,3,4}{
+        \draw[draw=black, fill=\winfill, fill opacity=0.35, line width=0.6pt]
+          (tkB\k)++(0,-\h/2) rectangle ++(\Wlen,\h);
+        \node[closed endpoint] at (tkB\k) {};
+        \node[open endpoint] at ($(tkB\k)+(\Wlen,0)$) {};
+      }
+      \draw[brace] ($(tkB2)+(0,0.4)$) -- node[above=15pt, nodelab] {$\lambda=W$} ($(tkB3)+(0,0.4)$);
+    \end{tikzpicture}
+    \caption{\(W=\lambda\)\,: finestre contigue.}
+  \end{subfigure}
+
+  \vspace{1.5em}
+
+  % --- (C) W > Δ ---
+  \begin{subfigure}{\linewidth}
+    \centering
+    \begin{tikzpicture}[x=1cm,y=1cm]
+      \def\tauZero{0}\def\tauOne{10}\def\DeltaLen{1.6}\def\h{0.6}\def\winfill{black!25}\def\Wlen{2.2}\def\ysep{0.9}
+      \draw[timeline] (\tauZero-0.6,0) -- (\tauOne+0.6,0);
+      \foreach \k in {0,1,2,3,4,5}{
+        \coordinate (tkC\k) at ({\tauZero + \k*\DeltaLen},0);
+        \draw[tick] (tkC\k)++(0,-0.12) -- +(0,0.24);
+        \node[nodelab] at (tkC\k) {$t_{\k}$};
+      }
+      \foreach \k in {0,1,2,3,4}{
+        \pgfmathtruncatemacro{\sgn}{mod(\k,2)==0 ? 1 : -1}
+        \coordinate (wkC\k) at ($(tkC\k)+(0,\sgn*\ysep)$);
+        \draw[draw=black, fill=\winfill, fill opacity=0.35, line width=0.6pt]
+          (wkC\k)++(0,-\h/2) rectangle ++(\Wlen,\h);
+        \node[closed endpoint] at (wkC\k) {};
+        \node[open endpoint] at ($(wkC\k)+(\Wlen,0)$) {};
+      }
+      \draw[brace] ($(tkC1)+(0,-0.45)$) -- node[below=5pt, nodelab] {$\Delta$} ($(tkC0)+(0,-0.45)$);
+      \draw[brace] ($(wkC1)+(\Wlen,-\h/2-0.15)$) -- node[below=5pt, nodelab] {$W$} ($(wkC1)+(0,-\h/2-0.15)$);
+    \end{tikzpicture}
+    \caption{\(W>\lambda\)\,: finestre sovrapposte.}
+  \end{subfigure}
+
+  \caption{Configurazioni delle finestre in funzione di \(W\) e \(\lambda\).}
+  \label{fig:finestre-varianti}
+\end{figure}

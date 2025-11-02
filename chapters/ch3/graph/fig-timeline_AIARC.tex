@@ -1,0 +1,175 @@
+\begin{tikzpicture}[
+    % --- Stili generali ---
+    every node/.style={font=\small},
+    arrowstyle/.style={-{Latex[length=3mm]}, line width=1pt},
+    cyanline/.style={arrowstyle, draw=cyan!60!black},
+    cyanline2/.style={draw=cyan!60!black, line width=1pt},
+    greenline/.style={arrowstyle, draw=green!70!black},
+    greenline2/.style={draw=green!70!black, line width=1pt},
+    yellowline/.style={arrowstyle, draw=orange!25!yellow},
+    yellowline2/.style={draw=orange!25!yellow, line width=1pt},
+    orangeline/.style={arrowstyle, draw=orange!70!yellow},
+    timeline/.style={line width=1pt},
+    tick/.style={line width=1pt},
+    publish/.style={fill=green!70!black, draw=none, shape=diamond, minimum size=5pt}
+]
+
+% ==========================
+% 0) DEFINIZIONE COORDINATE
+% ==========================
+% Qui dichiariamo TUTTE le coordinate (D72, D56, D34, D28, D6, D1, T2, T0)
+% PRIMA di usarle nelle righe successive.
+\coordinate (D72) at (0,0);
+\coordinate (D56) at (1.2,0);
+\coordinate (D34) at (2.8,0);
+\coordinate (D28) at (3.6,0);
+\coordinate (D6) at (7,0);
+\coordinate (D1) at (8,0);
+\coordinate (T2) at (9,0);
+\coordinate (T0) at (11,0);
+\pgfmathsetmacro{\levelsep}{-0.9}
+
+%\textbf{D} = rilascio nuovo \gls{airac} \quad
+%    \textbf{T} = mezzanotte del cambio \acrshort{airac} \quad
+
+\begin{scope}[shift={(0,1.2)}]
+  \node[anchor=west,font=\small] at (-2,0) {%
+    \tikz[baseline=-0.5ex] \node[diamond, draw=green!70!black, fill=green!70!black, minimum size=6pt, inner sep=0pt] {}; = inizio disponibilità  };
+\end{scope}
+
+% ==============================
+% 1) LINEA PRINCIPALE E TICK
+% ==============================
+\draw[timeline] (-2,0) -- (T0);
+\foreach \name/\lbl in {
+  D72/D-72, 
+  D56/D-56, 
+  D34/D-34, 
+  D28/D-28, 
+  D6/D-6, 
+  D1/D-1, 
+  T2/T-2, 
+  T0/T
+} {
+  \draw[tick] (\name) ++(0,-0.1) -- ++(0,0.2) node[above, yshift=2pt]{\lbl};
+}
+
+% ===========================================
+% 2) Airspace Design Activities (freccia ciano)
+% ===========================================
+\coordinate (AirStart) at (-2,\levelsep); 
+\coordinate (AirEnd)   at ($(D72)+(0,\levelsep)$); % primo livello
+\draw[cyanline] (AirStart) -- (AirEnd)
+    node[midway, above, yshift=2pt, text=cyan, align=center]{};
+
+% ==================================================
+% 3) SDO Data Entry & Validation (freccia ciano)
+% ==================================================
+\coordinate (SDOentryStart) at ($(D72)+(0,\levelsep*2)$);
+\coordinate (SDOentryEnd)   at ($(D56)+(0,\levelsep*2)$);
+\draw[cyanline] (SDOentryStart) -- (SDOentryEnd)
+  node[pos=0, anchor=east, xshift=-2pt, text=cyan, align=center]{\acrshort{sdo} Data Entry \\\& Validation};
+
+% =========================================================
+% 4) SDO AIRAC Data Published (diamante + freccia verde fino T)
+% =========================================================
+\coordinate (AIRACnode) at ($ (D56) + (0,\levelsep*3) $);
+\draw[greenline2] (AIRACnode) -- ($(T0) + (0,\levelsep*3)$)
+  node[pos=0, anchor=east, xshift=-2pt, text=cyan, align=center]{\acrshort{sdo} \gls{airac}\\Data Published};
+\node[diamond, draw=green!70!black, fill=green!70!black, minimum size=6pt, inner sep=0pt]
+     at (AIRACnode) {};
+     
+
+% ==============================================================
+% 5) SDO non-AIRAC Data Published (diamante + freccia verde fino T)
+% ==============================================================
+\coordinate (nonAIRACnode) at ($ (D28) + (0,\levelsep*4) $);
+\draw[greenline2] (nonAIRACnode) -- ($(T0) + (0,\levelsep*4)$)
+  node[pos=0, anchor=east, xshift=-2pt, text=cyan, align=center]{SDO non-\gls{airac}\\Data Published};
+\node[diamond, draw=green!70!black, fill=green!70!black, minimum size=6pt, inner sep=0pt]
+     at (nonAIRACnode) {};
+     
+% ===========================================
+% 6) NOTAM (freccia gialla da D-34 a T)
+% ===========================================
+\coordinate (NOTAMstart) at ($ (D56) + (0,\levelsep*5)$);
+\coordinate (NOTAMend)   at ($ (T0) + (0,\levelsep*5)$);
+\draw[yellowline] (NOTAMstart) -- (NOTAMend)
+  node[midway, above, yshift=2pt, text=orange!90!yellow]{\acrshort{notam}};
+
+
+% =============================================================
+% 7) CACD Published (diamante + freccia verde fino D-6, poi gialla)
+% =============================================================
+\coordinate (CACDstart) at ($ (D34) + (0,\levelsep*6)$);
+\coordinate (CACDmid) at ($ (D6) + (0,\levelsep*6)$);
+\coordinate (CACDend) at ($ (T0) + (0,\levelsep*6)$);
+
+\draw[greenline2] (CACDstart) -- (CACDmid)
+    node[midway, above, yshift=2pt, text=orange!90!yellow]{\acrshort{cacd} Published}
+;
+
+\draw[yellowline] (CACDmid) -- (CACDend)
+    node[midway, above, yshift=2pt, text=orange!90!yellow]{\acrshort{cacd} Pre-OPS}   
+;
+
+\node[diamond, draw=green!70!black, fill=green!70!black, minimum size=6pt, inner sep=0pt]
+     at (CACDstart) {};
+
+
+% ============================================================== 
+% 8) ASM Data (freccia verde da D-72 a D-6, poi gialla fino a T)
+% ============================================================== 
+\coordinate (ASMstart) at ($ (D72) + (0,\levelsep*7)$);
+\coordinate (ASMquarter)   at ($ (D6) + (0,\levelsep*7)$);
+\coordinate (ASMmid)   at ($ (T2) + (0,\levelsep*7)$);
+\coordinate (ASMend)   at ($ (T0) + (0,\levelsep*7)$);
+\draw[greenline2] (ASMstart) -- (ASMquarter)
+     node[midway, above, yshift=2pt, text=orange!90!yellow]{Level 1}
+     node[pos=0, anchor=east, xshift=-2pt, text=cyan, align=center]{\gls{asm} Data};
+\draw[yellowline2] (ASMquarter) -- (ASMmid)
+     node[midway, above, yshift=2pt, text=orange!90!yellow]{Level 2};
+\draw[orangeline] (ASMmid) -- (ASMend)
+    node[midway, above, yshift=2pt, text=orange!90!yellow]{Level 3};
+
+
+% ===========================================================================
+% 9) ATFM Data (freccia verde da D-72 a D-6, poi gialla fino a T, con etichette)
+% ===========================================================================
+\coordinate (ASMstart) at ($ (D72) + (0,\levelsep*8)$);
+\coordinate (ASMquarter)   at ($ (D6) + (0,\levelsep*8)$);
+\coordinate (ASMmid)   at ($ (T2) + (0,\levelsep*8)$);
+\coordinate (ASMend)   at ($ (T0) + (0,\levelsep*8)$);
+\draw[greenline2] (ASMstart) -- (ASMquarter)
+     node[midway, above, yshift=2pt, text=orange!90!yellow]{Strategic}
+     node[pos=0, anchor=east, xshift=-2pt, text=cyan, align=center]{\gls{atfcm} Data};
+\draw[yellowline2] (ASMquarter) -- (ASMmid)
+     node[midway, above, yshift=2pt, text=orange!90!yellow]{Pre-Tactical};
+\draw[orangeline] (ASMmid) -- (ASMend)
+    node[midway, above, yshift=2pt, text=orange!90!yellow]{Tactical};
+
+
+\coordinate (start) at (-2,\levelsep*9);
+\coordinate (quarter)   at ($ (D72) + (0,\levelsep*9)$);
+\coordinate (Interp) at ($ 
+     (quarter) !0.2! ( $(D56)+(0,{\levelsep*9}) $ ) 
+   $);
+\coordinate (secondquarter)   at ($ (T2) + (0,\levelsep*9)$);
+\coordinate (end)   at ($ (T0) + (0,\levelsep*9)$);
+
+\draw[cyanline2] (start) -- (Interp)
+    node[midway, above, yshift=2pt, text=orange!90!yellow]{\textbf{Design}};
+
+\draw[greenline2] (Interp) -- ($ (D6) + (0,\levelsep*9)$)
+    node[midway, above, yshift=2pt, text=orange!90!yellow]{\textbf{Strategic}};
+;
+
+\draw[yellowline2] ($ (D6) + (0,\levelsep*9)$) -- ($ (T2) + (0,\levelsep*9)$)
+    node[midway, above, yshift=2pt, text=orange!90!yellow]{\textbf{Pre-Tactical}};
+
+
+\draw[orangeline] ($ (T2) + (0,\levelsep*9)$) -- ($ (T0) + (0,\levelsep*9)$)
+    node[midway, above, yshift=2pt, text=orange!90!yellow]{\textbf{Tactical}};
+
+
+\end{tikzpicture}

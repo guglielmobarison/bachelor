@@ -1,0 +1,270 @@
+\section{Impostazione del problema e linee di analisi}
+Muovendosi dal quadro definitorio introdotto (cfr.\ Cap.~\ref{ch:introduzione-contesto}) e dagli obiettivi operativi (cfr.\ Cap.~\ref{ch:obiettivi-pianificazione}), questo capitolo assume come fonte primaria le tabelle sui profili di attraversamento delle regioni d’informazione volo, con particolare riferimento alla sottosezione \textsc{FLIGHT AIRSPACES} (cfr.\ Cap.~\ref{ch:caratteristiche-adr}, \S\ref{sec:flight_airspace}) e ai collegamenti semantici con \textsc{FLIGHTS} (cfr.\ \S\ref{sec:flights}).
+
+Per evitare ambiguità, fissiamo la notazione di base impiegata nelle metriche calcolate sulle sequenze di attraversamento per ciascuna regione.
+\begin{description}
+  \item[$f$] Identificativo del volo nel sistema \gls{adrr}.
+  \item[$R$] Regione di volo attraversata.
+  \item[$t^{\mathrm{in}}_{f,R}$] Istante di ingresso del volo \(f\) nella regione \(R\).
+  \item[$t^{\mathrm{out}}_{f,R}$] Istante di uscita del volo \(f\) dalla regione \(R\).
+\end{description}
+In simboli, useremo le seguenti equivalenze notazionali:
+\[
+  f \equiv \texttt{ECTRL\_ID},\quad
+  R \equiv \texttt{FIR ID},\quad
+  t^{\mathrm{in}}_{f,R} \equiv \texttt{Entry Time},\quad
+  t^{\mathrm{out}}_{f,R} \equiv \texttt{Exit Time}.
+\]
+\clearpage
+\section{Modello temporale e granularità}
+\label{sec:modello-temporale}
+Fissiamo un orizzonte di analisi \([\tau_0,\tau_1)\subset\mathbb{R}\) e scegliamo un passo di discretizzazione \(\lambda>0\). Definiamo quindi la griglia \(\mathcal{T}\) come la successione di nodi equispaziati a partire da \(\tau_0\):
+\begin{equation*}
+\label{eq:griglia-def}
+\mathcal{T}\coloneqq \bigl\{\, t_k = \tau_0 + k\,\lambda \;\bigm|\; k=0,1,\dots \,\bigr\}, \qquad t_k \in [\tau_0,\tau_1) .
+\end{equation*}
+I nodi \(t_k\) scandiscono l’intervallo di analisi con passo \(\Delta\).
+Un esempio schematico della griglia così definita è mostrato in \figurename~\ref{fig:griglia-temporale}.
+\input{chapters/ch4/figures/griglia_temporale.tex}
+\paragraph{Cardinalità della griglia.}
+L’introduzione di un indice terminale è necessaria: per esplicitare la cardinalità, si ponga
+\begin{equation}
+\label{eq:define-K}
+K \;=\; \Bigl\lfloor \frac{\tau_1 - \tau_0}{\lambda} \Bigr\rfloor .
+\end{equation}
+\subsection{Finestre temporali}\label{sec:finestre_temporali}
+Dato un parametro di ampiezza \(W>0\), a ciascun nodo \(t_k\) associamo la finestra semi–aperta a destra:
+\begin{equation*}
+\label{eq:finestra-def}
+I_k \coloneqq [\,t_k,\; t_k+W)\,.
+\end{equation*}
+Nel seguito assumiamo \(\lambda \le W\) così che le finestre risultino contigue o sovrapposte; il caso \(\lambda>W\) non è considerato. Le due configurazioni sono illustrate in \figurename~\ref{fig:finestre-varianti} per completezza.
+\clearpage
+\input{chapters/ch4/figures/finestre_varianti.tex}
+
+\clearpage
+\section{Metriche}
+\label{sec:metriche}
+\subsection{Throughput}
+\label{subsec:throughput-teoria}
+Sulla griglia temporale \(\mathcal{T}\) definita in \S\ref{sec:modello-temporale}, e con le finestre semi–aperte \(I_k=[t_k,t_k+W)\) introdotte in \S\ref{sec:finestre_temporali}, il \emph{throughput} per una regione \(R\) è il numero di istanti di ingresso che cadono in \(I_k\).
+    Denotiamo tale conteggio con \(T_R(I_k)\):
+    \begin{equation}
+    \label{eq:throughput-def}
+        T_R(I_k)\;\coloneqq\; \#\bigl\{\, f \in \mathcal{F}_R \;\bigm|\; t_k \le t^{\mathrm{in}}_{f,R} < t_k+W \,\bigr\}.
+    \end{equation}
+    In questo caso \(\mathcal{F}_R\) è l’insieme dei voli che attraversano \(R\) e \(t^{\mathrm{in}}_{f,R}\) è l’istante di ingresso del volo \(f\) in \(R\).
+    La scelta della finestra semi–aperta \([t_k,\,t_k+W)\) evita doppi conteggi sugli estremi condivisi.
+
+    
+    \input{chapters/ch4/figures/throughput.tex}
+    
+    \noindent La definizione \eqref{eq:throughput-def} è equivalente a un calcolo basato sulla differenza di due cumulate degli ingressi. Introduciamo la cumulata stretta $N_R(t)$ che conta gli ingressi. La proposizione seguente formalizza l’identità che adottiamo nell’implementazione.
+    
+    \begin{proposition}[Identità a due cumulate]
+    \label{prop:two-cumulatives}
+    Sia $I_k=[t_k,t_k+W)$ con $W>0$ e sia
+    \[
+    N_R(t_k)\;\coloneqq\;\#\bigl\{\,f\in\mathcal{F}_R:\ t^{\mathrm{in}}_{f,R}<t_k\,\bigr\}
+    \]
+    la cumulata stretta degli ingressi in $R$. Si avrà dunque che
+    \begin{equation}
+    \label{eq:throughput-diff-cumulate}
+    T_R(I_k)\;=\;N_R(t_k{+}W)\;-\;N_R(t_k)\quad\forall{k}>0.
+    \end{equation}
+    \end{proposition}
+    
+    \begin{proof}
+    Definiamo $S_R(t)=\{\,f\in\mathcal{F}_R:\ t^{\mathrm{in}}_{f,R}<t\,\}$, cosicchè $N_R(t)=\#S_R(t)$.
+    Per $I_k=[t_k,t_k{+}W)$ l’insieme degli ingressi che cadono nella finestra è
+    \[
+    \begin{aligned}
+    A_k
+    &= \bigl\{\,f:\ t_k \le t^{\mathrm{in}}_{f,R} < t_k+W\,\bigr\} 
+    \\[2pt]
+    &= \bigl\{\,f:\ (t^{\mathrm{in}}_{f,R} < t_k+W)\ \wedge\ \neg(t^{\mathrm{in}}_{f,R} < t_k)\,\bigr\}
+    \\[2pt]
+    &= \bigl\{\,f:\ t^{\mathrm{in}}_{f,R} < t_k+W\,\bigr\}
+       \ \cap\ 
+       \bigl\{\,f:\ \neg(t^{\mathrm{in}}_{f,R} < t_k)\,\bigr\}
+    \\[2pt]
+    &= \bigl\{\,f:\ t^{\mathrm{in}}_{f,R} < t_k+W\,\bigr\}
+       \ \setminus\ 
+       \bigl\{\,f:\ t^{\mathrm{in}}_{f,R} < t_k\,\bigr\}
+    \\[2pt]
+    &= S_R(t_k{+}W)\ \setminus\ S_R(t_k).
+    \end{aligned}
+    \]
+    Poiché $W>0$ implica $S_R(t_k)\subseteq S_R(t_k{+}W)$, passando alle cardinalità otteniamo
+    \[
+    \begin{aligned}
+    \#A_k
+    &=\#S_R(t_k{+}W)-\#S_R(t_k)
+    \\[2pt]
+    &=N_R(t_k{+}W)-N_R(t_k) \\[2pt]
+    &=T_R(I_k)
+    \end{aligned}
+    \]
+    che è proprio~\eqref{eq:throughput-diff-cumulate}.
+    \end{proof}
+    
+\subsection{Occupancy}
+\label{subsec:occupancy-teoria}
+Sulla griglia temporale \(\mathcal{T}\) definita in \S\ref{sec:modello-temporale}, e con le finestre semi–aperte \(I_k=[t_k,t_k+W)\) introdotte in \S\ref{sec:finestre_temporali}, definiamo l’\emph{occupancy} come il numero di velivoli che risultano presenti in \(R\) per tutta la finestra:
+    \begin{equation}
+    \label{eq:occ-finestra-copertura}
+    O_R(k) \;\coloneqq\; 
+    \#\Bigl\{\, f \in \mathcal{F}_R \;\Bigm|\; 
+    t^{\mathrm{in}}_{f,R} \le t_k \ \ \wedge\ \ t^{\mathrm{out}}_{f,R} \ge t_k{+}W \Bigr\}.
+    \end{equation}
+    In questo caso \(\mathcal{F}_R\) è l’insieme dei voli che attraversano \(R\), \(t^{\mathrm{in}}_{f,R}\) è l’istante di ingresso del volo \(f\) in \(R\) e \(t^{\mathrm{out}}_{f,R}\) è l’istante di uscita del volo \(f\) in \(R\).
+    \input{chapters/ch4/figures/occupancy.tex}
+    
+    L'implementazione algoritmica non valuta la condizione di copertura \eqref{eq:occ-finestra-copertura} per ogni volo e ogni finestra, ma sfrutta il principio dell'array di differenze. In pratica, al posto di verificare finestra per finestra, associamo a ciascun volo due “eventi discreti” sulla griglia: un ingresso nel primo indice in cui il volo copre interamente la finestra e un’uscita immediatamente dopo l’ultimo indice coperto.
+
+    Sia \(t_k=\tau_0+k\lambda\) e \(I_k=[t_k,\,t_k+W)\). Per un volo \(f\) con intervallo \(E_{f,R}=[t^{\mathrm{in}}_{f,R},\,t^{\mathrm{out}}_{f,R}]\), il primo e l’ultimo indice in cui \(I_k\) è interamente coperto sono
+    \[
+    k_s(f)=\Bigl\lceil \tfrac{t^{\mathrm{in}}_{f,R}-\tau_0}{\lambda} \Bigr\rceil,
+    \qquad
+    k_e(f)=\Bigl\lfloor \tfrac{t^{\mathrm{out}}_{f,R}-W-\tau_0}{\lambda} \Bigr\rfloor .
+    \]
+    Introduciamo quindi i delta per volo \(\delta_f(k)\) e il saldo netto per regione \(D_R(k)\):
+    \[
+    \delta_f(k)=
+    \begin{cases}
+    +1 & \text{se } k=k_s(f),\\
+    -1 & \text{se } k=k_e(f)+1,\\
+    0  & \text{altrimenti}.
+    \end{cases}
+    \qquad
+    D_R(k)=\sum_{f\in\mathcal{F}_R}\delta_f(k).
+    \]
+    Un \(+1\) “accende” la copertura al primo indice utile, mentre un \(-1\) la “spegne” subito dopo l’ultimo indice coperto; la somma cumulata di questi saldi ricostruisce l’occupancy come:
+    \begin{equation}
+    \label{eq:sum-cum}
+    O_R(k)\;=\;\sum_{i=0}^{k} D_R(i)\,,
+    \end{equation}
+    così che l’intero conteggio si riduce a una cumulata per regione, ordinata per indice di griglia.
+    
+    
+    \paragraph{Esempio.}
+Consideriamo l'intervallo \([0,100]\) e, per semplicità, poniamo \(W=\lambda=10\).
+Le finestre semi–aperte sono \(I_k=[t_k,t_k{+}10)\) con \(t_k=k\cdot10\) e \(k=0,\dots,9\).
+I voli (intervalli di permanenza in \(R\)) sono:
+\[
+F_1=[15,45],\quad
+F_2=[25,35],\quad
+F_3=[28,62],\quad
+F_4=[5,10],\quad
+F_5=[50,80].
+\]
+
+\medskip
+\noindent\emph{Passo 1: indici discreti \(k_s\) e \(k_e\).}
+Nel nostro caso \(\tau_0=0\) e \(\lambda=W=10\). Si ottiene:
+\[
+\begin{array}{c|cc|cc}
+\text{Volo} & t^{\mathrm{in}} & t^{\mathrm{out}} & k_s=\lceil t^{\mathrm{in}}/10\rceil & k_e=\lfloor (t^{\mathrm{out}}-10)/10\rfloor\\\hline
+F_1 & 15 & 45 & 2 & 3\\
+F_2 & 25 & 35 & 3 & 2\\
+F_3 & 28 & 62 & 3 & 5\\
+F_4 & 5  & 10 & 1 & 0\\
+F_5 & 50 & 80 & 5 & 7\\
+\end{array}
+\]
+I voli \(F_2\) e \(F_4\) non contribuiscono poiché \(k_s>k_e\) (durata insufficiente a coprire interamente una finestra di ampiezza \(W\)).
+
+\medskip
+\noindent\emph{Passo 2: differenze su \(k\).}
+Per ogni volo valido, aggiungiamo \(+1\) in \(k_s\) e \(-1\) in \(k_e{+}1\); quindi aggreghiamo per \(k\):
+\[
+\begin{array}{c|cccccccccc}
+k & 0&1&2&3&4&5&6&7&8&9\\\hline
+\delta_{F_1}(k) & 0&0&{+}1&0&{-}1&0&0&0&0&0\\
+\delta_{F_3}(k) & 0&0&0&{+}1&0&0&{-}1&0&0&0\\
+\delta_{F_5}(k) & 0&0&0&0&0&{+}1&0&0&{-}1&0\\\hline
+D(k)=\sum_f \delta_f(k) & 0&0&{+}1&{+}1&{-}1&{+}1&{-}1&0&{-}1&0
+\end{array}
+\]
+
+\medskip
+\noindent\emph{Passo 3: somma cumulata.}
+L'occupancy è la somma cumulata~\eqref{eq:sum-cum}:
+\[
+\begin{array}{c|cccccccccc}
+k & 0&1&2&3&4&5&6&7&8&9\\\hline
+O(k) & 0&0&1&2&1&2&1&1&0&0
+\end{array}
+\]
+
+
+\clearpage
+\section{Implementazione}
+\subsection{Throughput}
+\label{subsec:throughput-impl}
+
+\begin{algorithm}[ht]
+  \caption{Throughput per regione.}
+  \label{alg:throughput-anyW-naturale}
+  \begin{algorithmic}[1]
+    \Require tabella eventi $E$ con colonne $R$ (regione) e $t^{\mathrm{in}}$; estremi $\tau_0<\tau_1$; passo $\lambda$; ampiezza $W>0$.
+    \Ensure tabella $T$ con righe $(R,\,t_k,\,t_k+W,\,T_R(k))$ ordinate per $(R,\,t_k)$.
+    \EnsureEndSkip{}
+    \State \textbf{Prepara la griglia.} Calcola quanti passi stanno tra $\tau_0$ e $\tau_1$.
+    \State \textbf{Tieni solo gli eventi che servono.} Filtra $E$ conservando gli ingressi con tempo nell’intervallo $[\tau_0,\,\tau_1{+}W)$: così copri anche le finestre che iniziano vicino a $\tau_1$.
+    \State \textbf{Conta per istante.} Raggruppa gli eventi che hanno la stessa regione $R$ e lo stesso timestamp $t$; assegna a ciascuna coppia $(R,t)$ il conteggio $n_R(t)$, pari al numero di ingressi occorsi \emph{esattamente} a $t$ in $R$.
+    \State \textbf{Costruisci la cumulata “stretta”.} Per ciascuna regione ordina i tempi e costruisci $N_R(t)$ come “quanti ingressi sono già avvenuti prima di $t$”.
+    \State \textbf{Inizializza l’output.} Metti $T \gets [\ ]$.
+    \For{ogni regione $R$}
+      \For{$k \gets 0$ \textbf{to} $K{-}1$}
+        \State \textbf{Valuta la finestra.} Prendi il valore di cumulata al bordo sinistro ($N_R(t_k)$) e al bordo destro ($N_R(t_k{+}W)$). Il primo dice “quanti ingressi erano già avvenuti prima che iniziasse la finestra”, il secondo “quanti ce ne sono prima che la finestra finisca”.
+        \State \textbf{Calcola il throughput:}
+            \[
+                T_R(k) \;\gets\; N_R(t_k{+}W) - N_R(t_k)
+            \]
+        \State \textbf{Accoda il risultato.} Aggiungi a $T$ la riga $(R,\,t_k,\,t_k{+}W,\,T_R(k))$.
+      \EndFor
+    \EndFor
+    \State Ordina $T$ per $(R,\,t_k)$
+    \Return $T$.
+  \end{algorithmic}
+\end{algorithm}
+\clearpage
+\subsection{Occupancy}
+\label{subsec:occupancy-impl}
+\begin{algorithm}[H]
+  \caption{Occupancy per regione.}
+  \label{alg:occupancy-anyW-diff}
+    \vspace{-1.5em} %fix grafico dovuto a un buh
+  \begin{algorithmic}[1]
+    \Require tabella eventi $D$ con colonne $R$ (regione), $t^{\mathrm{in}}$, $t^{\mathrm{out}}$; estremi $\tau_0<\tau_1$; passo $\lambda$; ampiezza $W>0$.
+    \Ensure Tabella $O$ con righe $(R,\,t_k,\,t_k+W,\,O_R(k))$ ordinate per $(R,\,t_k)$.
+    \EnsureEndSkip{}
+    \State \textbf{Preparazione} Calcola gli istanti $t_k = \tau_0 + k \lambda$ per $k \in [0, K{-}1]$.
+    \State \textbf{Filtraggio dei voli.} Conserva solo i voli $f$ con $t^{\mathrm{out}}_{f,R} \ge \tau_0+W$ e $t^{\mathrm{in}}_{f,R} \le t_{K-1}$.
+    \State Inizializza l'array di differenze $E \gets [\ ]$.
+    \Comment{E: $(\mathbf{R}, \mathbf{k}, \mathbf{\delta})$}
+    \For{ogni volo $f$ filtrato}
+        \State \quad $k_{s} \gets \max\left(0, \left\lceil \frac{t^{\mathrm{in}}_{f,R} - \tau_0}{\lambda} \right\rceil\right)$
+        \State \quad $k_{e} \gets \min\left(K{-}1, \left\lfloor \frac{t^{\mathrm{out}}_{f,R} - W - \tau_0}{\lambda} \right\rfloor\right)$
+        \If{$k_{s} \le k_{e}$}
+            \State Registra evento \textbf{ingresso}: $E \gets E \cup \{(R, k_{s}, +1)\}$.
+            \State Registra evento \textbf{uscita}: $E \gets E \cup \{(R, k_{e} + 1, -1)\}$.
+        \EndIf
+    \EndFor
+    \State $B \gets \text{Aggrega } E \text{ sommando } \mathbf{\delta} \text{ per } (R, \mathbf{k}) \text{ (ottenendo } \mathbf{\delta_{sum}}).$
+    \State Estendi $\mathbf{B}$ per includere tutte le coppie $(R, \mathbf{k})$ della griglia, ponendo $\mathbf{\delta} \gets 0$ per gli istanti senza evento.
+  
+    \State Ordina $B$ per $(R,k)$.
+    \For{ogni $R$}
+      \State $s \gets 0$
+      \For{$k = 0,\dots,K{-}1$} \Comment scansiona gli indici in ordine crescente
+        \State $s \gets s + \bigl(\delta(R,k))\ $
+        \State $O_R(k) \gets s$
+      \EndFor
+      \State \textbf{Accoda il risultato.} Aggiungi a $O$ la riga $(R,\,t_k,\,t_k{+}W,\,O_R(k))$.
+    \EndFor
+\State \Return $O$
+   
+  \end{algorithmic}
+\end{algorithm}

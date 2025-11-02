@@ -1,0 +1,65 @@
+\section{Introduzione}
+Nel presente capitolo viene descritto in dettaglio il piano di lavoro preventivamente delineato per lo svolgimento dello stage presso il Dipartimento di Matematica ``Tullio Levi-Civita'' dell'Università degli Studi di Padova. Tale attività formativa si propone di approfondire tematiche di ricerca operativa applicate alla gestione e ottimizzazione dello spazio aereo europeo, attraverso l'utilizzo e l'analisi di dati forniti da \citet{eurocontrol2025} tramite il repository \acrfull{adrr}.
+
+\section{Finalità dello Stage}
+L'obiettivo principale dello stage consiste nell'analisi e nell'elaborazione di dati riguardanti il traffico e la configurazione dello spazio aereo europeo. Tali dati presentano informazioni storiche e diversificate circa le configurazioni adottate e la domanda di traffico aereo nei cieli europei. Le attività svolte durante lo stage sono orientate alla comprensione approfondita di tali dati e allo sviluppo di procedure di esportazione e analisi per facilitare la loro applicazione in modelli di ottimizzazione per la configurazione dinamica dello spazio aereo.
+
+\newpage
+\section{Ripartizione ore}
+\subsection{Preventivo}
+La pianificazione delle attività, definita nel preventivo iniziale, prevedeva la distribuzione delle ore di lavoro riportata nella Tabella~\ref{tab:pianificazione-attivita}.
+\begin{center}
+    \input{chapters/ch2/tabella_ripartizione_ore}
+\end{center}
+\clearpage
+
+\section{Obbiettivi}
+\subsection{Notazione}
+Si farà riferimento ai requisiti secondo le seguenti notazioni:
+\begin{itemize}
+	\item \textit{O} per i requisiti obbligatori, vincolanti in quanto obiettivo primario richiesto dal committente
+	\item \textit{D} per i requisiti desiderabili, non vincolanti o strettamente necessari,
+		  ma dal riconoscibile valore aggiunto
+	\item \textit{F} per i requisiti facoltativi, rappresentanti valore aggiunto non strettamente 
+		  competitivo
+\end{itemize}
+
+Le sigle precedentemente indicate saranno seguite da una coppia sequenziale di numeri, identificativo del requisito.
+
+\DisablePunct 
+\subsection{Obiettivi fissati}
+Si prevede lo svolgimento dei seguenti obiettivi:
+\begin{itemize}
+	\item Obbligatori
+	\begin{itemize}
+		\item \underline{\textit{O01}}: Acquisizione di competenze su dati concernenti il traffico aereo e il suo controllo;
+	    \item \underline{\textit{O02}}: Acquisizione dei dati \acrshort{adrr};
+	    \item \underline{\textit{O03}}: Implementazione di procedure di esportazione dei dati \acrshort{adrr} nei formati richiesti dai modelli di ottimizzazione per \acrshort{dac};
+	    \item \underline{\textit{O04}}: Redazione della documentazione di un manuale utente per le procedure realizzate.
+	\end{itemize}
+	
+	\item Desiderabili 
+	\begin{itemize}
+	   \item \underline{\textit{D01}}: Realizzazione di un benchmark di istanze reali DAC;
+	   \item \underline{\textit{D02}}: Test di performance dei modelli di ottimizzazione per \acrshort{dac} sul benchmark realizzato.	
+	\end{itemize}
+	\item Facoltativi
+	\begin{itemize}
+	   \item \underline{\textit{F01}}: Implementazione di un'interfaccia utente per l'esecuzione delle procedure di importazione ed esportazione dei dati \acrshort{adrr}.
+	\end{itemize} 
+\end{itemize}
+\EnablePunct
+
+
+%TODO da scrivere di più
+\section{Risorse utilizzate}
+Durante lo svolgimento delle attività dello stage, si è fatto uso delle seguenti risorse strumentali e software:
+
+\begin{itemize}
+\item Ambiente Python per l'elaborazione e analisi dei dati
+\item Librerie specializzate per ottimizzazione (Cplex)
+\item Repository EUROCONTROL per i dati storici e configurazioni
+\item Strumenti per la gestione della documentazione (\LaTeX e Git)
+\end{itemize}
+
+\newpage

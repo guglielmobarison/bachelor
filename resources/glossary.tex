@@ -55,9 +55,16 @@
     la navigabilità, le operazioni di volo e la gestione del traffico aereo.
 }
 
+\newdualentry{iata}{IATA}{International Air Transport Association}{%
+è l'associazione delle compagnie aeree di linea. Coordina aspetti commerciali e operativi e promuove standard comuni nell’industria del trasporto aereo.
+}
+
 \newdualentry{prisme}{PRISME~DWH}{Pan-European Repository of Information Supporting the Management of European Air Traffic Management – Data Warehouse}{%
     è archivio centralizzato che raccoglie, armonizza e conserva dati operativi su voli, aeromobili, spazio aereo, ritardi e costi.
 }
+
+\newdualentry{nat}{NAT}{North Atlantic Tracks}{
+è un sistema di tracce organizzate sull’Atlantico del Nord pubblicate giornalmente per ottimizzare i flussi transoceanici in funzione di venti e domanda.}
 
 
 \newdualentry{ats}{ATS routes}{Air Traffic Service routes}{%
@@ -81,6 +88,14 @@
     è un archivio di dati aeronautici relativo allo spazio aereo, a supporto dei sistemi operativi e abilitante per i servizi informativi aeronautici. Gli aggiornamenti del database possono essere dinamici, semi-dinamici (all’interno del ciclo \gls{airac} corrente) o statici (riferiti ai cicli \gls{airac} successivi).
 }
 
+\newdualentry{sid}{SID}{Standard Instrument Departure}{
+è la procedura standard di partenza strumentale, cioè una procedura usata dai velivoli nella fase successiva al decollo basata su radioassistenze.
+}
+
+\newdualentry{star}{STAR}{Standard Terminal Arrival Route}{
+è la Rotta \gls{ats} che un aeromobile in regime di volo strumentale deve seguire in prossimità dell'atterraggio.}
+
+
 \newdualentry{cfmu}{CFMU}{Central Flow Managment Unit}{%
     è un'area che copre lo spazio aereo di tutti gli Stati membri di \citet{eurocontrol2025} e alcune regioni limitrofe. Circa $11,5$ milioni di $km^2$, con estensione globale per dati di interesse mondiale, come ad esempio i tipi di aeromobili
 }
@@ -93,6 +108,11 @@
 \newdualentry{ide}{IDE}{Integrated Development Environment}{%
     è un ambiente di sviluppo integrato che fornisce editor, gestione dell’interprete, esecuzione degli script e strumenti di debug
 }
+
+\newdualentry{cdr}{CDR}{Conditional Route}{
+    è una rotta \gls{ats} non permanenti.
+}
+
 
 \newglossaryentry{python}
 {
@@ -135,6 +155,34 @@
     è un algoritmo di visita in ampiezza su grafi: esplora i nodi per livelli a partire da una sorgente, visitando prima tutti i vicini a distanza 1, poi quelli a distanza 2, e così via.}
 
 
+\newdualentry{aro}{ARO}{Air Traffic Services Reporting Office}{%
+è l'ente istituito allo scopo di ricevere le informazioni emesse dal Servizio informazioni aeronautiche ed i piani di volo presentati dagli equipaggi prima della partenza.
+}
+
+\newdualentry{fra}{FRA}{Free Route Airspace}
+{è uno spazio aereo all’interno del quale gli utenti possono pianificare liberamente una rotta tra un punto di ingresso e un punto di uscita definiti senza fare riferimento alla rete di rotte \gls{ats}.
+}
+
+\newdualentry{rnav}{RNAV}{Area Navigation}{%
+è un metodo di navigazione aerea durante il quale un aeromobile percorre, seguendo le regole del volo strumentale, qualsiasi rotta all'interno di una specifica area mediante l'ausilio di radioassistenze.
+}
+
+\newdualentry{navaid}{NAVAID}{Navigational aid}{%
+è un qualsiasi tipo di segnale, marcatore o apparecchiatura di guida che aiuti il viaggiatore nella navigazione, solitamente marittima o aerea.
+}
+
+\newdualentry{arp}{ARP}{Aerodrome Reference Point}{%
+è la posizione che viene convenzionalmente presa come riferimento geografico per ogni aeroporto.
+}
+
+\newdualentry{rad}{RAD}{Route Availability Document}{%
+è un documento per la pianificazione dei voli che integra sia i requisiti strutturali sia quelli di gestione dei flussi di traffico aereo \acrshort{atcfm}.
+}
+
+\newdualentry{dct}{DCT}{Direct route}{%
+è La rotta diretta tra due punti.
+}
+
 \newacronym{nm}{NM}{Netowork Manager}
 \newacronym{sdo}{SDO}{Static Data Operations}
 \newacronym{adrr}{ADRR}{Aviation Data Repository for Research}
@@ -149,3 +197,7 @@
 \newacronym{ades}{ADES}{Aerodrome of Destination}
 \newacronym{ac}{AC}{Aircraft}
 \newacronym{uir}{UIR}{Upper Information Regions}
+
+\newdualentry{fmp}{FMP}{Flow Management Position}{%
+è una postazione operativa istituita nelle da \gls{atc} per garantire la necessaria interfaccia con il \gls{nm} in materia di \gls{atfm}.
+} 

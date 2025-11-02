@@ -1,0 +1,105 @@
+\begin{figure}[H]
+\centering
+
+\tikzset{
+  region/.style={draw, rounded corners=2pt, fill=gray!20},
+  traj/.style={line width=0.5pt, -Latex},
+  proj/.style={dashed},
+  taxis/.style={-Latex, thick},
+  tmark/in/.style={circle, fill=black, inner sep=1.2pt},
+  tmark/out/.style={circle, draw=black, fill=white, inner sep=1.2pt},
+  openmark/.style={circle, draw=black, fill=white, inner sep=1.1pt},
+  rombo/.style={diamond, draw=black, fill=black, minimum size=6pt, inner sep=0pt},
+  note/.style={draw, fill=white, rounded corners=2pt, font=\scriptsize, inner sep=2pt}
+}
+
+\def\yaxis{-1.0}
+\def\tk{1.0}
+\def\tkW{4.0}
+
+\begin{subfigure}[t]{.48\textwidth}
+\centering
+\begin{tikzpicture}[x=0.9cm,y=0.9cm]
+  \def\yaxis{-1.2}
+  \def\tinA{0.8}
+  \def\toutA{4.8}
+  \draw[region] (0,0) rectangle (6,3);
+  \node[font=\small] at (6,3.5) {$R$};
+
+  % Traiettoria (passa dentro R)
+  \draw[traj] (-0.6,2.2) .. controls (1.0,2.0) and (3.5,1.6) .. (6.6,1.4);
+
+  % Finestra sulla linea temporale
+  \fill[gray!20, draw=black!50] (\tk,\yaxis+0.22) rectangle (\tkW,\yaxis-0.22);
+
+  % Punti di ingresso/uscita su frontiera R
+  \coordinate (EinA)  at (0,2.15);
+  \coordinate (EoutA) at (6,1.45);
+  \fill[red] (EinA) circle (1.6pt);                       % ingresso pieno
+  \node[openmark] at (EoutA) {};                           % uscita "open"
+  \node[font=\scriptsize, anchor=south west] at (EinA)  {$t^{\mathrm{in}}_{R}=0.8$};
+  \node[font=\scriptsize, anchor=south east] at (EoutA) {$t^{\mathrm{out}}_{R}=4.8$};
+
+  % Proiezioni su asse temporale
+  \draw[proj] (EinA) -- (\tinA,\yaxis);
+  \draw[proj] (EoutA) -- (\toutA,\yaxis);
+
+  % Asse temporale
+  \draw[taxis] (-0.2,\yaxis) -- (6.6,\yaxis);
+  \foreach \x in {0,...,6}{
+    \draw (\x,\yaxis+0.08) -- (\x,\yaxis-0.08);
+    \node[font=\scriptsize] at (\x,\yaxis-0.35) {\x.0};
+  }
+
+  % Marker ingresso/uscita su asse
+  \node[tmark/in]  at (\tinA,\yaxis) {};
+  \node[tmark/out] at (\toutA,\yaxis) {};
+\end{tikzpicture}
+\subcaption{Rotta A: \textbf{copre interamente} la finestra}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{.48\textwidth}
+\centering
+\begin{tikzpicture}[x=0.9cm,y=0.9cm]
+  \def\yaxis{-1.2}
+  \def\tinB{1.4}
+  \def\toutB{3.2}
+  \draw[region] (0,0) rectangle (6,3);
+  \node[font=\small] at (6,3.5) {$R$};
+
+  % Traiettoria
+  \draw[traj] (-0.6,0.9) .. controls (1.2,1.4) and (3.4,2.4) .. (6.6,2.7);
+
+  % Finestra sulla linea temporale
+  \fill[gray!20, draw=black!50] (\tk,\yaxis+0.22) rectangle (\tkW,\yaxis-0.22);
+
+  % Punti di ingresso/uscita su frontiera R
+  \coordinate (EinB)  at (0,1.05);
+  \coordinate (EoutB) at (6,2.62);
+  \fill[red] (EinB) circle (1.6pt);
+  \node[openmark] at (EoutB) {};
+  \node[font=\scriptsize, anchor=south west, yshift=1em] at (EinB)  {$t^{\mathrm{in}}_{R}=1.4$};
+  \node[font=\scriptsize, anchor=south east, yshift=-0.4em] at (EoutB) {$t^{\mathrm{out}}_{R}=3.2$};
+
+  % Proiezioni su asse temporale
+  \draw[proj] (EinB)  -- (\tinB,\yaxis);
+  \draw[proj] (EoutB) -- (\toutB,\yaxis);
+
+  % Asse temporale
+  \draw[taxis] (-0.2,\yaxis) -- (6.6,\yaxis);
+  \foreach \x in {0,...,6}{
+    \draw (\x,\yaxis+0.08) -- (\x,\yaxis-0.08);
+    \node[font=\scriptsize] at (\x,\yaxis-0.35) {\x.0};
+  }
+
+  % Marker ingresso/uscita su asse
+  \node[tmark/in]  at (\tinB,\yaxis) {};
+  \node[tmark/out] at (\toutB,\yaxis) {};
+  
+\end{tikzpicture}
+\subcaption{Rotta B: \textbf{non copre} la finestra}
+\end{subfigure}
+
+\caption{Occupazione \(O_R(k)\) per la regione \(R\): conteggio dei voli la cui permanenza copre interamente la finestra \(I_k=[t_k,t_k{+}W)\).}
+\label{fig:occupazione-subfig}
+\end{figure}

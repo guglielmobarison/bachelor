@@ -1,0 +1,31 @@
+\begin{tikzpicture}[scale=0.8]
+  \filldraw[fill=gray!20, draw=black, line width=0.5pt]
+    (0,0) rectangle (8,6);
+
+  \path[name path=wedgeborder]
+    (3.2,6) -- (4.8,6) -- (4,0) -- cycle;
+
+  \filldraw[fill=yellow!50, draw=black, line width=0.5pt]
+    (3.2,6) -- (4.8,6) -- (4,1.5) -- cycle;
+
+  \draw[draw=black, line width=0.5pt] (4,1.5) -- (4,0);
+    
+  \draw[name path=centerline, draw=green!70!black, line width=0.5pt]
+    (1.2,3) -- (6.8,3);
+  \fill[green!70!black] (1.2,3) circle (2pt);
+  \draw[draw=green!70!black, line width=0.5pt] (1.2,3) -- (0,4);
+  \draw[draw=green!70!black, line width=0.5pt] (1.2,3) -- (0,2);
+  \draw[draw=green!70!black, line width=0.5pt] (6.8,3) -- (8,4);
+  \fill[green!70!black] (6.8,3) circle (2pt);
+  \draw[draw=green!70!black, line width=0.5pt] (6.8,3) -- (8,2);
+
+  \path[name intersections={of=wedgeborder and centerline, by={I1,I2}}];
+
+  \foreach \pt in {I1,I2} {
+    \draw[draw=red, line width=1pt] (\pt) circle[radius=0.3];
+  }
+
+  \node at (2,1.2) {$S_1$};
+  \node at (4,4.5) {$S_2$};
+  \node at (6,1.2) {$S_3$};
+\end{tikzpicture}

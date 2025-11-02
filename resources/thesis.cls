@@ -25,7 +25,6 @@
 \usetikzlibrary{intersections,calc}
 
 
-
 \tikzset{ % cancella se non ti serve, è un rimasuglio della mia tesi per gli stili dei miei grafici 
   timeline/.style={-Latex, thick},
   tick/.style={thin},
@@ -60,7 +59,6 @@
 }
 
 \usepackage{newtxsf} 
-\usepackage{amsmath} 
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{arydshln}
@@ -196,12 +194,36 @@
 }
 
 
+% --- Teoremi (amsthm) con guardia su \openbox e numerazione adattiva ---
+\makeatletter
+% Evita "Command \openbox already defined" se un altro pacchetto l'ha già messa
+\@ifundefined{openbox}{}{%
+  \let\openbox\relax
+}
+\makeatother
+\RequirePackage{amsthm}
+
+% Definizione ambienti
+\makeatletter
+\@ifundefined{c@chapter}{%
+  % Classi senza capitoli (es. article): numerazione per SEZIONE
+  \newtheorem{proposition}{Proposizione}[section]%
+}{%
+  % Classi con capitoli (report/book/questa classe): numerazione per CAPITOLO
+  \newtheorem{proposition}{Proposizione}[chapter]%
+}
+\theoremstyle{remark}
+\newtheorem{remark}{Osservazione}
+\makeatother
+
+% Localizzazioni
+\renewcommand{\proofname}{Dimostrazione}
+\renewcommand{\qedsymbol}{$\square$}
+
+
 \RequirePackage{datetime}
 \newdateformat{monthyear}{\monthname[\THEMONTH] \THEYEAR}
 
-\RequirePackage{amssymb}
-\RequirePackage{amsmath}
-\RequirePackage{amsfonts}
 
 \DeclareMathOperator{\svd}{svd}
 \DeclareMathOperator{\diag}{diag}
@@ -220,80 +242,7 @@
 \floatstyle{ruled}
 \newfloat{algorithm}{htbp}{loa}[chapter]
 \floatname{algorithm}{Algorithm}
-% \makeatletter
-\if@garamond
-    \IfFileExists{eucal.sty}
-    {\IfFileExists{mathdesign.sty}
-    {\IfFileExists{mdugm.sty}
-    {\usepackage[mathscr]{eucal}
-    \usepackage[urw-garamond]{mathdesign}}
-    {\message{Package mdugm.sty was not found. You can download this from CTAN.}}}
-    {\message{Package mathdesign.sty was not found.}}}
-    {\message{Package eucal.sty was not found.}}
 
-\else
-    \if@palatino
-        \IfFileExists{mathpazo.sty}
-        {\usepackage[sc]{mathpazo}
-        \linespread{1.05}}
-        {\message{Package mathpazo.sty was not found.}}
-
-    \else
-        \if@libertine
-            \IfFileExists{libertine.sty}
-            {\usepackage{libertine}
-            \renewcommand*\familydefault{\sfdefault}
-            \usepackage{mathastext}}
-            {\message{Package libertine.sty was not found.}}
-
-        \else
-            \if@helvetica
-                \IfFileExists{helvet.sty}
-                {\usepackage[scaled]{helvet}
-                \renewcommand*\familydefault{\sfdefault}
-                \usepackage{mathastext}}
-                {\message{Package helvet.sty was not found.}}
-
-            \else
-                \if@times
-                    \IfFileExists{mathptmx.sty}
-                    {\usepackage{mathptmx}}
-                    {\message{Package mathptmx.sty was not found.}}
-
-                \else
-                    \if@sourcesanspro
-                        \IfFileExists{sourcesanspro.sty}
-                        {\usepackage[default]{sourcesanspro}
-                        \usepackage{mathastext}}
-                        {\message{Package sourcesanspro.sty was not found.}}
-
-                    \else
-                        \if@didot
-                            \IfFileExists{gfsdidot.sty}
-                            {\usepackage{gfsdidot}
-                            \usepackage{mathastext}}
-                            {\message{Package gfsdidot.sty was not found.}}
-
-                        \else
-                            \if@latinmodern
-                                \IfFileExists{lmodern.sty}
-                                {\usepackage{lmodern}
-                                \renewcommand*\familydefault{\sfdefault}
-                                \usepackage{mathastext}}
-                                {\message{Package lmodern.sty was not found.}}
-                            \fi
-                        \fi
-                    \fi
-                \fi
-            \fi
-        \fi
-    \fi
-\fi
-\if@lineno
-    \IfFileExists{lineno.sty}
-    {\usepackage[pagewise]{lineno}}
-    {\message{Package lineno.sty was not found.}}
-\fi
 
 % \makeatother
 \RequirePackage[T1]{fontenc}

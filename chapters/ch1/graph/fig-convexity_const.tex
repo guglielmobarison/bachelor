@@ -1,0 +1,22 @@
+\begin{tikzpicture}[scale=0.8]
+  \filldraw[fill=gray!20, draw=black, line width=0.5pt]
+    (0,0) rectangle (8,6);
+
+  \path[name path=s1border]
+    (0,6) -- (8,6) -- (6.4,1) -- (4.8,4) -- (3.2,1) -- cycle;
+
+  \filldraw[fill=yellow!50]
+    (0,6) -- (8,6) -- (6.4,1) -- (4.8,4) -- (3.2,1) -- cycle;
+
+  \draw[name path=centerline, draw=green!70!black, line width=0.5pt]
+    (0,3) -- (8,3);
+
+  \path[name intersections={of=s1border and centerline, by={I1,I2,I3,I4}}];
+
+  \foreach \pt in {I1,I2,I3,I4} {
+    \draw[draw=red, line width=1pt] (\pt) circle[radius=0.3];
+  }
+
+  \node at (4.2,4.8) {$S_1$};
+  \node at (4.2,1.2) {$S_2$};
+\end{tikzpicture}
