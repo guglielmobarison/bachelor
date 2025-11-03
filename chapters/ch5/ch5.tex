@@ -1,5 +1,5 @@
 \section{Introduzione}
-Questo capitolo esplicita i limiti informativi dell'\acrfull{adrr} rispetto al problema del \acrfull{dac} e dà conto, con trasparenza, anche dei tentativi non andati a buon fine. In particolare, l’elaborazione delle metriche temporali di Cap.~\ref{sec:metriche} calcolate sugli attraversamenti \gls{fir} (\S\ref{sec:flight_airspace}) non ha restituito segnali stabili o interpretabili in termini di configurazioni settoriali. La causa è di natura strutturale: \gls{adrr} rappresenta in modo accurato voli e tratte (\S\ref{sec:flights} e \S\ref{sec:flight_points}), ma non rende osservabili gli elementi centrali per il \gls{dac} delineati in Cap.~\ref{ch:introduzione-contesto} (\S\ref{subsec:settore-elementare} e \S\ref{subsec:settore-collassato}).
+Questo capitolo esplicita i limiti informativi dell'\acrfull{adrr} rispetto al problema del \acrfull{dac} e dà conto, con trasparenza, anche dei tentativi non andati a buon fine. In particolare, l’elaborazione delle metriche temporali di Cap.~\ref{sec:metriche} calcolate sugli attraversamenti \gls{fir} (\S\ref{sec:flight_airspace}) non ha restituito segnali stabili o interpretabili in termini di configurazioni settoriali. La causa è di natura strutturale: \gls{adrr} rappresenta in modo accurato voli e tratte (\S\S\,\ref{sec:flights} e \ref{sec:flight_points}), ma non rende osservabili gli elementi centrali per il \gls{dac} delineati in Cap.~\ref{ch:introduzione-contesto} (\S\S\,\ref{subsec:settore-elementare} e \ref{subsec:settore-collassato}).
 
     Per superare tale limite, adottiamo un’ipotesi di lavoro allineata all’unica componente geometrica effettivamente osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, una \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile). A partire da questa assunzione, costruiamo istanze coerenti con la geografia dei dati: le configurazioni ``elementari'' coincidono con singole \gls{fir}, mentre i ``collassati'' sono definiti come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini.
 
@@ -39,15 +39,15 @@ L'obiettivo è definire una capacità per ogni settore applicando una regola uni
 \clearpage      
 \section{Geometria}
 \label{sec:geometria}
-Muovendosi dal quadro definitorio di Cap.~\ref{ch:introduzione-contesto} e, in particolare, da \S\ref{subsec:settore-collassato}, riprendiamo i vincoli che rendono attuabili le configurazioni collassate (cfr. Figg.~\ref{fig:constraints_ab}–\ref{fig:constraints_cd}) e ne specifichiamo la traducibilità operativa sui dati \gls{adrr}, nei quali le \gls{fir} sono le sole entità geometriche osservabili.
+Muovendosi dal quadro definitorio di Cap.~\ref{ch:introduzione-contesto} e, in particolare, da \S\ref{subsec:settore-collassato}, riprendiamo i vincoli che rendono attuabili le configurazioni collassate (cfr. Figg.~\ref{fig:constraints_ab} e \ref{fig:constraints_cd}) e ne specifichiamo la traducibilità operativa sui dati \gls{adrr}, nei quali le \gls{fir} sono le sole entità geometriche osservabili.
 
 \subsection{Vincoli imposti (osservabili e applicati)}
 \paragraph{Connettività.}
 Richiediamo che l’aggregazione tra settori elementari avvenga esclusivamente quando sono soddisfatte entrambe le seguenti condizioni:
-\begin{enumerate}\itemsep0.2em
-  \item \textbf{Contatto planimetrico:} i confini dei due settori sono a contatto, ossia \(\partial E_i \cap \partial E_j \neq \varnothing\).
-  \item \textbf{Compatibilità verticale:} gli intervalli di quota operativa si sovrappongono almeno di un margine prefissato, vale a dire \(\mathrm{overlap}_{FL}(E_i,E_j)\ge m_{\!FL}\).\footnote{Il margine \(m_{\!FL}\) è configurabile.}
-\end{enumerate}
+\begin{itemize}
+  \item \textbf{Contatto planimetrico:} i confini dei due settori sono a contatto
+  \item \textbf{Compatibilità verticale:} gli intervalli di quota operativa si sovrappongono almeno di un margine prefissato
+\end{itemize}
 Nel seguito, consideriamo ammissibili soltanto quelle unioni di settori elementari per le quali esiste una catena di accostamenti che rispetta, passo dopo passo, entrambi i vincoli sopra elencati; in tal modo l’insieme risultante è connesso e coerente sia sul piano geometrico sia su quello altimetrico.
 
 \subsection{Vincoli non osservabili}
@@ -75,7 +75,9 @@ L'algoritmo genera settori collassati applicando una \gls{dfs} modificata all'in
           \State Ordina i vertici \((\text{longitudine}, \text{latitudine})\) per numero di sequenza.
           \If{il primo vertice \(\neq\) l'ultimo} \State aggiungi il primo vertice in coda \Comment{correzione della geometria} \EndIf
           \State \(E_i \gets \mathrm{Poligono}(\text{vertici})\); \quad \(R_i \gets [\text{quota\_min}, \text{quota\_max}]\)
-          \State Memorizza \((E_i, R_i)\) e marca \(E_i\) come \emph{non visitato}.
+          \State Memorizza \((E_i, R_i)\)
+          \State Segna \(E_i\) come non visitato \; ($\text{visited}[E_i]\gets\texttt{false}$)
+
         \EndFor
         
         \State $C \gets \emptyset$
@@ -94,8 +96,9 @@ L'algoritmo genera settori collassati applicando una \gls{dfs} modificata all'in
                         \State Genera $u \sim \mathcal{U}(0,1)$ e calcola $p(|G|)$
                         \If{$u < p$}
                             \State Aggiungi $E_n$ al gruppo: $G \gets G \cup \{E_n\}$
-                            \State Inserisci $E_n$ nello stack:
-                            \State Segna $E_n$ come visitato: $\text{visited}[E_n]\gets\texttt{true}$
+                            \State Inserisci $E_n$ nello stack
+                            \State Segna $E_n$ come visitato \; ($\text{visited}[E_i]\gets\texttt{true}$)
+
                             \EndIf
                     \EndIf
                 \EndFor
