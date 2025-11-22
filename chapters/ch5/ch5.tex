@@ -1,5 +1,5 @@
 \section{Introduzione}
-Questo capitolo esplicita i limiti informativi dell'\acrfull{adrr} rispetto al problema del \acrfull{dac} e dà conto, con trasparenza, anche dei tentativi non andati a buon fine. In particolare, l’elaborazione delle metriche temporali di Cap.~\ref{sec:metriche} calcolate sugli attraversamenti \gls{fir} (\S\ref{sec:flight_airspace}) non ha restituito segnali stabili o interpretabili in termini di configurazioni settoriali. La causa è di natura strutturale: \gls{adrr} rappresenta in modo accurato voli e tratte (\S\S\,\ref{sec:flights} e \ref{sec:flight_points}), ma non rende osservabili gli elementi centrali per il \gls{dac} delineati in Cap.~\ref{ch:introduzione-contesto} (\S\S\,\ref{subsec:settore-elementare} e \ref{subsec:settore-collassato}).
+Questo capitolo esplicita i limiti informativi dell'\acrfull{adrr} rispetto al problema del \acrfull{dac} e dà conto, con trasparenza, anche dei tentativi non andati a buon fine. In particolare, l’elaborazione delle metriche temporali di Cap.~\ref{sec:metriche} calcolate sugli attraversamenti \gls{fir} (cfr.\ \S\ref{sec:flight_airspace}) non ha restituito segnali stabili o interpretabili in termini di configurazioni settoriali. La causa è di natura strutturale: \gls{adrr} rappresenta in modo accurato voli e tratte (cfr.\ \S\S\,\ref{sec:flights} e \ref{sec:flight_points}), ma non rende osservabili gli elementi centrali per il \gls{dac} delineati in Cap.~\ref{ch:introduzione-contesto} (cfr.\ \S\S\,\ref{subsec:settore-elementare} e \ref{subsec:settore-collassato}).
 
     Per superare tale limite, adottiamo un’ipotesi di lavoro allineata all’unica componente geometrica effettivamente osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, una \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile). A partire da questa assunzione, costruiamo istanze coerenti con la geografia dei dati: le configurazioni ``elementari'' coincidono con singole \gls{fir}, mentre i ``collassati'' sono definiti come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini.
 
@@ -16,6 +16,7 @@ L'obiettivo è definire una capacità per ogni settore applicando una regola uni
       \begin{algorithmic}[1]
         \Require Serie giornaliera $N_R(d)$ su un periodo $D$; settore elementare $E$.
         \Ensure Capacità $C_{E}$ per il settore elementare $E$.
+        \EnsureEndSkip{}
         \State Considera la serie dei traffici giornalieri $N_R(d)$ sul periodo $D$.
         \State Limita l’analisi ai valori compresi tra il decimo e il novantesimo percentile (di un giorno $x$).
         \State Tra i valori rimasti, prendi il 75\% più alto e calcolane la media; questo è il valore di base.
@@ -30,6 +31,7 @@ L'obiettivo è definire una capacità per ogni settore applicando una regola uni
       \begin{algorithmic}[1]
         \Require Collassato $G$; capacità elementari $\{C_E\}_{E \in G}$.
         \Ensure Capacità $C_G$ per il collassato $G$.
+        \EnsureEndSkip{}
         \State Prendi il massimo tra le capacità elementari dei componenti di $G$; questo è il riferimento iniziale.
         \State Aumenta la base di una percentuale prefissata (ad es.\ 10\%) per ciascun altro componente del collassato, cioè per ogni settore elementare oltre quello che determina il massimo.
         \State Se è definito un upper bound complessivo (ad es.\ non oltre il 50\% rispetto alla base), non superarlo.
