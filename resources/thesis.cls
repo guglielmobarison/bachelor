@@ -155,6 +155,8 @@
 
 \ProcessOptions \relax
 \LoadClass{report}
+\PassOptionsToPackage{breaklinks}{hyperref}
+\RequirePackage[a-1b]{pdfx}
 
 \RequirePackage[a4paper,inner=4cm,outer=3cm,top=4cm,bottom=3.5cm,pdftex]{geometry}
 
@@ -454,7 +456,6 @@
     \def\nompreamble{\addcontentsline{toc}{chapter}{Nomenclature}A list of the variables and notation used in this thesis is defined below. The definitions and conventions set here will be observed throughout unless otherwise stated.\\}
 }
 
-\RequirePackage[breaklinks]{hyperref}
 \makeatletter
 \hypersetup{colorlinks,linkcolor=black,filecolor=black,urlcolor=black,citecolor=black,pdftitle={PhD Thesis}}
 \makeatother
