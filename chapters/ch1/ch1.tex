@@ -1,34 +1,29 @@
-\section{Contesto del traffico aereo in Europa e ruolo di Eurocontrol}
-
 Nel contesto della gestione dell'\Gls{atm}, lo spazio aereo viene modellato attraverso un insieme di entità geometriche e funzionali che ne descrivono l’organizzazione e le modalità operative. Al fine di rappresentare in maniera accurata le configurazioni spaziali e temporali utilizzate nella gestione della capacità e del controllo del traffico, è utile introdurre alcune definizioni fondamentali che costituiscono la base del modello adottato da \citet{eurocontrol2025}.
 
 \section{Definizioni preliminari}
+Lo spazio aereo è rappresentato attraverso unità di controllo elementari che possono essere aggregate su più livelli, secondo gli schemi descritti nelle sottosezioni che seguono. In questa sezione si introducono le principali entità geometriche e funzionali del modello, che verranno poi richiamate nella definizione delle metriche di capacità e nelle formulazioni di ottimizzazione.
 
 \subsection{Airblock}
-
 L’airblock è l’unità spaziale di base del modello. Esso è definito come un poligono chiuso in due dimensioni (2D), rappresentato come una sequenza ordinata di punti in coordinate geografiche. Ogni airblock delimita una porzione dello spazio aereo e costituisce la tessera elementare (o tassello) del mosaico bidimensionale che modella il dominio orizzontale dello spazio aereo. L’insieme completo degli airblock fornisce dunque una partizione esaustiva e non sovrapposta dello spazio aereo orizzontale.
 \clearpage
-\subsection{Settore elementare}
+\subsection{Settore elementare (\emph{elementary sector})}
 \label{subsec:settore-elementare}
-
-Il settore elementare è un volume tridimensionale ottenuto associando a un airblock un intervallo di livelli di volo. Ogni settore è identificato da una tripletta, come illustrato in \eqref{eq:settore-elementare}, che ne descrive la struttura spaziale:
-\begin{equation}
+Il settore elementare (\emph{elementary sector}) è un volume tridimensionale ottenuto associando a un airblock un intervallo di livelli di volo. Ogni settore è identificato dalla seguente tripletta, che ne descrive la struttura spaziale:
+\begin{equation*}
     (\text{airblock}, \text{\acrshort{fl}}_{\min}, \text{\acrshort{fl}}_{\max})
-    \label{eq:settore-elementare}
-\end{equation}
-
+\end{equation*}
 Tale settore rappresenta l’unità minima di gestione del traffico aereo in ambito operativo e viene utilizzato nella pianificazione della capacità.
 
-\subsection{Settore collassato}
+\subsection{Settore collassato (\emph{collapsed sector})}
 \label{subsec:settore-collassato}
 
-Il settore collassato è un volume dello spazio aereo ottenuto mediante l’unione di almeno un settore elementare. Tale aggregazione ha lo scopo di adattare dinamicamente la configurazione dello spazio aereo in funzione del volume di traffico atteso e della disponibilità delle risorse di controllo.
+Il settore collassato (\emph{collapsed sector}) è un volume dello spazio aereo ottenuto mediante l’unione di almeno un settore elementare. Tale aggregazione ha lo scopo di adattare dinamicamente la configurazione dello spazio aereo in funzione del volume di traffico atteso e della disponibilità delle risorse di controllo.
 
 In particolare, affinché le configurazioni collassate siano attuabili senza generare eccessiva complessità operativa, devono essere rispettati i seguenti vincoli:
 \DisablePunct
 \begin{itemize}
   \item {\bf Convessità} (cfr.~Figura~\ref{fig:convexity}): ogni settore collassato deve avere una forma convessa, in modo da limitare la complessità geometrica e ridurre i punti di possibile conflitto all’interno dello spazio aereo, semplificando il monitoraggio radar e le manovre dei controllori;
-  \item {\bf Tempo minimo di permanenza} (cfr.~Figura~\ref{fig:minstay}): un settore collassato, una volta attivato, deve rimanere operativo per almeno \(t_p\) intervalli di tempo, al fine di evitare cambi troppo rapidi che comporterebbero numerosi handover\footnote{Per \emph{handover} si intende il trasferimento della responsabilità di sorveglianza e comunicazione di un aeromobile da un settore di spazio aereo a un altro.} e un sovraccarico procedurale per i centri di controllo;
+  \item {\bf Tempo minimo di permanenza} (cfr.~Figura~\ref{fig:minstay}): un settore collassato, una volta attivato, deve rimanere operativo per almeno \(t_p\) intervalli di tempo, al fine di evitare cambi troppo rapidi che comporterebbero numerosi handover (cioè il trasferimento della responsabilità di sorveglianza e comunicazione di un aeromobile da un settore di spazio aereo a un altro) e un sovraccarico procedurale per i centri di controllo;
  \clearpage
   \begin{figure}[H]
     \centering
@@ -73,13 +68,13 @@ In particolare, affinché le configurazioni collassate siano attuabili senza gen
 La \gls{cta} costituisce una porzione contigua e coerente di spazio aereo, ottenuta attraverso l’aggregazione di uno o più settori, siano essi elementari o collassati. Essa si configura come una struttura di ordine superiore all’interno dell’architettura gerarchica dello spazio aereo, che include, su livelli inferiori, gli airblocks, i settori e gli airspace.
 Dal punto di vista funzionale, la \acrshort{cta} rappresenta un'entità organizzativa concepita sia per scopi operativi sia per esigenze analitiche. In particolare, essa consente di modellare un’area omogenea in termini di attribuzione della capacità e di gestione del traffico aereo. Ogni \acrshort{cta} è affidata alla supervisione di un \Gls{acc}, gestito da un \Gls{ansp}, il quale è responsabile dell’erogazione dei servizi di controllo all’interno dei volumi di spazio assegnati.
 
-Una rappresentazione della \gls{cta} e dei settori collassati è fornita nella Figura 1.1, derivata da \cite{ehrencrona2014} come esito del lavoro di ricerca sui metodi di formazione delle configurazioni.
+Una rappresentazione della \gls{cta} e dei settori collassati è fornita nella Figura~\ref{fig:cta}, derivata da \cite{ehrencrona2014} come esito del lavoro di ricerca sui metodi di formazione delle configurazioni.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.9\textwidth]{chapters/ch1/img/madrid_south_ACC}
   \caption{Un esempio di \acrshort{cta}: a destra la \acrshort{cta} di ``Madrid South'', a sinistra la sua decomposizione in settori collassati \cite{ehrencrona2014}.}
-  \label{fig:etichetta_immagine}
+  \label{fig:cta}
 \end{figure}
 
 
@@ -124,17 +119,17 @@ Gli \acrshort{aua} sono strutture operative relativamente stabili, organizzate p
 \fi
 % ------
 
-Diversamente dalle \acrshort{fir}, i settori collassati costituiscono configurazioni dinamiche e temporanee dello spazio aereo. Essi derivano dall'aggregazione o dalla divisione di settori elementari in risposta a esigenze operative contingenti, come le variazioni giornaliere nel volume di traffico.
+%Diversamente dalle \acrshort{fir}, i settori collassati costituiscono configurazioni dinamiche e temporanee dello spazio aereo. Essi derivano dall'aggregazione o dalla divisione di settori elementari in risposta a esigenze operative contingenti, come le variazioni giornaliere nel volume di traffico.
 
 \section{Dynamic Airspace Configuration}
-La gestione dello spazio aereo avviene secondo logiche dinamiche e flessibili, guidate dal principio del \acrfull{fua}, che prevede l’utilizzo ottimizzato delle risorse spaziali in risposta alle variazioni previste nel traffico, integrando esigenze civili e militari.
+La gestione dello spazio aereo avviene secondo logiche dinamiche e flessibili, guidate dal principio del \acrfull{fua}, che prevede l’utilizzo ottimizzato delle risorse spaziali in risposta alle variazioni previste nel traffico e integra in modo coordinato le esigenze civili e militari~\citep{ec2150_2005,eurocontrol_ans_fua}.
 
-In ambito operativo, ciò si realizza attraverso configurazioni settoriali che evolvono nel corso della giornata. Ogni configurazione è costituita da una combinazione di settori attivi (cfr.\ \S\S~\ref{subsec:settore-elementare} e~\ref{subsec:settore-collassato}), selezionati secondo un opening scheme che ne determina la temporizzazione. A ciascun settore attivo è associata una capacità nominale, definita come il numero massimo di voli che possono essere gestiti per unità di tempo, determinata sulla base della complessità operativa e delle risorse disponibili.
+In ambito operativo, ciò si realizza attraverso configurazioni settoriali che evolvono nel corso della giornata. Ogni configurazione è costituita da una combinazione di settori attivi (vedi Sezioni~\ref{subsec:settore-elementare} e~\ref{subsec:settore-collassato}), selezionati secondo un \emph{opening scheme} che ne determina la temporizzazione. Chiamiamo \emph{opening scheme} di un dato \gls{acc}, per un dato giorno, la descrizione delle diverse configurazioni che si susseguono nel corso della giornata~\citep{opscheme1, opscheme2}. A ciascun settore attivo è associata una capacità nominale, definita come il numero massimo di voli che possono essere gestiti per unità di tempo, determinata sulla base della complessità operativa e delle risorse disponibili.
 
-Il problema del \acrfull{dac} consiste nel determinare la sequenza ottimale delle configurazioni dello spazio aereo in un intervallo temporale, con l'obiettivo di minimizzare l’eccedenza della domanda di traffico rispetto alla capacità disponibile. Formalmente, il problema assume di disporre di:
+Il problema del \acrfull{dac} consiste nel determinare la sequenza ottimale delle configurazioni dello spazio aereo in un intervallo temporale, con l'obiettivo di minimizzare l’eccedenza della domanda di traffico rispetto alla capacità disponibile. Nel contesto operativo utilizzato in \citep{galeazzo2024integer}, il problema assume di disporre di:
 \begin{itemize}
     \item un insieme finito di configurazioni ammissibili
-    \item la domanda di traffico prevista su ciascun settore per ogni periodo decisionale
+    \item la domanda di traffico prevista su ciascun settore e la sua evoluzione temporale
     \item la capacità nominale di ciascun settore
 \end{itemize}
 % TODO si ripete quello scritto sopra?
@@ -146,7 +141,7 @@ Data tale situazione operativa, l'obiettivo del \acrshort{dac} diventa quello di
 \end{itemize}
 
 
-Tale problema può essere formulato matematicamente mediante un modello di \Gls{ilp}, come descritto nella sezione seguente.
+Tale problema può essere formulato matematicamente mediante un modello di \Gls{ilp}, come formulato in \cite{galeazzo2024integer} e riportato nella sezione seguente.
 
 \subsection{Formulazione matematica}
 La formulazione matematica del problema del \gls{dac} può essere rappresentata attraverso un modello di \gls{ilp} introdotto da \citet{galeazzo2024integer}. Tale modello consente di determinare la successione ottimale delle configurazioni spaziali del traffico aereo lungo un orizzonte temporale discreto, minimizzando l'eccesso di domanda rispetto alla capacità disponibile, nel rispetto dei vincoli operativi richiesti per una gestione sicura ed efficiente del traffico aereo.\\\\
