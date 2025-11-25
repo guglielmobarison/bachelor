@@ -1,47 +1,46 @@
-\section{Introduzione}
-Questo capitolo esplicita i limiti informativi dell'\acrfull{adrr} rispetto al problema del \acrfull{dac} e dà conto, con trasparenza, anche dei tentativi non andati a buon fine. In particolare, l’elaborazione delle metriche temporali di Cap.~\ref{sec:metriche} calcolate sugli attraversamenti \gls{fir} (cfr.\ \S\ref{sec:flight_airspace}) non ha restituito segnali stabili o interpretabili in termini di configurazioni settoriali. La causa è di natura strutturale: \gls{adrr} rappresenta in modo accurato voli e tratte (cfr.\ \S\S\,\ref{sec:flights} e \ref{sec:flight_points}), ma non rende osservabili gli elementi centrali per il \gls{dac} delineati in Cap.~\ref{ch:introduzione-contesto} (cfr.\ \S\S\,\ref{subsec:settore-elementare} e \ref{subsec:settore-collassato}).
+Questo capitolo esplicita i limiti informativi dell'\gls{adrr} rispetto al problema del \gls{dac} e dà conto ai tentativi effettuati durante lo stage per colmare le carenze informative, anche se spesso non sono andati a buon fine. 
 
-    Per superare tale limite, adottiamo un’ipotesi di lavoro allineata all’unica componente geometrica effettivamente osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, una \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile). A partire da questa assunzione, costruiamo istanze coerenti con la geografia dei dati: le configurazioni ``elementari'' coincidono con singole \gls{fir}, mentre i ``collassati'' sono definiti come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini.
+\section{Limiti struttrali di \gls{adrr} e solutioni adottate}
+Dal punto di vista concettuale, la risoluzione del problema del \gls{dac} richiede almeno:
+\begin{itemize}
+  \item la descrizione geometrica dei settori elementari;
+  \item l’elenco delle porzioni di spazio aereo attivabili, ottenute come aggregazioni di settori elementari (i cosiddetti settori collassati)
+  \item la rappresentazione delle configurazioni settoriali e dei relativi \emph{opening scheme} giornalieri, ossia la sequenza temporale delle combinazioni di settori effettivamente attive in un dato \gls{acc};
+  \item i valori di capacità dichiarata associati a ciascun settore
+  \item eventuali ulteriori vincoli operativi che limitano la combinabilità dei settori in configurazioni ammissibili
+\end{itemize}
+Il repository \gls{adrr}, per come è strutturato, non fornisce questo livello di dettaglio.  
+Le tabelle sui profili di attraversamento mettono a disposizione esclusivamente:
+\begin{itemize}
+  \item i tracciati dei voli e i relativi tempi di ingresso/uscita
+  \item le informazioni di attraversamento delle sole \glspl{fir}, che costituiscono l’unica entità geometrica esplicitamente rappresentata nei dati di traffico
+\end{itemize}
+
+Mancano quindi sia la definizione delle porzioni di spazio aereo corrispondenti ai settori di controllo, sia gli opening scheme che ne descrivono l’evoluzione temporale, sia i valori di capacità ufficialmente dichiarati per tali settori.
+
+Durante lo stage sono state esplorate diverse strade per arricchire \gls{adrr} con informazioni settoriali: dall’analisi di ulteriori tabelle del repository, al tentativo di incrocio con sorgenti esterne (ad esempio shapefile pubblici o documentazione tecnica), fino alla valutazione di un collegamento sistematico con il repository \gls{adr}.  
+Nessuna di queste soluzioni ha tuttavia consentito di ricostruire in modo generalizzabile e robusto il grafo dei settori operativi, le relative porzioni di spazio aereo e gli opening scheme associati. Ciò impone di adottare una modellizzazione semplificata, costruita unicamente sulla base delle informazioni geometriche effettivamente disponibili.
+
+\subsection{Pseudo-settori elementari e collassati}
+Per superare questo limite, si introduce un’ipotesi di lavoro allineata all’unica componente geometrica osservabile in \gls{adrr}: le \glspl{fir} sono assimilate a unità settoriali elementari. In concreto, ogni \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile nei dati).  
+
+A partire da questa assunzione, costruiamo istanze coerenti con la geografia del repository: le porzioni elementari di spazio aereo coincidono con singole \gls{fir}, mentre le porzioni collassate sono definite come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini. Nel seguito chiameremo tali porzioni, rispettivamente, pseudo-settore elementare (una singola \gls{fir}) e pseudo-settore collassato (una porzione connessa ottenuta come unione di più \gls{fir}).  
+
+Nel prosieguo del capitolo si formalizza l’impiego delle \gls{fir} come ``mattoni'' geometrici per definire pseudo-settori elementari e pseudo-settori collassati, si introducono i criteri di assegnazione della capacità a queste porzioni di spazio aereo e si specificano i corrispondenti vincoli geometrici.
+
+\subsection{Portata e riutilizzabilità delle procedure}
+È importante sottolineare che questa modellizzazione non coincide con l’assetto informativo richiesto per risolvere il problema di \gls{dac} in un contesto operativo reale: i pseudo-settori non rappresentano i settori di controllo effettivamente utilizzati, né i valori di capacità che vi sono associati.  
+Tuttavia, il lavoro svolto mantiene una forte utilità metodologica: tutte le procedure di calcolo (costruzione delle porzioni di spazio aereo, valutazione di throughput e occupancy, assegnazione della capacità e verifica dei vincoli) sono state progettate in modo da dipendere solo dal grafo delle porzioni e dai relativi attributi.  
+
+Quando saranno disponibili dati completi sulla settorizzazione operativa (geometrie dei settori reali, opening scheme, capacità dichiarate), le stesse procedure potranno quindi essere riutilizzate sostituendo ai pseudo-settori elementari e collassati le corrispondenti entità reali, con modifiche limitate agli strati di caricamento e mappatura dei dati.
+    %Per superare tale limite, adottiamo un’ipotesi di lavoro allineata all’unica componente geometrica effettivamente osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, una \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile). A partire da questa assunzione, costruiamo istanze coerenti con la geografia dei dati: le configurazioni ``elementari'' coincidono con singole \gls{fir}, mentre i ``collassati'' sono definiti come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini.
 
     %TODO cambiare configurazioni elementari e collassate
-    Nel seguito si formalizza l’impiego delle \gls{fir} come ``mattoni'' geometrici per definire configurazioni elementari e collassate; si introducono i criteri di assegnazione della capacità e i corrispondenti vincoli geometrici. Per una sintesi visiva si veda la Figura~\ref{fig:rassegna-collassati}.
+    %Nel seguito si formalizza l’impiego delle \gls{fir} come ``mattoni'' geometrici per definire configurazioni elementari e collassate; si introducono i criteri di assegnazione della capacità e i corrispondenti vincoli geometrici.
 
-\section{Capacità}
-\label{sec:cap5-capacita}
-L'obiettivo è definire una capacità per ogni settore applicando una regola unica tanto ai settori elementari quanto alle loro unioni. Il traffico giornaliero \(N_R(d)\) di un settore elementare \(R\) alla data \(d\) si ricava dal \emph{throughput} (cfr.~\S\ref{subsec:throughput-teoria}) fissando \(W=5\,\mathrm{min}\) e \(\lambda=1\,\mathrm{h} \). In questo modo l'intervallo è suddiviso in 288 intervalli da 5 minuti, ognuno dei quali analizza l’andamento dell’ora successiva.
-    \subsection{Settore elementare}
-    \begin{algorithm}[H]
-      \caption{Capacità di un settore elementare.}
-      \label{alg:cap-elementare-naturale}
-      \begin{algorithmic}[1]
-        \Require Serie giornaliera $N_R(d)$ su un periodo $D$; settore elementare $E$.
-        \Ensure Capacità $C_{E}$ per il settore elementare $E$.
-        \EnsureEndSkip{}
-        \State Considera la serie dei traffici giornalieri $N_R(d)$ sul periodo $D$.
-        \State Limita l’analisi ai valori compresi tra il decimo e il novantesimo percentile (di un giorno $x$).
-        \State Tra i valori rimasti, prendi il 75\% più alto e calcolane la media; questo è il valore di base.
-        \State Opzionalmente aggiungi o sottrai una piccola quantità aleatoria attorno a zero, quindi arrotonda all’intero più vicino. Il risultato è la capacità del settore elementare $C_E$.
-      \end{algorithmic}
-    \end{algorithm}
-    
-    \subsection{Settore collassato}
-    \begin{algorithm}[H]
-      \caption{Capacità di un settore collassato.}
-      \label{alg:cap-collassato-naturale}
-      \begin{algorithmic}[1]
-        \Require Collassato $G$; capacità elementari $\{C_E\}_{E \in G}$.
-        \Ensure Capacità $C_G$ per il collassato $G$.
-        \EnsureEndSkip{}
-        \State Prendi il massimo tra le capacità elementari dei componenti di $G$; questo è il riferimento iniziale.
-        \State Aumenta la base di una percentuale prefissata (ad es.\ 10\%) per ciascun altro componente del collassato, cioè per ogni settore elementare oltre quello che determina il massimo.
-        \State Se è definito un upper bound complessivo (ad es.\ non oltre il 50\% rispetto alla base), non superarlo.
-        \State Arrotonda il valore finale all’intero più vicino. Il risultato è la capacità del settore collassato $C_G$.
-      \end{algorithmic}
-    \end{algorithm}
-\clearpage      
-\section{Geometria}
+\section{Vincoli geometrici}
 \label{sec:geometria}
-Muovendosi dal quadro definitorio di Cap.~\ref{ch:introduzione-contesto} e, in particolare, da \S\ref{subsec:settore-collassato}, riprendiamo i vincoli che rendono attuabili le configurazioni collassate (cfr. Figg.~\ref{fig:constraints_ab} e \ref{fig:constraints_cd}) e ne specifichiamo la traducibilità operativa sui dati \gls{adrr}, nei quali le \gls{fir} sono le sole entità geometriche osservabili.
+A partire dal quadro definitorio del Capitolo~\ref{ch:introduzione-contesto} e, in particolare, dalla nozione di settori collassati, riprendiamo i vincoli che rendono attuabili le configurazioni collassate e ne discutiamo la traduzione operativa sui dati \gls{adrr}, nei quali le \gls{fir} costituiscono le sole entità geometriche direttamente osservabili.
 
 \subsection{Vincoli imposti (osservabili e applicati)}
 \paragraph{Connettività.}
@@ -60,6 +59,70 @@ Il vincolo prevede buffer minimi rispetto ai confini degli \gls{acc} adiacenti (
 \paragraph{Convessità della geometria risultante.}
 Nel dataset considerato la convessità è l’eccezione: su 324 poligoni validi, 4 sono convessi (1.23\%) e 320 sono concavi (98.77\%). Imporre la convessità comporterebbe alterare i confini reali delle \gls{fir} contraddicendo l’assunzione di trattarle come ``mattoni'' atomici. Per questo motivo non imponiamo la convessità e manteniamo la geometria osservata.
 
+\section{Calcolo delle capacità}
+\label{sec:cap5-capacita}
+L'obiettivo è associare a ciascun settore una capacità nominale, cioè un numero intero che rappresenti il volume di traffico ritenuto gestibile in condizioni operative ordinarie.  
+Nel contesto di questa tesi la capacità non è stimata a partire da procedure operative ufficiali, ma tramite regole euristiche costruite sui dati storici \acrshort{adrr} e pensate per generare istanze artificiali realistiche per il problema di \gls{dac}.  
+
+Le due procedure descritte in questa sezione (per settori elementari e per settori collassati) sono state introdotte e impiegate in \cite{galeazzo2024integer} per la valutazione di approcci \gls{ilp} al \gls{dac}. Qui vengono riprese e adattate al dataset \acrshort{adrr} utilizzato nello stage.
+
+Per ogni settore elementare \(R\) e per ogni giorno campione \(d \in D\) si definisce un traffico giornaliero \(N_R(d)\).  
+Più precisamente, fissiamo una griglia temporale con passo \(\lambda = 5\,\mathrm{min}\) e finestre di lunghezza \(W = 1\,\mathrm{h}\) (vedi Sezione~\ref{subsec:throughput-teoria}). Per ciascun giorno \(d\) e per ciascun settore \(R\) si calcola quindi il \emph{throughput} \(T_R(I_k)\) su tutte le finestre \(I_k = [t_k, t_k+W)\) che cadono nel giorno considerato. La serie \(\{N_R(d)\}_{d \in D}\) fornisce quindi, per ciascun settore, un insieme di osservazioni giornaliere su cui costruire una capacità nominale.
+
+    \subsection{Capacità del settore elementare}
+    Nel caso di un settore elementare \(E\), l’idea è stimare una capacità a partire dalla distribuzione dei picchi giornalieri \(N_E(d)\) osservati nel periodo di analisi \(D\), filtrando gli outlier (ossia osservazioni anomale che si discostano nettamente dai valori tipici) e concentrandosi sui giorni tipicamente più carichi.  
+Questa scelta consente di ottenere un valore coerente con le condizioni di traffico più impegnative, senza farsi dominare da pochi giorni eccezionali (molto scarichi o eccezionalmente congestionati).
+
+In primo luogo si calcolano il decimo e il novantesimo percentile della distribuzione \(\{N_E(d)\}_{d \in D}\) e si scartano i giorni che cadono al di fuori di questo intervallo. In questo modo si eliminano sia i giorni atipicamente scarichi (ad esempio per chiusure o riduzioni temporanee dello spazio aereo) sia quelli con valori eccezionalmente alti legati a fenomeni puntuali.  
+
+Sui giorni rimasti si prendono poi i valori più alti (il 75\% superiore) e se ne calcola la media: questo valore rappresenta la base su cui definire la capacità nominale, in quanto approssima il livello di traffico osservato nei giorni più rappresentativi delle condizioni “di punta”.
+
+Eventuali piccoli aggiustamenti aleatori servono unicamente a introdurre una lieve variabilità tra settori con profili molto simili, quando si generano molte istanze artificiali: non modificano in modo significativo l’ordine di grandezza delle capacità.
+
+	\clearpage
+    \begin{algorithm}[H]
+      \caption{Capacità di un settore elementare.}
+      \label{alg:cap-elementare-naturale}
+      \begin{algorithmic}[1]
+        \Require Serie giornaliera $N_R(d)$ su un periodo $D$; settore elementare $E$.
+        \Ensure Capacità $C_{E}$ per il settore elementare $E$.
+        \EnsureEndSkip{}
+        \State Considera la serie dei traffici giornalieri $N_R(d)$ sul periodo $D$.
+        \State Limita l’analisi ai valori compresi tra il decimo e il novantesimo percentile (di un giorno $x$).
+        \State Tra i valori rimasti, prendi il 75\% più alto e calcolane la media; questo è il valore di base.
+        \State Opzionalmente aggiungi o sottrai una piccola quantità aleatoria attorno a zero, quindi arrotonda all’intero più vicino. Il risultato è la capacità del settore elementare $C_E$.
+      \end{algorithmic}
+    \end{algorithm}
+    
+    \subsection{Capacità del settore collassato}
+    Un settore collassato \(G\) è ottenuto come unione di più settori elementari. Anche in questo caso occorre assegnare un valore di capacità \(C_G\) da utilizzare nel modello di \gls{dac}.  
+Sommarne semplicemente le capacità elementari porterebbe in genere a valori irrealistici, perché il carico di lavoro di un singolo controllore non cresce linearmente con il numero di settori accorpati. Si adotta quindi una regola più conservativa, che parte dalla capacità del settore più “forte” e la incrementa in modo moderato quando si aggregano altri settori.
+
+Sia dunque \(G\) un collassato costituito da un insieme di settori elementari \(\{E\}_{E \in G}\) per i quali è già stata calcolata la capacità \(C_E\) secondo l’Algoritmo~\ref{alg:cap-elementare-naturale}. Nel caso di un collassato \(G\) si procede nel modo seguente: si assume come riferimento iniziale la capacità massima tra quelle dei settori elementari che lo compongono. Per ciascun ulteriore componente del collassato si incrementa tale valore di una percentuale prefissata. Infine si impone un limite superiore globale, espresso come percentuale rispetto alla base, in modo da evitare che collassati molto estesi producano capacità eccessivamente elevate.
+
+	\subsection{Osservazioni sulla scelta delle soglie}
+\label{subsec:cap-discussione}
+
+Le scelte numeriche adottate seguono l’impostazione proposta in \cite{galeazzo2024integer}. In particolare:
+\begin{itemize}
+  \item il filtraggio tramite percentili riduce l’influenza di giorni anomali (molto scarichi o eccezionalmente congestionati), che potrebbero distorcere la stima
+  \item la media sul 75\% più alto dei giorni ``regolari'' concentra la capacità sui livelli tipicamente riscontrati nelle giornate più critiche, evitando di sovrastimare la capacità sulla base di pochi picchi estremi
+  \item per i collassati, l’incremento percentuale per ciascun componente aggiuntivo, combinato con un limite superiore complessivo, consente di modellare un aumento di capacità legato all’accorpamento dei settori, ma con rendimenti decrescenti e senza raggiungere valori non compatibili con il carico di lavoro di un singolo controllore
+\end{itemize}
+
+    \begin{algorithm}[H]
+      \caption{Capacità di un settore collassato.}
+      \label{alg:cap-collassato-naturale}
+      \begin{algorithmic}[1]
+        \Require Collassato $G$; capacità elementari $\{C_E\}_{E \in G}$.
+        \Ensure Capacità $C_G$ per il collassato $G$.
+        \EnsureEndSkip{}
+        \State Prendi il massimo tra le capacità elementari dei componenti di $G$; questo è il riferimento iniziale.
+        \State Aumenta la base di una percentuale prefissata (ad es.\ 10\%) per ciascun altro componente del collassato, cioè per ogni settore elementare oltre quello che determina il massimo.
+        \State Se è definito un upper bound complessivo (ad es.\ non oltre il 50\% rispetto alla base), non superarlo.
+        \State Arrotonda il valore finale all’intero più vicino. Il risultato è la capacità del settore collassato $C_G$.
+      \end{algorithmic}
+    \end{algorithm}    
 \clearpage
 \section{Generazione settori collassati}
 \label{subsec:algo-collassati}

@@ -1,5 +1,5 @@
 \section{Impostazione del problema e linee di analisi}
-Muovendosi dal quadro definitorio introdotto (cfr.\ Cap.~\ref{ch:introduzione-contesto}) e dagli obiettivi operativi (cfr.\ Cap.~\ref{ch:obiettivi}), questo capitolo assume come fonte primaria le tabelle sui profili di attraversamento delle regioni d’informazione volo, con particolare riferimento alla sottosezione \textsc{FLIGHT AIRSPACES} (cfr.\ \S\ref{sec:flight_airspace}) e ai collegamenti semantici con \textsc{FLIGHTS} (cfr.\ \S\ref{sec:flights}).
+Muovendosi dal quadro definitorio introdotto (vedi  Capitolo~\ref{ch:introduzione-contesto}) e dagli obiettivi dello stage (vedi Capitolo~\ref{ch:obiettivi}), questo capitolo assume come fonte primaria le tabelle sui profili di attraversamento delle regioni d’informazione volo, con particolare riferimento alla sottosezione \textsc{FLIGHT AIRSPACES} (vedi Sezione \ref{sec:flight_airspace}) e ai collegamenti semantici con \textsc{FLIGHTS} (vedi Sezione \ref{sec:flights}).
 
 Per evitare ambiguità, fissiamo la notazione di base impiegata nelle metriche calcolate sulle sequenze di attraversamento per ciascuna regione.
 \begin{description}
@@ -18,6 +18,7 @@ In simboli, useremo le seguenti equivalenze notazionali:
 \clearpage
 \section{Modello temporale e granularità}
 \label{sec:modello-temporale}
+Per passare da una rappresentazione continua a una rappresentazione discreta del tempo, si discretizza l’orizzonte di analisi suddividendolo in intervalli elementari tutti della stessa durata. Tale durata, indicata con \(\lambda\), rappresenta la granularità temporale dell’analisi (cioè il passo minimo con cui vengono osservate le grandezze di interesse).
 Fissiamo un orizzonte di analisi \([\tau_0,\tau_1)\subset\mathbb{R}\) e scegliamo un passo di discretizzazione \(\lambda>0\). Definiamo quindi la griglia \(\mathcal{T}\) come la successione di nodi equispaziati a partire da \(\tau_0\):
 \begin{equation*}
 \label{eq:griglia-def}
@@ -26,8 +27,8 @@ Fissiamo un orizzonte di analisi \([\tau_0,\tau_1)\subset\mathbb{R}\) e scegliam
 I nodi \(t_k\) scandiscono l’intervallo di analisi con passo \(\lambda\).
 Un esempio schematico della griglia così definita è mostrato in \figurename~\ref{fig:griglia-temporale}.
 \input{chapters/ch4/figures/griglia_temporale.tex}
-\paragraph{Cardinalità della griglia.}
-L’introduzione di un indice terminale è necessaria: per esplicitare la cardinalità, si ponga
+
+Osserviamo che la definizione di \(\mathcal{T}\) introduce, in prima istanza, una successione potenzialmente infinita di nodi \((t_k)_{k\in\mathbb{N}}\); nella pratica, però, all’interno dell’intervallo \([\tau_0,\tau_1)\) si utilizzano solo un numero finito di istanti. Per poter lavorare con vettori e somme indicizzati nel tempo è quindi utile rendere esplicita la cardinalità effettiva della griglia all’interno dell’orizzonte di analisi. A tal fine si introduce un indice terminale
 \begin{equation}
 \label{eq:define-K}
 K \;=\; \Bigl\lfloor \frac{\tau_1 - \tau_0}{\lambda} \Bigr\rfloor .
@@ -44,10 +45,12 @@ Nel seguito assumiamo \(\lambda \le W\) così che le finestre risultino contigue
 
 \clearpage
 \section{Metriche}
+In questa sezione si introducono le grandezze utilizzate per descrivere il carico di traffico su una regione di spazio aereo \(R\).  
+A partire dalla griglia temporale \(\mathcal{T}\) e dalla finestra \(I_k\), si definiscono due metriche: il \emph{throughput}, che misura il numero di ingressi in una regione nell’arco di una finestra, e l’\emph{occupancy}, che quantifica invece quanti velivoli risultano presenti nella regione per l’intera durata della finestra. Queste quantità consentono di passare dai dati puntuali di ingresso/uscita dei singoli voli a misure sintetiche, più adatte sia all’analisi statistica sia agli utilizzi dei capitoli successivi.
 \label{sec:metriche}
 \subsection{Throughput}
 \label{subsec:throughput-teoria}
-Sulla griglia temporale \(\mathcal{T}\) definita in \S\ref{sec:modello-temporale}, e con le finestre semi–aperte \(I_k=[t_k,t_k+W)\) introdotte in \S\ref{sec:finestre_temporali}, il \emph{throughput} per una regione \(R\) è il numero di istanti di ingresso che cadono in \(I_k\).
+Sulla griglia temporale \(\mathcal{T}\) definita in Sezione \ref{sec:modello-temporale}, e con la finestre semi–aperta \(I_k=[t_k,t_k+W)\) introdotta in Sezione \ref{sec:finestre_temporali}, il \emph{throughput} per una regione \(R\) è il numero di istanti di ingresso che cadono in \(I_k\).
     Denotiamo tale conteggio con \(T_R(I_k)\):
     \begin{equation}
     \label{eq:throughput-def}
@@ -121,36 +124,192 @@ Sulla griglia temporale \(\mathcal{T}\) definita in \S\ref{sec:modello-temporale
     t^{\mathrm{in}}_{f,R} \le t_k \ \ \wedge\ \ t^{\mathrm{out}}_{f,R} \ge t_k{+}W \Bigr\}.
     \end{equation}
     In questo caso \(\mathcal{F}_R\) è l’insieme dei voli che attraversano \(R\), \(t^{\mathrm{in}}_{f,R}\) è l’istante di ingresso del volo \(f\) in \(R\) e \(t^{\mathrm{out}}_{f,R}\) è l’istante di uscita del volo \(f\) in \(R\).
+    \clearpage
     \input{chapters/ch4/figures/occupancy.tex}
     
-    L'implementazione algoritmica non valuta la condizione di copertura \eqref{eq:occ-finestra-copertura} per ogni volo e ogni finestra, ma sfrutta il principio dell'array di differenze. In pratica, al posto di verificare finestra per finestra, associamo a ciascun volo due “eventi discreti” sulla griglia: un ingresso nel primo indice in cui il volo copre interamente la finestra e un’uscita immediatamente dopo l’ultimo indice coperto.
+    L'implementazione algoritmica non valuta la condizione di copertura \eqref{eq:occ-finestra-copertura} per ogni volo e ogni finestra, ma sfrutta il principio dell'array di differenze. La proposizione seguente formalizza l’identità che adottiamo nell’implementazione.
+    
+    \subsection{Occupancy}
+\label{subsec:occupancy-teoria}
+Sulla griglia temporale \(\mathcal{T}\) definita in \S\ref{sec:modello-temporale}, e con le finestre semi–aperte \(I_k=[t_k,t_k+W)\) introdotte in \S\ref{sec:finestre_temporali}, definiamo l’\emph{occupancy} come il numero di velivoli che risultano presenti in \(R\) per tutta la finestra:
+\begin{equation}
+\label{eq:occ-finestra-copertura}
+O_R(k) \;\coloneqq\; 
+\#\Bigl\{\, f \in \mathcal{F}_R \;\Bigm|\; 
+t^{\mathrm{in}}_{f,R} \le t_k \ \ \wedge\ \ t^{\mathrm{out}}_{f,R} \ge t_k{+}W \Bigr\}.
+\end{equation}
+In questo caso \(\mathcal{F}_R\) è l’insieme dei voli che attraversano \(R\), \(t^{\mathrm{in}}_{f,R}\) è l’istante di ingresso del volo \(f\) in \(R\) e \(t^{\mathrm{out}}_{f,R}\) è l’istante di uscita del volo \(f\) in \(R\).
 
-    Sia \(t_k=\tau_0+k\lambda\) e \(I_k=[t_k,\,t_k+W)\). Per un volo \(f\) con intervallo \(E_{f,R}=[t^{\mathrm{in}}_{f,R},\,t^{\mathrm{out}}_{f,R}]\), il primo e l’ultimo indice in cui \(I_k\) è interamente coperto sono
-    \[
-    k_s(f)=\Bigl\lceil \tfrac{t^{\mathrm{in}}_{f,R}-\tau_0}{\lambda} \Bigr\rceil,
-    \qquad
-    k_e(f)=\Bigl\lfloor \tfrac{t^{\mathrm{out}}_{f,R}-W-\tau_0}{\lambda} \Bigr\rfloor .
-    \]
-    Introduciamo quindi i delta per volo \(\delta_f(k)\) e il saldo netto per regione \(D_R(k)\):
-    \[
-    \delta_f(k)=
-    \begin{cases}
-    +1 & \text{se } k=k_s(f),\\
-    -1 & \text{se } k=k_e(f)+1,\\
+\clearpage
+\input{chapters/ch4/figures/occupancy.tex}
+
+L'implementazione algoritmica non valuta la condizione di copertura \eqref{eq:occ-finestra-copertura} per ogni volo e ogni finestra, ma sfrutta il principio dell'array di differenze. La proposizione seguente formalizza l’identità che adottiamo nell’implementazione.
+
+\begin{proposition}[Equivalenza tra occupancy a copertura e a differenze]
+\label{prop:occupancy-equivalence}
+Sia \(R\) una regione di volo, \(I_k = [t_k, t_k+W)\) una finestra temporale su una griglia \(\mathcal{T}\) di passo \(\lambda>0\) con origine \(\tau_0\), e sia \(\mathcal{F}_R\) l'insieme dei voli che attraversano \(R\).
+Definiamo innanzitutto l'\emph{occupancy a copertura} come
+\begin{equation*}
+  O_R^{\text{cop}}(k) \coloneqq 
+  \#\Bigl\{\, f \in \mathcal{F}_R \;\Bigm|\; 
+  t^{\mathrm{in}}_{f,R} \le t_k \ \wedge\ t^{\mathrm{out}}_{f,R} \ge t_k+W \Bigr\}.
+\end{equation*}
+Definiamo poi l'\emph{occupancy a differenze} come
+\begin{equation*}
+  O_R^{\text{diff}}(k) \coloneqq \sum_{i=0}^k D_R(i),
+  \qquad \text{dove} \qquad
+  D_R(i) \coloneqq \sum_{f \in \mathcal{F}_R} \delta_f(i),
+\end{equation*}
+e la funzione di contributo del singolo volo \(f\) come
+\begin{equation*}
+  \delta_f(i) \coloneqq
+  \begin{cases}
+    +1 & \text{se } i = k_s(f), \\
+    -1 & \text{se } i = k_e(f) + 1, \\
     0  & \text{altrimenti}.
-    \end{cases}
-    \qquad
-    D_R(k)=\sum_{f\in\mathcal{F}_R}\delta_f(k).
-    \]
-    Un \(+1\) “accende” la copertura al primo indice utile, mentre un \(-1\) la “spegne” subito dopo l’ultimo indice coperto; la somma cumulata di questi saldi ricostruisce l’occupancy come:
-    \begin{equation}
-    \label{eq:sum-cum}
-    O_R(k)\;=\;\sum_{i=0}^{k} D_R(i)\,,
-    \end{equation}
-    così che l’intero conteggio si riduce a una cumulata per regione, ordinata per indice di griglia.
-    
-    
-    \paragraph{Esempio.}
+  \end{cases}
+\end{equation*}
+
+Gli indici \(k_s(f)\) e \(k_e(f)\) sono scelti in modo che il volo \(f\) contribuisca esattamente alle finestre che risultano completamente coperte dall'intervallo di permanenza in \(R\), ossia \([t^{\mathrm{in}}_{f,R}, t^{\mathrm{out}}_{f,R}]\).
+
+Perché la finestra \(I_k = [t_k, t_k+W)\) sia interamente contenuta in \([t^{\mathrm{in}}_{f,R}, t^{\mathrm{out}}_{f,R}]\) devono valere le disuguaglianze
+\begin{equation*}
+  t^{\mathrm{in}}_{f,R} \le t_k 
+  \qquad\text{e}\qquad 
+  t_k + W \le t^{\mathrm{out}}_{f,R}.
+\end{equation*}
+Poiché i nodi della griglia sono definiti da
+\begin{equation*}
+  t_k = \tau_0 + k\,\lambda,
+\end{equation*}
+sostituendo otteniamo il sistema
+\begin{equation*}
+  t^{\mathrm{in}}_{f,R} \le \tau_0 + k\,\lambda,
+  \qquad
+  \tau_0 + k\,\lambda + W \le t^{\mathrm{out}}_{f,R}.
+\end{equation*}
+Risolvendo rispetto a \(k\):
+\begin{align*}
+  t^{\mathrm{in}}_{f,R} \le \tau_0 + k\,\lambda 
+  &\iff k \ge \frac{t^{\mathrm{in}}_{f,R} - \tau_0}{\lambda}, \\[0.5em]
+  \tau_0 + k\,\lambda + W \le t^{\mathrm{out}}_{f,R} 
+  &\iff k \le \frac{t^{\mathrm{out}}_{f,R} - W - \tau_0}{\lambda}.
+\end{align*}
+Dunque gli indici interi \(k\) per cui il volo \(f\) copre completamente la finestra \(I_k\) sono esattamente quelli che soddisfano
+\begin{equation*}
+  \frac{t^{\mathrm{in}}_{f,R} - \tau_0}{\lambda} 
+  \;\le\; k \;\le\;
+  \frac{t^{\mathrm{out}}_{f,R} - W - \tau_0}{\lambda}.
+\end{equation*}
+Imponendo che \(k\) sia intero, otteniamo quindi
+\begin{equation*}
+  k_s(f) \coloneqq 
+  \left\lceil \frac{t^{\mathrm{in}}_{f,R} - \tau_0}{\lambda} \right\rceil,
+  \qquad
+  k_e(f) \coloneqq 
+  \left\lfloor \frac{t^{\mathrm{out}}_{f,R} - W - \tau_0}{\lambda} \right\rfloor.
+\end{equation*}
+Se \(k_s(f) > k_e(f)\) l'intervallo \([t^{\mathrm{in}}_{f,R}, t^{\mathrm{out}}_{f,R}]\) non contiene alcuna finestra \(I_k\) per intero e il volo \(f\) non contribuisce ad alcun indice; altrimenti contribuisce per tutti e soli gli indici interi \(k\) tali che \(k_s(f) \le k \le k_e(f)\). Con queste definizioni vale l'identità
+\begin{equation}
+\label{eq:occupancy-equivalence}
+  O_R^{\text{cop}}(k) = O_R^{\text{diff}}(k) 
+  \quad \forall k \ge 0.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Fissiamo una regione $R$ e un indice $k$. Per definizione, $O_R^{\text{cop}}(k)$ è il numero di voli $f$ tali che l’intera finestra
+\[
+I_k = [t_k,\,t_k{+}W)
+\]
+è contenuta nell’intervallo di permanenza del volo in $R$, cioè in
+\[
+[t^{\mathrm{in}}_{f,R},\,t^{\mathrm{out}}_{f,R}] .
+\]
+Questo è equivalente a dire che esistono due indici interi $k_s(f)$ e $k_e(f)$ tali che il volo $f$ copre esattamente le finestre con
+\[
+k_s(f) \le k \le k_e(f),
+\]
+e non copre nessun’altra finestra.  
+In altre parole,
+\[
+O_R^{\text{cop}}(k) 
+= \#\bigl\{\, f \in \mathcal{F}_R \;\bigm|\; k_s(f) \le k \le k_e(f) \bigr\}.
+\]
+Per ogni volo $f$ poniamo
+\[
+  \delta_f(i) \coloneqq
+  \begin{cases}
+    +1 & \text{se } i = k_s(f), \\
+    -1 & \text{se } i = k_e(f) + 1, \\
+    0  & \text{altrimenti},
+  \end{cases}
+\]
+e $D_R(i) = \displaystyle\sum_{f\in \mathcal{F}_R} \delta_f(i)$.  
+L’occupancy a differenze è la somma cumulata:
+\begin{equation*}
+\label{eq:sum-cum}
+  O_R^{\text{diff}}(k) \coloneqq \sum_{i=0}^k D_R(i).
+\end{equation*}
+
+Per capire che cosa stiamo contando, è sufficiente guardare il contributo di un singolo volo $f$.  
+Definiamo
+\[
+S_f(k) \coloneqq \sum_{i=0}^k \delta_f(i).
+\]
+Poiché $\delta_f(i)$ è diverso da zero solo in $i=k_s(f)$ e in $i=k_e(f){+}1$, abbiamo tre casi:
+\begin{itemize}
+  \item se $k < k_s(f)$, non abbiamo ancora sommato il $+1$, quindi $S_f(k)=0$
+  \item se $k_s(f) \le k \le k_e(f)$, abbiamo sommato il $+1$ in $k_s(f)$ ma non ancora il $-1$ in $k_e(f){+}1$, quindi $S_f(k)=1$
+  \item se $k > k_e(f)$, nella somma sono entrati sia il $+1$ (in $k_s(f)$) sia il $-1$ (in $k_e(f){+}1$), che si annullano, quindi $S_f(k)=0$
+\end{itemize}
+
+Dunque $S_f(k)$ è semplicemente la funzione indicatrice del fatto che il volo $f$ copre la finestra $I_k$:
+\[
+S_f(k) =
+\begin{cases}
+1 & \text{se } k_s(f) \le k \le k_e(f),\\
+0 & \text{altrimenti}.
+\end{cases}
+\]
+\medskip
+Osserviamo ora che, per definizione di $D_R(i)$,
+\[
+  D_R(i) = \sum_{f\in\mathcal{F}_R} \delta_f(i).
+\]
+Sommando fino all’indice $k$ otteniamo
+\[
+  O_R^{\text{diff}}(k)
+  = \sum_{i=0}^k D_R(i)
+  = \sum_{i=0}^k \sum_{f\in\mathcal{F}_R} \delta_f(i)
+  = \sum_{f\in\mathcal{F}_R} \underbrace{\sum_{i=0}^k \delta_f(i)}_{S_f(k)}.
+\]
+Dunque
+\[
+  O_R^{\text{diff}}(k) = \sum_{f\in\mathcal{F}_R} S_f(k).
+\]
+
+Ma abbiamo appena visto che $S_f(k)$ vale $1$ se e solo se il volo $f$ copre la finestra $I_k$
+(ossia se $k_s(f) \le k \le k_e(f)$), e vale $0$ altrimenti.
+Quindi la somma
+\[
+  \sum_{f\in\mathcal{F}_R} S_f(k)
+\]
+non è altro che il numero di voli che coprono la finestra $I_k$, cioè
+\[
+  O_R^{\text{diff}}(k)
+  = \#\bigl\{\, f \in \mathcal{F}_R \;\bigm|\; k_s(f) \le k \le k_e(f) \bigr\}.
+\]
+Confrontando con l’espressione trovata all’inizio per $O_R^{\text{cop}}(k)$ si ottiene, per ogni $k$,
+\[
+  O_R^{\text{cop}}(k) = O_R^{\text{diff}}(k),
+\]
+cioè l’identità~\eqref{eq:occupancy-equivalence}.
+\end{proof}
+
+
+
+ \paragraph{Esempio.}
 Consideriamo l'intervallo \([0,100]\) e, per semplicità, poniamo \(W=\lambda=10\).
 Le finestre semi–aperte sono \(I_k=[t_k,t_k{+}10)\) con \(t_k=k\cdot10\) e \(k=0,\dots,9\).
 I voli (intervalli di permanenza in \(R\)) sono:
@@ -192,7 +351,7 @@ D(k)=\sum_f \delta_f(k) & 0&0&{+}1&{+}1&{-}1&{+}1&{-}1&0&{-}1&0
 
 \medskip
 \noindent\emph{Passo 3: somma cumulata.}
-L'occupancy è la somma cumulata~\eqref{eq:sum-cum}:
+L'occupancy è la somma cumulata:
 \[
 \begin{array}{c|cccccccccc}
 k & 0&1&2&3&4&5&6&7&8&9\\\hline
@@ -202,9 +361,28 @@ O(k) & 0&0&1&2&1&2&1&1&0&0
 
 
 \clearpage
-\section{Implementazione}
+\section{Progettazione degli algoritmi di calcolo delle metriche}
+In questa sezione si descrive la progettazione degli algoritmi che permettono di calcolare le serie temporali di \emph{throughput} e \emph{occupancy} per ciascuna regione.  
+Gli algoritmi sono presentati come pseudocodice e costituiscono il riferimento concettuale per l'implementazione software sviluppata successivamente.
+
 \subsection{Throughput}
-\label{subsec:throughput-impl}
+\label{sec:progettazione-metriche}
+Dal punto di vista algoritmico, il calcolo del \emph{throughput} introdotto in Sezione~\ref{subsec:throughput-teoria} parte da una tabella di eventi \(E\), in cui ogni riga rappresenta l’ingresso di un volo in una regione \(R\) al tempo \(t^{\mathrm{in}}_{f,R}\).  
+L’obiettivo è ottenere, per ogni regione e per ogni finestra temporale \(I_k = [t_k, t_k+W)\) della griglia \(\mathcal{T}\), il numero di ingressi che cadono all’interno di \(I_k\).
+
+Per evitare di scorrere tutti gli eventi per ogni finestra (approccio inefficiente su grandi volumi di dati), si sfrutta l’identità della Proposizione~\ref{prop:two-cumulatives}, che esprime il throughput come differenza di due valori di una funzione cumulata \(N_R(t)\), dove \(N_R(t)\) è il numero di ingressi avvenuti in \(R\) prima dell’istante \(t\). In particolare,
+\[
+  T_R(k) \;=\; N_R(t_k{+}W) - N_R(t_k),
+\]
+così che per ogni finestra siano sufficienti due sole valutazioni della cumulata.
+L’Algoritmo~\ref{alg:throughput-anyW-naturale} traduce questa idea come segue.  
+Anzitutto costruisce la griglia temporale tra \(\tau_0\) e \(\tau_1\) con passo \(\lambda\), determinando il numero di nodi \(K\) e quindi le finestre \(I_k\) (riga~1).  
+Successivamente filtra gli eventi, conservando soltanto gli ingressi con tempo in \([\tau_0,\,\tau_1{+}W)\), così da coprire anche le finestre che iniziano vicino al bordo superiore dell’orizzonte (riga~2), e per ogni regione \(R\) aggrega gli eventi che condividono lo stesso timestamp \(t\), ottenendo i conteggi elementari \(n_R(t)\) (riga~3).  
+Su questa base, per ciascuna regione costruisce la funzione cumulata “stretta” \(N_R(t)\), che per ogni istante \(t\) restituisce quanti ingressi sono già avvenuti prima di \(t\) (riga~4).  
+Infine, per ogni regione e per ogni finestra \(I_k\), valuta i valori della cumulata al bordo sinistro e al bordo destro e calcola il throughput come differenza (righe~7–9), producendo la tabella di output \(T\) ordinata per \((R,t_k)\).
+
+Questo schema è indipendente dalla tecnologia utilizzata e si presta a un’implementazione vettoriale sulle strutture tabellari del dataset, riducendo il costo computazionale rispetto a una scansione finestra per finestra degli eventi grezzi.
+\clearpage
 
 \begin{algorithm}[ht]
   \caption{Throughput per regione.}
@@ -235,6 +413,19 @@ O(k) & 0&0&1&2&1&2&1&1&0&0
 \clearpage
 \subsection{Occupancy}
 \label{subsec:occupancy-impl}
+Dal punto di vista algoritmico, il calcolo dell’\emph{occupancy} introdotto in Sezione~\ref{subsec:occupancy-teoria} parte da una tabella di attraversamenti \(D\), in cui ogni riga rappresenta un volo \(f\) che entra in una regione \(R\) al tempo \(t^{\mathrm{in}}_{f,R}\) ed esce al tempo \(t^{\mathrm{out}}_{f,R}\).  
+L’obiettivo è determinare, per ogni regione e per ogni finestra temporale \(I_k = [t_k, t_k+W)\) della griglia \(\mathcal{T}\), il valore \(O_R(k)\) che conta i voli presenti in \(R\) per l’intera durata della finestra. 
+L’algoritmo lavora sugli indici discreti della griglia. Per ogni volo filtrato determina:
+\begin{itemize}
+  \item l’indice \(k_s\) della prima finestra che il volo contribuisce a occupare
+  \item l’indice \(k_e\) dell’ultima finestra da considerare
+\end{itemize}
+Invece di aggiornare direttamente \(O_R(k)\) per tutti gli indici \(k_s \le k \le k_e\), registra soltanto due variazioni: un incremento che fa crescere l’occupancy a partire da \(k_s\), e un decremento che la fa diminuire dopo l’ultima finestra influenzata dal volo.  
+Aggregando queste variazioni per coppia \((R,k)\) si ottiene, per ciascuna regione, un array di differenze \(D_R(k)\); calcolandone la somma cumulata rispetto a \(k\) si ricostruiscono i valori \(O_R(k)\).
+
+L’Algoritmo~\ref{alg:occupancy-anyW-diff} implementa questo schema: prepara la griglia temporale e filtra i voli che non possono contribuire ad alcuna finestra dell’orizzonte considerato (righe~1–2), costruisce l’array di differenze aggiungendo per ogni volo gli eventi di ingresso e uscita (righe~4–10), aggrega le variazioni per regione e indice \(k\) (righe~11–12) e, infine, per ciascuna regione, scorre gli indici in ordine crescente accumulando le differenze per ottenere l’occupancy \(O_R(k)\) e popolare la tabella di output \(O\) (righe~14–20).
+\clearpage
+
 \begin{algorithm}[H]
   \caption{Occupancy per regione.}
   \label{alg:occupancy-anyW-diff}
