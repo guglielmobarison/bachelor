@@ -14,6 +14,7 @@
 % (inputenc)                not set up for use with LaTeX.
 % …
 % l.56 ...ntnoidxglossary[type=main,title=Glossario]
+
 \usepackage{etoolbox}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta}
@@ -42,6 +43,8 @@
   rombo/.style={diamond, draw=black, fill=black, minimum size=6pt, inner sep=0pt},
   note/.style={draw, fill=white, rounded corners=2pt, font=\scriptsize, inner sep=2pt}
 }
+
+
 
 \usepackage{xcolor}
 \definecolor{pyBg}{RGB}{250,250,250}
@@ -262,6 +265,21 @@
 \fi
 \RequirePackage{caption}
 \RequirePackage{subcaption}
+\RequirePackage{listings}
+
+
+\lstset{
+language=Python,
+basicstyle=\small\sffamily,
+numbers=left,
+numberstyle=\tiny,
+frame=tb,
+columns=fullflexible,
+showstringspaces=false
+}
+
+
+
 
 \RequirePackage{longtable}
 \RequirePackage{color}
@@ -354,13 +372,6 @@
 \algtext*{EndIndent}
 
 
-% --- Traduzioni per listings ---
-\AtBeginDocument{%
-  \renewcommand{\lstlistingname}{Codice}% oppure "Codice"
-  \renewcommand{\lstlistlistingname}{Elenco dei codici}% oppure "Elenco dei codici"
-  \captionsetup[lstlisting]{name=\lstlistingname}
-}
-
 % Change the default captions font
 \if@smallcaptions
     \def\captionfont{\small}
@@ -400,53 +411,13 @@
 \makeatother
 
 \RequirePackage{boxedminipage}
-\RequirePackage{listings}
+%\RequirePackage{listings}
 \RequirePackage{minitoc}
 \RequirePackage{ifpdf}
 \RequirePackage{nomencl}
 
 \usepackage{courier}
-\lstset{
-    basicstyle=\footnotesize\ttfamily, % Default font
-    numbers=left,              % Location of line numbers
-    numberstyle=\tiny,          % Style of line numbers
-    % stepnumber=2,              % Margin between line numbers
-    numbersep=5pt,              % Margin between line numbers and text
-    tabsize=2,                  % Size of tabs
-    extendedchars=true,
-    breaklines=true,            % Lines will be wrapped
-    keywordstyle=\color{red},
-    frame=b,
-    % keywordstyle=[1]\textbf,
-    % keywordstyle=[2]\textbf,
-    % keywordstyle=[3]\textbf,
-    % keywordstyle=[4]\textbf,   \sqrt{\sqrt{}}
-    stringstyle=\color{white}\ttfamily, % Color of strings
-    showspaces=false,
-    showtabs=false,
-    xleftmargin=17pt,
-    framexleftmargin=17pt,
-    framexrightmargin=5pt,
-    framexbottommargin=4pt,
-    % backgroundcolor=\color{lightgray},
-    showstringspaces=false
-}
-\lstloadlanguages{ % Check documentation for further languages ...
-     % [Visual]Basic,
-     % Pascal,
-     % C,
-     % C++,
-     % XML,
-     % HTML,
-     Python
-}
-% \DeclareCaptionFont{blue}{\color{blue}} 
 
-% \captionsetup[lstlisting]{singlelinecheck=false, labelfont={blue}, textfont={blue}}
-\usepackage{caption}
-\DeclareCaptionFont{white}{\color{white}}
-\DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
-\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
 
 \makenomenclature
 
@@ -463,7 +434,7 @@
 \RequirePackage{makeidx}
 \makeindex
 
-\RequirePackage[acronym,toc,numberedsection=autolabel]{glossaries}
+\RequirePackage[toc,numberedsection=autolabel]{glossaries}
 \renewcommand*{\glsautoprefix}{gl:}
 
 % 1) Registra la chiave addizionale “glossterm”
@@ -490,6 +461,10 @@
   \GlsUseAcrStyleDefs{long-short}%
 }
 \setacronymstyle{linkmain}
+% P NEI NUMERI GLOSSARIO
+\renewcommand{\glossaryentrynumbers}[1]{%
+  \hspace{1em}p.~#1%
+}
 
 \newcommand{\newdualentry}[4]{%
   \newglossaryentry{#1@main}{%
@@ -499,6 +474,13 @@
    \newacronym[%
     glossterm   = {#1@main}
   ]{#1}{#2}{#3}%
+}
+
+\renewcommand{\newdualentry}[4]{%
+  \newglossaryentry{#1}{%
+    name        = {#2},%
+    description = {(#3). #4}%  % Forma estesa in corsivo + descrizione
+  }%
 }
 
 \makeatletter

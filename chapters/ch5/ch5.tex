@@ -100,6 +100,19 @@ Sommarne semplicemente le capacità porterebbe a valori irrealistici, perché il
 
 Sia dunque \(G\) un pseudo-settore collassato costituito da un insieme di pseudo-settori elementari \(\{E\}_{E \in G}\) per i quali è già stata calcolata la capacità \(C_E\) secondo l’Algoritmo~\ref{alg:cap-elementare-naturale}. Nel caso di \(G\) si procede nel modo seguente: si assume come riferimento iniziale la capacità massima tra quelle dei pseudo-settori elementari che lo compongono. Per ciascun ulteriore componente si incrementa tale valore di una percentuale prefissata. Infine si impone un limite superiore globale, espresso come percentuale rispetto alla base, in modo da evitare che pseudo-settori collassati molto estesi producano capacità eccessivamente elevate.
     
+    \begin{algorithm}[H]
+      \caption{Capacità di un pseudo-settore collassato.}
+      \label{alg:cap-collassato-naturale}
+      \begin{algorithmic}[1]
+      
+        \Require Pseudo-settore collassato $G$; capacità pseudo-settori elementari $\{C_E\}_{E \in G}$.
+        \Ensure Capacità $C_G$ per il pseudo-settore collassato $G$.
+        \State Prendi il massimo tra le capacità dei componenti di $G$; questo è il riferimento iniziale.
+        \State Aumenta la base di una percentuale prefissata (ad es.\ 10\%) per ciascun altro componente del pseudo-settore collassato, cioè per ogni pseudo-settore elementare oltre quello che determina il massimo.
+        \State Se è definito un upper bound complessivo (ad es.\ non oltre il 50\% rispetto alla base), non superarlo.
+        \State Arrotonda il valore finale all’intero più vicino. Il risultato è la capacità del pseudo-settore collassato $C_G$.
+      \end{algorithmic}
+    \end{algorithm}
 \subsection{Osservazioni sulla scelta delle soglie}
 \label{subsec:cap-discussione}
 
@@ -112,8 +125,30 @@ Le scelte numeriche adottate seguono l’impostazione proposta in \cite{galeazzo
 \clearpage
 \section{Generazione configurazioni di pseudo-settori collassati}
 \label{subsec:algo-collassati}
-L'algoritmo genera una configurazione di pseudo-settori collassati applicando una \gls{dfs} modificata all'insieme dei pseudo-settori elementari.
+L'algoritmo genera configurazioni di pseudo-settori collassati attraverso un processo di aggregazione dei pseudo-settori elementari. Consiste in una visita \gls{dfs} modificata che esplora le relazioni di vicinato spaziale tra i poligoni, combinando gradualmente quelli compatibili secondo specifici criteri.
+La fase iniziale prevede una preparazione delle geometrie: per ogni \gls{fir}, i vertici del poligono vengono ordinati e, se necessario, si applica una correzione per garantire la chiusura della geometria. Ciascun poligono così ottenuto viene associato al proprio intervallo verticale di quote e marcato come non visitato.
+L'algoritmo si sviluppa attraverso cicli di esplorazione che partono da poligoni non visitati. Per ciascuno di essi:
+\DisablePunct
+\begin{enumerate}
+	\item Si crea un gruppo temporaneo contenente inizialmente solo il poligono corrente
+	\item Mediante uno stack si esplorano ricorsivamente i vicini non visitati
+	\item Per ogni poligono adiacente:
+	\begin{enumerate}
+		\item Si verifica la sovrapposizione degli intervalli di quota
+		\item Se esiste compatibilità verticale, si decide probabilisticamente l'inclusione nel gruppo corrente
+	\end{enumerate}
+	\item La probabilità di inclusione \(p(|G|)\) diminuisce all'aumentare della dimensione del gruppo, favorendo così aggregati di dimensioni contenute
+	\item Il processo termina quando si esauriscono i vicini compatibili o si raggiunge la dimensione massima  
+\end{enumerate}
+\EnablePunct
+Al termine di ciascun ciclo, tutti i poligoni del gruppo vengono fusi in un'unica geometria poligonale attraverso un'operazione di unione.
 
+La probabilità di inclusione \(p(|G|)\) decresce linearmente con la dimensione attuale del gruppo secondo:
+\[
+p(|G|) = \frac{N_{\text{max}} - |G| + 1}{N_{\text{max}} + 1}
+\]
+La probabilità diminuisce perché a gruppi piccoli serve forte spinta all'espansione, mentre a gruppi grandi serve controllo per prevenire aggregati eccessivi. La decrescita bilancia automaticamente queste due esigenze: alta probabilità iniziale (\(p \approx 1\) per \(|G|=1\)) favorisce crescita rapida, bassa probabilità finale (\(p \approx 0\) per \(|G|=N_{\max}\)) frena l'espansione
+Ogni nuovo elemento incluso riduce \(p\) di un valore costante \(\Delta p = \frac{1}{N_{\max}+1}\). Alternativi non lineari (es. esponenziali) introdurrebbero comportamenti bruschi o parametri aggiuntivi senza vantaggi pratici, mentre la linearità offre il miglior compromesso tra semplicità computazionale ed efficacia operativa.
     \begin{algorithm}[H]
       \caption{Generazione configurazione di pseudo-settori collassati.}
       \label{alg:collasso-dfs-prob}
@@ -159,16 +194,8 @@ L'algoritmo genera una configurazione di pseudo-settori collassati applicando un
         \EndFor
         \end{algorithmic}
     \end{algorithm}
+    \clearpage
     
-\subsection{Logica probabilistica}
-La probabilità di inclusione \(p\) decresce linearmente con la dimensione attuale del gruppo \(|G|\), secondo la relazione
-\[
-p(|G|) = \frac{N_{\text{max}} - |G| + 1}{N_{\text{max}} + 1}
-\]
-
-\paragraph{Proprietà utili.}
-All’inizio (\(|G|=1\)) la probabilità è molto alta, mentre al raggiungimento di \(N_{\max}\) è piccola: questo garantisce una spinta iniziale e un freno naturale verso la fine. La discesa è a passo costante: ogni nuova inclusione riduce \(p\) della stessa quantità. Inoltre \(p\) è monotona decrescente e quindi: man mano che \(|G|\) cresce l’inclusione diventa via via meno probabile, l’esplorazione tende a fermarsi spontaneamente.
-
     \begin{figure}[H]
       \centering
       \begin{subfigure}[t]{0.49\linewidth}

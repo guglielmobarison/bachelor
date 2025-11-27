@@ -1,1 +1,457 @@
-prova
+Nei capitoli precedenti sono stati introdotti il modello temporale e le metriche di traffico, la costruzione delle porzioni di spazio aereo e dei pseudo-settori collassati, la definizione delle capacità nominali e la formulazione del problema de \gls{dac} come modello di programmazione lineare intera.  
+In questo capitolo si passa dal piano teorico a quello realizzativo, descrivendo come le procedure progettate siano state effettivamente implementate in un prototipo software basato su \gls{python}.  
+L’obiettivo non è fornire una documentazione esaustiva del codice, ma chiarire le scelte progettuali, le librerie utilizzate e l’organizzazione complessiva della pipeline, mostrando in che modo le competenze informatiche sono state applicate al caso di studio.
+\section{Ambiente di sviluppo e strumenti}
+In questa sezione si descrive l'ambiente di sviluppo e l'insieme di strumenti software utilizzati per costruire la pipeline di elaborazione dei dati \gls{adrr} e il prototipo di risolutore per il problema di \gls{dac}.  
+
+Le attività sono state svolte prevalentemente in ambiente \gls{python} su workstation personale. Tutti gli strumenti convergono in un unico progetto software organizzato come applicazione a riga di comando, per facilitare la riproducibilità degli esperimenti descritti nelle sezioni successive.
+
+\subsection{Linguaggio e versione di Python}
+
+L'intero progetto è stato sviluppato in \gls{python}~3.13, eseguito all'interno di ambienti virtuali dedicati per isolare le dipendenze e garantire la riproducibilità.
+
+La scelta di \gls{python} è motivata dal fatto che offre un ecosistema maturo per l'elaborazione di dati tabellari (in particolare tramite \texttt{pandas} e \texttt{Dask}), mette a disposizione interfacce native verso solutori di ottimizzazione (ad esempio \texttt{DOcplex} per \gls{cplex}) e supporta librerie geospaziali come \texttt{GeoPandas} e \texttt{Shapely}. Alternative come R o MATLAB sono state considerate solo a livello concettuale e non adottate, perché avrebbero richiesto integrazioni separate per ottimizzazione, geografia e gestione di grandi volumi di dati, frammentando lo stack tecnologico.
+
+\subsection{Stack per l'elaborazione dei dati}
+
+Per la manipolazione dei dati tabellari e delle tabelle derivate da \gls{adrr} si è fatto uso congiunto di \texttt{pandas} e \texttt{Dask DataFrame}. La prima libreria viene utilizzata come strumento principale per filtrare, aggregare e unire i \texttt{DataFrame} che rappresentano profili di volo, attraversamenti di regioni e metriche; la seconda entra in gioco nei passaggi più pesanti (caricamento di interi mesi campione, calcolo delle metriche su orizzonti estesi), sfruttando il parallelismo e la valutazione \emph{lazy} su partizioni multiple, mantenendo un'API molto simile a quella di \texttt{pandas}.
+
+I rilasci \gls{adrr} sono disponibili in formato CSV compresso, che costituisce il formato di input obbligato. Per i risultati intermedi sono stati invece adottati file \texttt{Parquet}, che offrono una lettura più efficiente, una migliore compressione e un'integrazione diretta con \texttt{pandas} e \texttt{Dask}. Non è stato introdotto un \gls{dbms} relazionale: l'onere di modellazione e caricamento non sarebbe stato compensato, nel contesto dello stage, da vantaggi concreti rispetto a una pipeline basata su file e prevalentemente \emph{read--only}.
+
+\subsection{Librerie geospaziali}
+
+La costruzione delle porzioni di spazio aereo e dei settori collassati richiede la gestione di geometrie poligonali e di relazioni topologiche tra regioni. Questo compito è affidato alla combinazione di \texttt{GeoPandas} e \texttt{Shapely}. \texttt{GeoPandas} consente di rappresentare le regioni come \texttt{GeoDataFrame} facilitando lettura, trasformazione e integrazione con i dati tabellari. \texttt{Shapely} fornisce le primitive geometriche di base (intersezioni, unioni, differenze, calcolo di aree e adiacenze) utilizzate, ad esempio, per derivare le porzioni dallo spazio aereo di partenza e per verificare l'adiacenza tra regioni.
+
+\subsection{Strumenti per l'ottimizzazione}
+
+La componente del \gls{dac} è stata modellata come problema di programmazione lineare intera e risolta tramite \gls{cplex}, accessibile da \gls{python} attraverso la libreria \texttt{DOcplex}. Questa combinazione permette di esprimere variabili, vincoli e funzione obiettivo con un'API vicina alla notazione matematica. Solutori open source sarebbero stati alternative possibili, ma \gls{cplex} è stato preferito per prestazioni, disponibilità di licenza accademica e integrazione consolidata nel contesto di ricerca in cui si è svolto lo stage.
+
+\subsection{Gestione del codice e documentazione}
+
+Il codice è versionato con \gls{git}, che ha permesso di tracciare l'evoluzione delle scelte progettuali, mantenere rami dedicati a esperimenti o refactoring più invasivi.
+
+L'elaborato è redatto in \LaTeX, utilizzando una classe personalizzata che integra la gestione del glossario e degli acronimi, le impostazioni per la conformità PDF/A e alcune macro dedicate per figure, algoritmi e listati di codice.
+
+\clearpage
+\section{Implementazione}
+In questa sezione si descrive come gli schemi algoritmici introdotti nei capitoli precedenti per il calcolo del \emph{throughput}, dell'\emph{occupancy}, delle capacità nominali dei pseudo-settori e della generazione delle configurazioni di pseudo-settori collassati siano stati tradotti in codice \gls{python}.  
+\subsection{Throughput}
+La funzione \texttt{compute} implementa l'algoritmo per calcolare il throughput (vedi Algoritmo~\ref{alg:throughput-anyW-naturale}) di eventi in una determinata regione temporale. Questa funzione è parte del modulo \texttt{throughput} e utilizza strutture tabellari e strumenti di manipolazione dei dati per ottenere il risultato desiderato.
+
+La funzione accetta diversi parametri, tra cui un DataFrame di eventi \texttt{E}, un timestamp di inizio \texttt{tau0}, un timestamp di fine \texttt{tau1}, un intervallo di tempo \texttt{Lambda}, una finestra di tempo \texttt{W}, e altre opzioni. Questi parametri corrispondono agli oggetti matematici utilizzati nell'algoritmo originale.
+
+\begin{lstlisting}[language=Python, caption={}]
+def compute(
+    E: dd.DataFrame,
+    *,
+    R_col: str,
+    tau0: pd.Timestamp,
+    tau1: pd.Timestamp,
+    Lambda: pd.Timedelta,
+    W: pd.Timedelta,
+    t_in_col: str = "Entry Time",
+    expected_keys: Optional[List[str]] = None,
+) -> pd.DataFrame:
+\end{lstlisting}
+
+Il primo passo consiste nel preparare la griglia temporale. Questa griglia è determinata dai parametri \texttt{tau0}, \texttt{tau1} e \texttt{Lambda}, che definiscono l'intervallo di tempo e la granularità della griglia. La funzione \texttt{grid\_params} viene utilizzata per calcolare il numero di intervalli \texttt{K} tra \texttt{tau0} e \texttt{tau1}. Questo è essenziale per suddividere il periodo di interesse in intervalli gestibili e uniformi, che faciliteranno il calcolo del throughput per ciascuna finestra temporale.
+
+\begin{lstlisting}[language=Python, caption={}]
+t0, t1, Lambda_td, W_td, K, _m = grid_params(
+    tau0, tau1, Lambda, str(W)
+)
+\end{lstlisting}
+
+Successivamente, vengono filtrati gli eventi per conservare solo quelli che cadono nell'intervallo di tempo specificato. Questo è necessario per assicurarsi che stiamo considerando solo gli eventi rilevanti per il nostro calcolo del throughput. Il filtraggio degli eventi riduce il set di dati a quelli che sono effettivamente necessari per il calcolo, migliorando l'efficienza e la precisione del risultato.
+
+\begin{lstlisting}[language=Python, caption={}]
+E_filtered = E[[R_col, t_in_col]]
+E_filtered = E_filtered[
+    (E_filtered[t_in_col] >= t0) &
+    (E_filtered[t_in_col] <  t1 + W_td)
+]
+\end{lstlisting}
+
+Per ogni coppia di regione e timestamp, viene calcolato il numero di ingressi avvenuti esattamente in quel momento. Questo ci permette di avere una visione chiara di quanti eventi stanno accadendo in ogni regione a ogni istante di tempo. Il conteggio degli eventi è un passaggio fondamentale perché fornisce la base per il calcolo delle cumulate e, successivamente, del throughput.
+
+\begin{lstlisting}[language=Python, caption={}]
+grp = (
+    E_filtered.groupby([R_col, t_in_col], observed=False)
+    .size()
+    .rename("n_R")  # Conteggio n_R(t)
+    .reset_index()
+)
+events_counted = grp.compute()
+\end{lstlisting}
+
+La cumulata stretta viene costruita ordinando gli eventi per tempo e accumulando i conteggi. Questo ci dà una misura di quanti eventi sono avvenuti prima di un certo timestamp, esclusi gli eventi al timestamp stesso. La cumulata stretta è importante perché ci permette di considerare solo gli eventi che sono avvenuti strettamente prima di un certo tempo, evitando così di contare eventi che cadono esattamente sul bordo della finestra temporale.
+
+\begin{lstlisting}[language=Python, caption={}]
+events_counted[R_col] = events_counted[R_col].astype("object")
+events_counted = events_counted.sort_values(t_in_col).reset_index(drop=True)
+events_counted["N_R"] = events_counted.groupby(
+    R_col, sort=False, observed=False
+)["n_R"].cumsum()
+\end{lstlisting}
+
+Si costruisce quindi una griglia completa con tutte le combinazioni di regione e timestamp. Questa griglia serve come base per il calcolo del throughput, permettendo di valutare tutte le finestre temporali di interesse. La griglia di output è essenziale per garantire che ogni finestra temporale e ogni regione siano considerate nel calcolo del throughput, assicurando così una copertura completa.
+\clearpage
+\begin{lstlisting}[language=Python, caption={}]
+t0, t1, Lambda_td, W_td, K, _m = grid_params(
+    tau0, tau1, Lambda, str(W)
+)
+\end{lstlisting}
+
+Per ogni finestra temporale, vengono valutate le cumulate ai bordi sinistro e destro. Questo viene fatto utilizzando operazioni di merge, che permettono di calcolare rapidamente il numero di eventi in ogni finestra. La valutazione delle cumulate ai bordi è cruciale perché permette di determinare il numero di eventi che si verificano all'interno di ogni finestra temporale, che è esattamente ciò che il throughput intende misurare.
+
+\begin{lstlisting}[language=Python, caption={}]
+# Tabelle ordinate per merge_asof
+events_renamed = (
+    events_counted.rename(columns={t_in_col: "time"})
+    .sort_values("time")
+    .reset_index(drop=True)
+)
+
+# N_R(t_k) con soglia stretta (< t_k)
+left_df = base_grid.rename(columns={"t_k": "q_time"})[[R_col, "q_time", "idx"]]
+left_df = left_df.sort_values("q_time").reset_index(drop=True)
+left_merged = pd.merge_asof(
+    left_df, events_renamed,
+    left_on="q_time", right_on="time",
+    by=R_col, direction="backward",
+    allow_exact_matches=False,  # soglia stretta
+).sort_values("idx").reset_index(drop=True)
+
+# N_R(t_k + W) con soglia stretta (< t_k+W)
+right_df = base_grid.assign(q_time=base_grid["t_k"] + W_td)[[R_col, "q_time", "idx"]]
+right_df = right_df.sort_values("q_time").reset_index(drop=True)
+right_merged = pd.merge_asof(
+    right_df, events_renamed,
+    left_on="q_time", right_on="time",
+    by=R_col, direction="backward",
+    allow_exact_matches=False,
+).sort_values("idx").reset_index(drop=True)
+\end{lstlisting}
+
+Il throughput viene quindi calcolato come la differenza tra le cumulate ai bordi destro e sinistro di ogni finestra. Questo ci dà una misura del numero di eventi che si verificano in ogni finestra temporale. 
+
+\clearpage
+\begin{lstlisting}[language=Python, caption={}]
+# T_R(k) = N_R(t_k+W) - N_R(t_k)
+N_R_at_tk        = left_merged["N_R"].fillna(0).to_numpy(dtype=np.int64)
+N_R_at_tk_plus_W = right_merged["N_R"].fillna(0).to_numpy(dtype=np.int64)
+T_R = N_R_at_tk_plus_W - N_R_at_tk
+\end{lstlisting}
+
+Infine, viene costruito il DataFrame di output, che contiene le informazioni sul throughput per ogni regione e finestra temporale. Questo DataFrame è ordinato per regione e timestamp, rendendo facile l'analisi dei risultati.
+\begin{lstlisting}[language=Python, caption={}]
+T_output = base_grid.drop(columns=["idx"]).copy()
+T_output["t_k_plus_W"] = T_output["t_k"] + W_td
+T_output["T_R"] = T_R
+return T_output[[R_col, "t_k", "t_k_plus_W", "T_R"]]
+\end{lstlisting}
+
+Il risultato è una tabella con righe \((R, t_k, t_k{+}W, T_R(k))\) ordinate per regione e tempo, esattamente come previsto dalla specifica dell'algoritmo.
+
+
+\subsection{Occupancy}
+La funzione \texttt{compute} implementa l'algoritmo per calcolare l'occupancy (vedi Algoritmo~\ref{alg:occupancy-anyW-diff}) di eventi in una determinata regione temporale. Questa funzione è parte del modulo \texttt{occupancy} e utilizza strutture tabellari e strumenti di manipolazione dei dati per ottenere il risultato desiderato.
+La funzione accetta diversi parametri, tra cui un DataFrame di eventi \texttt{E}, un timestamp di inizio \texttt{tau0}, un timestamp di fine \texttt{tau1}, un intervallo di tempo \texttt{Delta}, una finestra di tempo \texttt{W}, e altre opzioni. Questi parametri corrispondono agli oggetti matematici utilizzati nell'algoritmo originale.
+\begin{lstlisting}[language=Python, caption={}]
+def compute(
+    E: dd.DataFrame,
+    *,
+    key_col: str,
+    tau0: pd.Timestamp,
+    tau1: pd.Timestamp,
+    Delta: pd.Timedelta,
+    W: pd.Timedelta,
+    t_in: str = "Entry Time",
+    t_out: str = "Exit Time",
+) -> pd.DataFrame:
+\end{lstlisting}
+Una volta preparata la griglia temporale e filtrati gli eventi, come descritto nella sezione del throughput, il calcolo dell'occupancy procede con il calcolo degli indici \texttt{k\_start} e \texttt{k\_end}.
+\clearpage
+\begin{lstlisting}[language=Python, caption={}]
+k_start = ceil((t_in - t0)/Delta)
+k_end = floor((t_out - W - t0)/Delta) 
+\end{lstlisting}
+Si costruiscono quindi due DataFrame per rappresentare gli eventi di ingresso e uscita. Ogni evento di ingresso corrisponde a un aumento di 1 nell'occupancy, mentre ogni evento di uscita corrisponde a una diminuzione di 1. Questi eventi vengono quindi aggregati per calcolare le differenze cumulative.
+\begin{lstlisting}[language=Python, caption={}]
+e1 = dfv[[key_col, "k_start"]].rename(columns={"k_start": "k"})
+e1["delta"] = 1
+e2 = dfv[[key_col, "k_end"]].rename(columns={"k_end": "k"})
+e2["k"] = e2["k"] + 1
+e2["delta"] = -1
+edges_dd = dd.concat([e1, e2], axis=0)
+edges_dd = edges_dd[(edges_dd["k"] >= 0) & (edges_dd["k"] < K)]
+\end{lstlisting}
+Infine, viene calcolata l'occupancy come la somma cumulativa delle differenze per ogni regione e timestamp. Questo ci dà una misura dell'occupancy in ogni finestra temporale.
+\begin{lstlisting}[language=Python, caption={}]
+base = base.merge(edges, how="left", on=[key_col, "k"]).fillna({"delta": 0})
+base = base.sort_values([key_col, "k"]).reset_index(drop=True)
+base["O_R"] = base.groupby(key_col, sort=False)["delta"].cumsum().astype("int64")
+base["t_k"] = np.tile(tks.to_numpy(), len(Rs))
+base["t_k_plus_W"] = base["t_k"] + W
+return base[[key_col, "t_k", "t_k_plus_W", "O_R"]]
+\end{lstlisting}
+Il risultato è una tabella con righe \((R, t_k, t_k{+}W, O_R(k))\)
+  ordinate per regione e tempo, esattamente come previsto dalla specifica dell'algoritmo.
+\clearpage
+\section{Calcolo delle capacità}
+L'implementazione delle capacità nominali per i pseudo-settori elementari e collassati segue gli schemi algoritmici descritti negli Algoritmi~\ref{alg:cap-elementare-naturale} e~\ref{alg:cap-collassato-naturale}. La funzione principale opera su dati di \emph{throughput} precalcolati implementando i seguenti passaggi:
+\begin{lstlisting}[language=Python, caption={}]
+df_throughput = pd.read_parquet(throughput_parquet_path)
+df_throughput["t_k"] = pd.to_datetime(df_throughput["t_k"], utc=True)
+
+day_start = pd.Timestamp(day, tz="UTC")
+day_end = day_start + pd.Timedelta(days=1)
+df_day = df_throughput[(df_throughput["t_k"] >= day_start) & 
+                       (df_throughput["t_k"] < day_end)]
+\end{lstlisting}
+Il dataset viene letto dal percorso Parquet specificato, con conversione esplicita dei timestamp in formato UTC per garantire consistenza temporale. Il filtraggio giornaliero isola esclusivamente le osservazioni rilevanti per l'analisi.
+\begin{lstlisting}[language=Python, caption={}]
+capacities = {}
+for region_id, group in df_day.groupby("R"):
+    counts = group["T_R"]
+    counts = counts[counts != 0]  # Rimozione zeri
+    
+    if counts.empty:
+        capacities[region_id] = npr.uniform(threshold * 0.5, threshold * 1.5)
+        continue
+    
+    p10 = counts.quantile(0.10)
+    p90 = counts.quantile(0.90)
+    filtered_counts = counts[(counts >= p10) & (counts <= p90)]
+    
+    filtered_counts = filtered_counts[filtered_counts >= threshold]
+    if filtered_counts.empty:
+        capacities[region_id] = npr.uniform(threshold * 0.5, threshold * 1.5)
+        continue
+\end{lstlisting}
+Per ogni regione, si applica una sequenza di filtri statistici: eliminazione dei valori nulli, selezione del range interquartile e scarto dei valori sotto la soglia minima configurabile. 
+\clearpage
+\begin{lstlisting}[language=Python, caption={Calcolo capacità base}]
+    sorted_counts = filtered_counts.sort_values()
+    num_top = max(1, int(round(len(sorted_counts) * 0.75)))
+    top_counts = sorted_counts.iloc[-num_top:]
+    avg_top = top_counts.mean()
+    
+    capacity = avg_top + random_adjustment
+    capacities[region_id] = capacity if capacity >= 1 else npr.uniform(threshold * 0.5, threshold * 1.5)
+\end{lstlisting}
+La capacità base è definita come media del 25\% più elevato dei valori superstiti. L'aggiustamento aleatorio finale introduce variabilità controllata, con ulteriore fallback per valori non validi.
+Per i pseudo-settori collassati, la capacità deriva da quelle elementari costituenti.
+\begin{lstlisting}[language=Python, caption={}]
+global_capacities = {}
+for key, info in global_collapsed_info.items():
+    elementary_ids = info["elementary_ids"]
+    capacities_list = [element_capacities[es_id] 
+                      for es_id in elementary_ids 
+                      if es_id in element_capacities]
+\end{lstlisting}
+Per ogni pseudo-settore collassato, vengono estratte le capacità dei pseudo-settori elementari componenti da un dizionario.
+
+\begin{lstlisting}[language=Python, caption={}]
+    if capacities_list:
+        base_capacity = max(capacities_list)
+        
+        additional_count = len(elementary_ids) - 1
+        increment_factor = min(additional_count * 0.1, 0.5)
+        
+        collapsed_capacity = base_capacity * (1 + increment_factor)
+    else:
+        collapsed_capacity = npr.uniform(25.0 * 0.5, 25.0 * 1.5)
+    
+    global_capacities[info["collapsed_sector"]] = int(round(collapsed_capacity))
+\end{lstlisting}
+La capacità del pseudo-settore collassato parte dal massimo valore elementare, con incremento del 10\% per ogni componente aggiuntivo (limitato al 50\% totale). L'arrotondamento all'intero produce valori operativi direttamente utilizzabili nella simulazione.
+
+L'output finale è un dizionario che associa ciascun pseudo-settore collassato alla sua capacità nominale stimata.
+
+\section{Generazione configurazioni di pseudo-settori collassati}
+La generazione delle configurazioni collassate segue l'algoritmo descritto nella Sezione~\ref{subsec:algo-collassati}.
+Il processo inizia con il caricamento dei dati dei settori elementari. La funzione \texttt{load\_fir\_data} legge il dataset delle \gls{fir} da un file CSV compresso.
+\begin{lstlisting}[language=Python, caption={}]
+def load_fir_data() -> gpd.GeoDataFrame:
+    df = pd.read_csv(DEFAULT_FIR_FILE, sep=",", compression="gzip",
+                     quotechar='"', skipinitialspace=True)
+
+    for fir_id, group in df.groupby("Airspace ID"):
+        group = group.sort_values("Sequence Number")  
+        coords = list(zip(group["Longitude"], group["Latitude"]))
+        
+        if coords[0] != coords[-1]:
+            coords.append(coords[0])
+               
+        line = LineString(coords)
+        polys = list(polygonize([line]))
+        geom_union = unary_union([p.buffer(0) for p in polys]) if polys else None
+        
+        records.append({
+            "Airspace ID": fir_id,
+            "Min Flight Level": group["Min Flight Level"].iloc[0],
+            "Max Flight Level": group["Max Flight Level"].iloc[0],
+            "geometry": geom_union
+        })
+
+    return gpd.GeoDataFrame(records, crs="EPSG:4326").to_crs("EPSG:3035")
+\end{lstlisting}
+Questa fase preparatoria garantisce la corretta formazione dei poligoni spaziali, ordinando i vertici secondo la sequenza logica, chiudendo le geometrie incomplete e convertendo le coordinate in un sistema di riferimento appropriato per le operazioni spaziali successive. Ogni pseudo-settore elementare viene memorizzato con i suoi intervalli di quota minimo e massimo, attributi fondamentali per la fase successiva.
+La verifica della sovrapposizione verticale tra settori adiacenti è implementata da una funzione dedicata che applica il criterio matematico descritto nell'algoritmo. La funzione \texttt{vertical\_overlap} calcola l'intersezione tra gli intervalli di quota di due settori, considerandoli compatibili solo quando la sovrapposizione supera una soglia minima configurata.
+\clearpage
+\begin{lstlisting}[language=Python, caption={}]
+def vertical_overlap(row1: pd.Series, row2: pd.Series) -> bool:
+    min1, max1 = row1["Min Flight Level"], row1["Max Flight Level"]
+    min2, max2 = row2["Min Flight Level"], row2["Max Flight Level"]
+    overlap = min(max1, max2) - max(min1, min2)
+    return overlap >= VERTICAL_OVERLAP_MARGIN  
+\end{lstlisting}
+L'algoritmo esplora ricorsivamente lo spazio dei settori partendo da un elemento non visitato, espandendosi verso i vicini spazialmente adiacenti e verticalmente compatibili. La probabilità di inclusione $p(|G|)$ diminuisce linearmente con la dimensione del gruppo corrente, favorendo la formazione di aggregati di dimensioni moderate. Ogni gruppo completato viene fuso in un'unica geometria poligonale attraverso un'operazione di unione spaziale, producendo infine un GeoDataFrame contenente tutte le configurazioni collassate con i relativi metadati identificativi.
+\begin{lstlisting}[language=Python, caption={}]
+def generate(self) -> gpd.GeoDataFrame:
+    merged_indices = set() 
+    merged_records = []
+    sindex = self.sectors.sindex  # Indice spaziale per ricerca efficiente
+    
+    for idx, row in self.sectors.iterrows():  
+        if idx in merged_indices: continue              
+        collapsed_sector = {idx}  
+        stack = [idx]             
+        
+        # Espansione ricorsiva del gruppo
+        while stack and len(collapsed_sector) < self.max_size:
+            current_idx = stack.pop()  # Estrazione settore corrente dallo stack
+            
+            # Ricerca vicini spaziali tramite indice spaziale
+            possible_idxs = list(sindex.query(
+                self.sectors.loc[current_idx, "geometry"], 
+                predicate="touches"
+            ))
+            
+            # Valutazione dei vicini candidati
+            for neighbor in possible_idxs:  
+                if neighbor in merged_indices: continue  
+                                    
+                if not self.vertical_overlap(
+                    self.sectors.loc[current_idx],
+                    self.sectors.loc[neighbor]
+                ): continue
+                
+                group_size = len(collapsed_sector)
+                p_merge = (self.max_size - group_size + 1) / \
+                          (self.max_size + 1)
+                
+                # Decisione probabilistica di inclusione
+                if npr.rand() < p_merge:  
+                    collapsed_sector.add(neighbor)  
+                    stack.append(neighbor)         
+                    if len(collapsed_sector) >= self.max_size: 
+                        break  
+        
+        # Unione geometrica dei settori del gruppo
+        merged_geom = unary_union([
+            self.sectors.loc[i, "geometry"].buffer(0) 
+            for i in collapsed_sector
+        ])
+        
+        merged_records.append({
+            "elementary_sector": list(collapsed_sector),
+            "geometry": merged_geom,
+            "collapsed_sector": generate_id()  # Generazione ID univoco
+        })
+        merged_indices.update(collapsed_sector)  
+            
+    return gpd.GeoDataFrame(merged_records, crs=self.sectors.crs)
+\end{lstlisting}
+
+\subsection{\gls{dac}}
+L'implementazione operativa del problema del \gls{dac} è stata realizzata in \gls{python}, sfruttando la libreria \texttt{DOcplex} per la modellazione e la risoluzione di problemi di programmazione lineare intera. Il prototipo segue fedelmente la formulazione matematica illustrata in Sezione \ref{sec:dac_math}, traducendo le variabili decisionali, i vincoli di permanenza, quiescenza e compatibilità tra configurazioni in vincoli \gls{cplex}
+
+I dati operativi vengono caricati da file JSON organizzati per configurazione, comprendenti la domanda di traffico prevista, le capacità nominali dei pseudo-settori collassati e le configurazioni ammissibili. La funzione \texttt{load\_data\_for\_config} gestisce il caricamento dei dati, restituendo oggetti \gls{python} direttamente utilizzabili per costruire il modello.
+\begin{lstlisting}[language=Python, caption={}]
+tr, c, dizio_conf = load_data_for_config(config_id, data_dir)
+\end{lstlisting}
+L'eccesso di domanda rispetto alla capacità dei settori viene calcolato con la funzione \texttt{compute\_excess}, che restituisce per ogni settore e intervallo temporale il valore \(\max(\text{traffico} - \text{capacità}, 0)\):
+
+\begin{lstlisting}[language=Python, caption={}]
+def compute_excess(tr, c, T):
+    excess = {}
+    for s in tr:
+        excess[s] = [max(tr[s][t] - c[s], 0) for t in T]
+    return excess
+\end{lstlisting}
+Successivamente, \texttt{compute\_coefficients} aggrega l’eccesso a livello di configurazione, calcolando per ciascun intervallo temporale la somma degli eccessi dei settori appartenenti a quella configurazione.
+\begin{lstlisting}[language=Python, caption={}]
+def compute_coefficients(dizio_conf, excess, T):
+    e = {}
+    for conf, sectors in dizio_conf.items():
+        e[conf] = {t: sum(excess[s][t] for s in sectors) for t in T}
+    return e
+\end{lstlisting}
+La creazione delle variabili decisionali binarie \(x^c_t\) e ausiliarie \(s^c_t\) è gestita da \\\texttt{create\_decision\_variables}:
+\begin{lstlisting}[language=Python, caption={}]
+def create_decision_variables(model, X, dom):
+    if dom == 'cont':
+        x = model.continuous_var_dict(keys=X, name='x', lb=0, ub=1)
+        s = model.continuous_var_dict(keys=X, name='s', lb=0, ub=1)
+    elif dom == 'bin':
+        x = model.binary_var_dict(keys=X, name='x')
+        s = model.binary_var_dict(keys=X, name='s')
+    else:
+        raise ValueError("Dominio non valido. Usare 'cont' o 'bin'.")
+    return x, s
+\end{lstlisting}
+I vincoli principali del modello vengono aggiunti con la funzione \texttt{add\_constraints}, che implementa:
+\begin{itemize}
+    \item l'unicità di una configurazione attiva per ogni intervallo
+    \item la compatibilità tra configurazioni consecutive
+    \item le transizioni tra intervalli temporali
+    \item i vincoli di permanenza e quiescenza
+\end{itemize}
+\begin{lstlisting}[language=Python, caption={}]
+def add_constraints(model, x, s, CONF_t, CONF_tc, T, tp, tq):
+    # Vincolo: assegnazione di una configurazione per ogni istante
+    for t in T:
+        model.add_constraint(
+            model.sum(x[(t, c)] for c in CONF_t[t]) == 1
+        )
+
+    # Vincolo: transizione tra configurazioni
+    for t in T[:-1]:
+        for c in CONF_t[t]:
+            model.add_constraint(
+                x[(t, c)] - model.sum(x[(t + 1, k)] for k in CONF_tc[(t + 1, c)]) <= 0
+            )
+
+    # Vincolo: cambiamento tra istanti consecutivi
+    for t in T[1:]:
+        for c in CONF_t[t]:
+            if c in CONF_t[t - 1]:
+                model.add_constraint(x[(t, c)] - x[(t - 1, c)] <= s[(t, c)])
+            else:
+                model.add_constraint(x[(t, c)] <= s[(t, c)])
+
+    # Vincolo di permanenza
+    if tp >= 2:
+        for t in T:
+            model.add_constraint(
+                model.sum(
+                    s[(w, c)] for w in range(t, min(t + tp, len(T))) 
+                    for c in CONF_t[w]
+                ) <= 1
+            )
+
+    # Vincolo di quiescenza
+    if tq >= 2:
+        for t in T:
+            for c in CONF_t[t]:
+                model.add_constraint(
+                    x[(t, c)] + model.sum(
+                        s[(w, c)] 
+                        for w in range(t + 1, min(t + tq + 1, len(T))) 
+                        if c in CONF_t[w]
+                    ) <= 1)
+\end{lstlisting}
+
+La soluzione ottimale viene ottenuta tramite \texttt{model.solve()} e salvata in formato JSON.

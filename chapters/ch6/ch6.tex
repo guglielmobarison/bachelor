@@ -1,34 +1,40 @@
-In questo capitolo si presenta il consuntivo delle attività e delle ore svolte, confrontato con il preventivo iniziale (Tabella~\ref{tab:pianificazione-attivita}). Gli scostamenti sono principalmente imputabili ai limiti informativi di \gls{adrr} sui settori elementari, che hanno richiesto un maggiore impegno nell’implementazione delle procedure di esportazione; la ridotta copertura di casi reali ha inoltre comportato una lieve riduzione dei test di performance dei modelli \gls{dac}. In luogo dell’interfaccia utente, è stata privilegiata la generazione di istanze fittizie, riadattando le \gls{fir} per simulare gruppi settoriali e consentire benchmark consistenti. Il totale consuntivato ammonta a 327\,h e i dettagli sono riportati in Tabella~\ref{tab:consuntivo-attivita}.
+In questo capitolo si presenta il consuntivo delle attività e delle ore svolte, confrontato con il preventivo iniziale (Tabella~\ref{tab:pianificazione-attivita}). Gli scostamenti sono principalmente imputabili ai limiti informativi di \gls{adrr} sui settori elementari, che hanno richiesto un maggiore impegno nell’implementazione delle procedure di esportazione; la ridotta copertura di casi reali ha inoltre comportato una lieve riduzione dei test di performance dei modelli \gls{dac}. In luogo dell’interfaccia utente, è stata privilegiata la generazione di istanze fittizie, riadattando le \gls{fir} per simulare gruppi settoriali e consentire benchmark consistenti. Il totale consuntivato ammonta a 327 ore e i dettagli sono riportati in Tabella~\ref{tab:consuntivo-attivita}.
+Di seguito si riporta lo stato degli obiettivi definiti in Capitolo \ref{ch:obiettivi} (cfr. Tabella~\ref{tab:consuntivo-obiettivi}).  
 
-Di seguito è riportato lo stato degli obiettivi definiti in §\ref{sec:obbiettivi}; per ciascuno sono indicati lo stato e, ove necessario, una sintetica giustificazione.
-
+\begin{itemize}
+    \item \textit{O01 – O04}: Tutti gli obiettivi obbligatori sono stati raggiunti come previsto
+    \item \textit{D01}: Parzialmente raggiunto a causa della copertura limitata di \gls{adrr} sui settori elementari, che ha impedito di realizzare un benchmark completamente basato su dati reali
+    \item \textit{D02}: Raggiunto, sebbene con un numero ridotto di test rispetto al preventivo, per via della limitata disponibilità di istanze reali
+    \item \textit{F01}: Non raggiunto; al suo posto è stata implementata la generazione di istanze fittizie per consentire il completamento dei benchmark.
+\end{itemize}
+\clearpage
     \begin{table}[htbp]
-    \begin{tabularx}{\textwidth}{!{\vrule}c!{\vrule}c!{\vrule}X!{\vrule}}
-    \hline
-    \textbf{Obiettivo} & \textbf{Stato} & \textbf{Giustificazione} \\\hline
-    \textit{O01} & Raggiunto & \\
-    \textit{O02} & Raggiunto & \\
-    \textit{O03} & Raggiunto & \\
-    \textit{O04} & Raggiunto & \\
-    \hline
-    \textit{D01} & Parzialmente raggiunto & \textit{copertura \acrshort{adrr} limitata sui settori elementari} \\
-    \textit{D02} & Raggiunto & \\
-    \hline
-    \textit{F01} & Non raggiunto & \textit{sostituita da generazione di istanze fittizie} \\
-    \hline
-    \end{tabularx}
-    \caption{Consuntivo degli obiettivi}
-    \label{tab:consuntivo-obiettivi}
-    \end{table}
-    
-    \input{chapters/ch6/table/tabella_consuntivo.tex}
+\begin{tabularx}{\textwidth}{!{\vrule}c!{\vrule}X!{\vrule}c!{\vrule}}
+\hline
+\textbf{Obiettivo} & \textbf{Definizione} & \textbf{Stato} \\\hline
+\textit{O01} & Acquisizione di competenze su dati concernenti il traffico aereo e il suo controllo & Raggiunto \\
+\textit{O02} & Acquisizione dei dati \acrshort{adrr} & Raggiunto \\
+\textit{O03} & Implementazione di procedure di esportazione dei dati \acrshort{adrr} nei formati richiesti dai modelli di ottimizzazione per \acrshort{dac} & Raggiunto \\
+\textit{O04} & Redazione della documentazione di un manuale utente per le procedure realizzate & Raggiunto \\
+\hline
+\textit{D01} & Realizzazione di un benchmark di istanze reali DAC & Parzialmente raggiunto \\
+\textit{D02} & Test di performance dei modelli di ottimizzazione per \acrshort{dac} sul benchmark realizzato & Raggiunto \\
+\hline
+\textit{F01} & Implementazione di un'interfaccia utente per l'esecuzione delle procedure di importazione ed esportazione dei dati \acrshort{adrr} & Non raggiunto \\
+\hline
+\end{tabularx}
+\caption{Consuntivo degli obiettivi.}
+\label{tab:consuntivo-obiettivi}
+\end{table}
+   
+\input{chapters/ch6/table/tabella_consuntivo.tex}
 
 
 \section{Considerazioni personali sull’esperienza}
 \subsection{Difficoltà incontrate}
-Le principali difficoltà hanno riguardato l’allineamento tra ciò che sarebbe “ideale” per il \gls{dac} e ciò che è realmente osservabile in \gls{adrr}. L’assenza di settori elementari e di confini \gls{acc} ha imposto scelte di modellazione conservative (assimilazione delle \gls{fir} a unità atomiche) e un maggiore dispendio di tempo nell’analisi sistematica della repository alla ricerca di proxy informativi. Nonostante il lavoro di messa a punto delle metriche temporali (throughput, occupancy) e l’esplorazione approfondita del dataset, tali analisi non hanno prodotto evidenze utili a descrivere o inferire i settori elementari, principalmente per la copertura limitata di \gls{adrr} su questi oggetti.
-
+Le principali difficoltà hanno riguardato l’allineamento tra ciò che sarebbe “ideale” per il \gls{dac} e ciò che è realmente osservabile in \gls{adrr}. L’assenza di settori elementari e di confini \gls{acc} ha imposto scelte di modellazione conservative e un maggiore dispendio di tempo nell’analisi sistematica della repository alla ricerca di proxy informativi. Nonostante il lavoro di messa a punto delle metriche temporali (\emph{throughput}, \emph{occupancy}) e l’esplorazione approfondita del dataset non abbia prodotto evidenze sufficienti a descrivere o inferire i settori elementari, le procedure sviluppate mantengono una forte utilità metodologica: esse permettono di costruire istanze reali di \gls{dac} non appena i dati necessari diventino disponibili, garantendo la replicabilità e l’adattabilità dei benchmark.
 
 \subsection{Retrospettiva e lezioni apprese}
 Lo stage mi ha imposto di integrare ingegneria del dato e modellazione: una definizione elegante è sterile se i dati non la sostengono; simmetricamente, una pipeline robusta deve esplicitare le assunzioni che introduce. Ho constatato che un modello convincente è inutile se le variabili chiave non sono osservabili (nel nostro caso i settori elementari in \gls{adrr}) e che una pipeline apparentemente solida può fuorviare se non rende chiare e tracciabili le scelte operative (ampiezza delle finestre temporali, regole di conteggio).
 Non è stato soltanto esercizio di programmazione: mi ha portato oltre il perimetro tipico del corso di laurea, chiedendomi di coniugare metodo e analisi dei dati. Ho dovuto rendere esplicite le ipotesi, documentarle nel codice e verificarle sistematicamente sul dataset. Ho imparato a esplicitare precocemente i limiti osservativi (ciò che non si può misurare), così da distinguere con rapidità gli errori d’implementazione dalle opzioni modellistiche.
+
