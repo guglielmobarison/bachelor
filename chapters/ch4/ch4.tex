@@ -43,7 +43,6 @@ Nel seguito assumiamo \(\lambda \le W\) così che le finestre risultino contigue
 \clearpage
 \input{chapters/ch4/figures/finestre_varianti.tex}
 
-\clearpage
 \section{Metriche}
 In questa sezione si introducono le grandezze utilizzate per descrivere il carico di traffico su una regione di spazio aereo \(R\).  
 A partire dalla griglia temporale \(\mathcal{T}\) e dalla finestra \(I_k\), si definiscono due metriche: il \emph{throughput}, che misura il numero di ingressi in una regione nell’arco di una finestra, e l’\emph{occupancy}, che quantifica invece quanti velivoli risultano presenti nella regione per l’intera durata della finestra. Queste quantità consentono di passare dai dati puntuali di ingresso/uscita dei singoli voli a misure sintetiche, più adatte sia all’analisi statistica sia agli utilizzi dei capitoli successivi.
@@ -59,7 +58,7 @@ Sulla griglia temporale \(\mathcal{T}\) definita in Sezione \ref{sec:modello-tem
     In questo caso \(\mathcal{F}_R\) è l’insieme dei voli che attraversano \(R\) e \(t^{\mathrm{in}}_{f,R}\) è l’istante di ingresso del volo \(f\) in \(R\).
     La scelta della finestra semi–aperta \([t_k,\,t_k+W)\) evita doppi conteggi sugli estremi condivisi.
 
-    
+    \clearpage
     \input{chapters/ch4/figures/throughput.tex}
     
     \noindent La definizione \eqref{eq:throughput-def} è equivalente a un calcolo basato sulla differenza di due cumulate degli ingressi. Introduciamo la cumulata stretta $N_R(t)$ che conta gli ingressi. La proposizione seguente formalizza l’identità che adottiamo nell’implementazione.
@@ -112,11 +111,9 @@ Sulla griglia temporale \(\mathcal{T}\) definita in Sezione \ref{sec:modello-tem
     \end{proof}
     
     
-    
-    
 \subsection{Occupancy}
 \label{subsec:occupancy-teoria}
-Sulla griglia temporale \(\mathcal{T}\) definita in \S\ref{sec:modello-temporale}, e con le finestre semi–aperte \(I_k=[t_k,t_k+W)\) introdotte in \S\ref{sec:finestre_temporali}, definiamo l’\emph{occupancy} come il numero di velivoli che risultano presenti in \(R\) per tutta la finestra:
+Sulla griglia temporale \(\mathcal{T}\) definita in Sezione \ref{sec:modello-temporale}, e con la finestra semi–aperta \(I_k=[t_k,t_k+W)\) introdotta in Sezione \ref{sec:finestre_temporali}, definiamo l’\emph{occupancy} come il numero di velivoli che risultano presenti in \(R\) per tutta la finestra:
     \begin{equation}
     \label{eq:occ-finestra-copertura}
     O_R(k) \;\coloneqq\; 
@@ -124,27 +121,11 @@ Sulla griglia temporale \(\mathcal{T}\) definita in \S\ref{sec:modello-temporale
     t^{\mathrm{in}}_{f,R} \le t_k \ \ \wedge\ \ t^{\mathrm{out}}_{f,R} \ge t_k{+}W \Bigr\}.
     \end{equation}
     In questo caso \(\mathcal{F}_R\) è l’insieme dei voli che attraversano \(R\), \(t^{\mathrm{in}}_{f,R}\) è l’istante di ingresso del volo \(f\) in \(R\) e \(t^{\mathrm{out}}_{f,R}\) è l’istante di uscita del volo \(f\) in \(R\).
-    \clearpage
+  
     \input{chapters/ch4/figures/occupancy.tex}
     
     L'implementazione algoritmica non valuta la condizione di copertura \eqref{eq:occ-finestra-copertura} per ogni volo e ogni finestra, ma sfrutta il principio dell'array di differenze. La proposizione seguente formalizza l’identità che adottiamo nell’implementazione.
     
-    \subsection{Occupancy}
-\label{subsec:occupancy-teoria}
-Sulla griglia temporale \(\mathcal{T}\) definita in \S\ref{sec:modello-temporale}, e con le finestre semi–aperte \(I_k=[t_k,t_k+W)\) introdotte in \S\ref{sec:finestre_temporali}, definiamo l’\emph{occupancy} come il numero di velivoli che risultano presenti in \(R\) per tutta la finestra:
-\begin{equation}
-\label{eq:occ-finestra-copertura}
-O_R(k) \;\coloneqq\; 
-\#\Bigl\{\, f \in \mathcal{F}_R \;\Bigm|\; 
-t^{\mathrm{in}}_{f,R} \le t_k \ \ \wedge\ \ t^{\mathrm{out}}_{f,R} \ge t_k{+}W \Bigr\}.
-\end{equation}
-In questo caso \(\mathcal{F}_R\) è l’insieme dei voli che attraversano \(R\), \(t^{\mathrm{in}}_{f,R}\) è l’istante di ingresso del volo \(f\) in \(R\) e \(t^{\mathrm{out}}_{f,R}\) è l’istante di uscita del volo \(f\) in \(R\).
-
-\clearpage
-\input{chapters/ch4/figures/occupancy.tex}
-
-L'implementazione algoritmica non valuta la condizione di copertura \eqref{eq:occ-finestra-copertura} per ogni volo e ogni finestra, ma sfrutta il principio dell'array di differenze. La proposizione seguente formalizza l’identità che adottiamo nell’implementazione.
-
 \begin{proposition}[Equivalenza tra occupancy a copertura e a differenze]
 \label{prop:occupancy-equivalence}
 Sia \(R\) una regione di volo, \(I_k = [t_k, t_k+W)\) una finestra temporale su una griglia \(\mathcal{T}\) di passo \(\lambda>0\) con origine \(\tau_0\), e sia \(\mathcal{F}_R\) l'insieme dei voli che attraversano \(R\).

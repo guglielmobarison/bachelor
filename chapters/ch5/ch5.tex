@@ -1,6 +1,6 @@
 In questo capitolo si analizza il divario tra l’impianto teorico del problema del \gls{dac}, così come formulato nel modello di \gls{ilp}, e il livello di dettaglio effettivamente offerto dal repository \gls{adrr}. Il modello assume di poter operare su una descrizione già strutturata dello spazio aereo e della sua gestione nel tempo, mentre \gls{adrr} è concepito come base dati orientata ai voli, centrata sui profili di attraversamento e sulle \gls{fir} come principali entità geometriche osservabili.
 
-Questa asimmetria informativa rende necessario introdurre uno strato intermedio di modellizzazione, capace di trasformare le sole informazioni sugli attraversamenti delle \gls{fir} in un insieme di oggetti utilizzabili nel contesto del \gls{dac}: porzioni di spazio aereo con capacità nominali derivate dal traffico storico e configurazioni su cui valutare domanda ed eccedenze. Nei paragrafi che seguono si rendono espliciti, da un lato, i limiti strutturali di \gls{adrr} rispetto alle esigenze del problema del \gls{dac} e, dall’altro, le soluzioni adottate per costruire, a partire da tali dati, una famiglia di istanze artificiali su cui sperimentare le procedure di soluzione.
+Questa asimmetria informativa rende necessario introdurre uno strato intermedio di modellizzazione, capace di trasformare le \gls{fir} in un insieme di oggetti utilizzabili nel contesto del \gls{dac}: porzioni di spazio aereo con capacità nominali derivate dal traffico storico e configurazioni su cui valutare domanda ed eccedenze. Nei paragrafi che seguono si rendono espliciti, da un lato, i limiti strutturali di \gls{adrr} rispetto alle esigenze del problema del \gls{dac} e, dall’altro, le soluzioni adottate per costruire, a partire da tali dati, una famiglia di istanze artificiali su cui sperimentare le procedure di soluzione.
 
 \section{Limiti struttrali di \gls{adrr} e solutioni adottate}
 Dal punto di vista concettuale, la risoluzione del problema del \gls{dac} richiede almeno:
@@ -15,25 +15,25 @@ Il repository \gls{adrr}, per come è strutturato, non fornisce questo livello d
 Le tabelle sui profili di attraversamento mettono a disposizione esclusivamente:
 \begin{itemize}
   \item i tracciati dei voli e i relativi tempi di ingresso/uscita
-  \item le informazioni di attraversamento delle sole \glspl{fir}, che costituiscono l’unica entità geometrica esplicitamente rappresentata nei dati di traffico
+  \item le informazioni di attraversamento delle sole \gls{fir}, che costituiscono l’unica entità geometrica esplicitamente rappresentata nei dati di traffico
 \end{itemize}
 
-Mancano quindi sia la definizione delle porzioni di spazio aereo corrispondenti ai settori di controllo, sia gli opening scheme che ne descrivono l’evoluzione temporale, sia i valori di capacità ufficialmente dichiarati per tali settori.
+Mancano quindi sia la definizione delle porzioni di spazio aereo corrispondenti ai settori di controllo, sia gli \emph{opening scheme} che ne descrivono l’evoluzione temporale, sia i valori di capacità ufficialmente dichiarati per tali settori.
 
 Durante lo stage sono state esplorate diverse strade per arricchire \gls{adrr} con informazioni settoriali: dall’analisi di ulteriori tabelle del repository, al tentativo di estrapolare indirettamente dalle metriche di traffico indizi sulla struttura effettiva delle porzioni di spazio aereo.  
-Nessuna di queste soluzioni ha tuttavia consentito di ricostruire in modo generalizzabile e robusto il grafo dei settori operativi, le relative porzioni di spazio aereo e gli opening scheme associati. Ciò impone di adottare una modellizzazione semplificata, costruita unicamente sulla base delle informazioni geometriche effettivamente disponibili.
+Nessuna di queste soluzioni ha tuttavia consentito di ricostruire in modo generalizzabile e robusto il grafo dei settori operativi, le relative porzioni di spazio aereo e gli \emph{opening scheme} associati. Ciò impone di adottare una modellizzazione semplificata, costruita unicamente sulla base delle informazioni geometriche effettivamente disponibili.
 
 \subsection{Pseudo-settori elementari e collassati}
-Per superare questo limite, si introduce un’ipotesi di lavoro allineata all’unica componente geometrica osservabile in \gls{adrr}: le \glspl{fir} sono assimilate a unità settoriali elementari. In concreto, ogni \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile nei dati).  
+Per superare questo limite, si introduce un’ipotesi di lavoro allineata all’unica componente geometrica osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, ogni \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile nei dati).  
 
-A partire da questa assunzione, costruiamo istanze coerenti con la geografia del repository: le porzioni elementari di spazio aereo coincidono con singole \gls{fir}, mentre le porzioni collassate sono definite come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini. Nel seguito chiameremo tali porzioni, rispettivamente, pseudo-settore elementare (una singola \gls{fir}) e pseudo-settore collassato (una porzione connessa ottenuta come unione di più \gls{fir}).  
+A partire da questa assunzione, costruiamo istanze coerenti con la geografia del repository: i settori elementari coincidono con singole \gls{fir}, mentre i settori collassati sono definiti  come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini. Nel seguito chiameremo tali porzioni, rispettivamente, pseudo-settore elementare (una singola \gls{fir}) e pseudo-settore collassato (una porzione connessa ottenuta come unione di più \gls{fir}).  
 
 Nel prosieguo del capitolo si formalizza l’impiego delle \gls{fir} come ``mattoni'' geometrici per definire pseudo-settori elementari e pseudo-settori collassati, si introducono i criteri di assegnazione della capacità a queste porzioni di spazio aereo e si specificano i corrispondenti vincoli geometrici.
 
 \subsection{Portata e riutilizzabilità delle procedure}
 È importante sottolineare che questa modellizzazione non coincide con l’assetto informativo richiesto per risolvere il problema di \gls{dac} in un contesto operativo reale: i pseudo-settori non rappresentano i settori effettivamente utilizzati, né i valori di capacità che vi sono associati.    
 
-Quando saranno disponibili dati completi sulla settorizzazione operativa (geometrie dei settori reali, opening scheme, capacità dichiarate), le stesse procedure potranno quindi essere riutilizzate sostituendo ai pseudo-settori elementari e collassati le corrispondenti entità reali, con modifiche limitate agli strati di caricamento e mappatura dei dati.
+Quando saranno disponibili dati completi sulla settorizzazione operativa (geometrie dei settori reali, \emph{opening scheme}, capacità dichiarate), le stesse procedure potranno quindi essere riutilizzate sostituendo ai pseudo-settori elementari e collassati le corrispondenti entità reali, con modifiche limitate agli strati di caricamento e mappatura dei dati.
     %Per superare tale limite, adottiamo un’ipotesi di lavoro allineata all’unica componente geometrica effettivamente osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, una \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile). A partire da questa assunzione, costruiamo istanze coerenti con la geografia dei dati: le configurazioni ``elementari'' coincidono con singole \gls{fir}, mentre i ``collassati'' sono definiti come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini.
 
     %TODO cambiare configurazioni elementari e collassate
@@ -55,7 +55,7 @@ Nel seguito, consideriamo ammissibili soltanto quelle unioni di settori elementa
 \subsection{Vincoli non osservabili}
 Di seguito documentiamo i vincoli concettualmente previsti ma non verificabili operativamente in \gls{adrr}.
 \paragraph{Rispetto dei confini degli \gls{acc}.}
-Il vincolo prevede buffer minimi rispetto ai confini degli \gls{acc} adiacenti (cfr. Fig.~\ref{fig:boundary}). Poiché \gls{adrr} non rende disponibili né i perimetri degli \gls{acc} né le relative distanze operative, il controllo non è osservabile nel dataset e, di conseguenza, non è imponibile; ne documentiamo l’assenza tra le limitazioni.
+Il vincolo prevede buffer minimi rispetto ai confini degli \gls{acc} adiacenti. Poiché \gls{adrr} non rende disponibili né i perimetri degli \gls{acc} né le relative distanze operative, il controllo non è osservabile nel dataset e, di conseguenza, non è imponibile; ne documentiamo l’assenza tra le limitazioni.
 
 \paragraph{Convessità della geometria risultante.}
 Nel dataset considerato la convessità è l’eccezione: su 324 poligoni validi, 4 sono convessi (1.23\%) e 320 sono concavi (98.77\%). Imporre la convessità comporterebbe alterare i confini reali delle \gls{fir} contraddicendo l’assunzione di trattarle come ``mattoni'' atomici. Per questo motivo non imponiamo la convessità e manteniamo la geometria osservata.
@@ -125,20 +125,20 @@ Le scelte numeriche adottate seguono l’impostazione proposta in \cite{galeazzo
 \clearpage
 \section{Generazione configurazioni di pseudo-settori collassati}
 \label{subsec:algo-collassati}
-L'algoritmo genera configurazioni di pseudo-settori collassati attraverso un processo di aggregazione dei pseudo-settori elementari. Consiste in una visita \gls{dfs} modificata che esplora le relazioni di vicinato spaziale tra i poligoni, combinando gradualmente quelli compatibili secondo specifici criteri.
+L'algoritmo genera configurazioni di pseudo-settori collassati (cfr.\ Figura \ref{fig:rassegna-collassati}) attraverso un processo di aggregazione dei pseudo-settori elementari. Consiste in una visita \gls{dfs} modificata che esplora le relazioni di vicinato spaziale tra i poligoni, combinando gradualmente quelli compatibili secondo specifici criteri.
 La fase iniziale prevede una preparazione delle geometrie: per ogni \gls{fir}, i vertici del poligono vengono ordinati e, se necessario, si applica una correzione per garantire la chiusura della geometria. Ciascun poligono così ottenuto viene associato al proprio intervallo verticale di quote e marcato come non visitato.
 L'algoritmo si sviluppa attraverso cicli di esplorazione che partono da poligoni non visitati. Per ciascuno di essi:
 \DisablePunct
 \begin{enumerate}
-	\item Si crea un gruppo temporaneo contenente inizialmente solo il poligono corrente
-	\item Mediante uno stack si esplorano ricorsivamente i vicini non visitati
+	\item Si crea un gruppo temporaneo contenente inizialmente solo il poligono corrente;
+	\item Mediante uno stack si esplorano ricorsivamente i vicini non visitati;
 	\item Per ogni poligono adiacente:
 	\begin{enumerate}
-		\item Si verifica la sovrapposizione degli intervalli di quota
-		\item Se esiste compatibilità verticale, si decide probabilisticamente l'inclusione nel gruppo corrente
+		\item Si verifica la sovrapposizione degli intervalli di quota;
+		\item Se esiste compatibilità verticale, si decide probabilisticamente l'inclusione nel gruppo corrente;
 	\end{enumerate}
-	\item La probabilità di inclusione \(p(|G|)\) diminuisce all'aumentare della dimensione del gruppo, favorendo così aggregati di dimensioni contenute
-	\item Il processo termina quando si esauriscono i vicini compatibili o si raggiunge la dimensione massima  
+	\item La probabilità di inclusione \(p(|G|)\) diminuisce all'aumentare della dimensione del gruppo, favorendo così aggregati di dimensioni contenute;
+	\item Il processo termina quando si esauriscono i vicini compatibili o si raggiunge la dimensione massima. 
 \end{enumerate}
 \EnablePunct
 Al termine di ciascun ciclo, tutti i poligoni del gruppo vengono fusi in un'unica geometria poligonale attraverso un'operazione di unione.
@@ -147,7 +147,7 @@ La probabilità di inclusione \(p(|G|)\) decresce linearmente con la dimensione 
 \[
 p(|G|) = \frac{N_{\text{max}} - |G| + 1}{N_{\text{max}} + 1}
 \]
-La probabilità diminuisce perché a gruppi piccoli serve forte spinta all'espansione, mentre a gruppi grandi serve controllo per prevenire aggregati eccessivi. La decrescita bilancia automaticamente queste due esigenze: alta probabilità iniziale (\(p \approx 1\) per \(|G|=1\)) favorisce crescita rapida, bassa probabilità finale (\(p \approx 0\) per \(|G|=N_{\max}\)) frena l'espansione
+La probabilità diminuisce perché a gruppi piccoli serve forte spinta all'espansione, mentre a gruppi grandi serve controllo per prevenire aggregati eccessivi. La decrescita bilancia queste due esigenze: alta probabilità iniziale (\(p \approx 1\) per \(|G|=1\)) favorisce crescita rapida, bassa probabilità finale (\(p \approx 0\) per \(|G|=N_{\max}\)) frena l'espansione.
 Ogni nuovo elemento incluso riduce \(p\) di un valore costante \(\Delta p = \frac{1}{N_{\max}+1}\). Alternativi non lineari (es. esponenziali) introdurrebbero comportamenti bruschi o parametri aggiuntivi senza vantaggi pratici, mentre la linearità offre il miglior compromesso tra semplicità computazionale ed efficacia operativa.
     \begin{algorithm}[H]
       \caption{Generazione configurazione di pseudo-settori collassati.}

@@ -36,7 +36,7 @@ L'elaborato è redatto in \LaTeX, utilizzando una classe personalizzata che inte
 \section{Implementazione}
 In questa sezione si descrive come gli schemi algoritmici introdotti nei capitoli precedenti per il calcolo del \emph{throughput}, dell'\emph{occupancy}, delle capacità nominali dei pseudo-settori e della generazione delle configurazioni di pseudo-settori collassati siano stati tradotti in codice \gls{python}.  
 \subsection{Throughput}
-La funzione \texttt{compute} implementa l'algoritmo per calcolare il throughput (vedi Algoritmo~\ref{alg:throughput-anyW-naturale}) di eventi in una determinata regione temporale. Questa funzione è parte del modulo \texttt{throughput} e utilizza strutture tabellari e strumenti di manipolazione dei dati per ottenere il risultato desiderato.
+La funzione \texttt{compute} implementa l'algoritmo per calcolare il throughput (vedi Algoritmo~\ref{alg:throughput-anyW-naturale}) in una determinata regione temporale. Questa funzione è parte del modulo \texttt{throughput} e utilizza strutture tabellari e strumenti di manipolazione dei dati per ottenere il risultato desiderato.
 
 La funzione accetta diversi parametri, tra cui un DataFrame di eventi \texttt{E}, un timestamp di inizio \texttt{tau0}, un timestamp di fine \texttt{tau1}, un intervallo di tempo \texttt{Lambda}, una finestra di tempo \texttt{W}, e altre opzioni. Questi parametri corrispondono agli oggetti matematici utilizzati nell'algoritmo originale.
 
@@ -62,7 +62,7 @@ t0, t1, Lambda_td, W_td, K, _m = grid_params(
 )
 \end{lstlisting}
 
-Successivamente, vengono filtrati gli eventi per conservare solo quelli che cadono nell'intervallo di tempo specificato. Questo è necessario per assicurarsi che stiamo considerando solo gli eventi rilevanti per il nostro calcolo del throughput. Il filtraggio degli eventi riduce il set di dati a quelli che sono effettivamente necessari per il calcolo, migliorando l'efficienza e la precisione del risultato.
+Successivamente, vengono filtrati gli eventi per conservare solo quelli che cadono nell'intervallo di tempo specificato. Questo è necessario per assicurarsi che stiamo considerando solo gli eventi rilevanti per il nostro calcolo del throughput. Il filtraggio degli eventi riduce il set di dati a quelli che sono effettivamente necessari per il calcolo.
 
 \begin{lstlisting}[language=Python, caption={}]
 E_filtered = E[[R_col, t_in_col]]
@@ -72,7 +72,7 @@ E_filtered = E_filtered[
 ]
 \end{lstlisting}
 
-Per ogni coppia di regione e timestamp, viene calcolato il numero di ingressi avvenuti esattamente in quel momento. Questo ci permette di avere una visione chiara di quanti eventi stanno accadendo in ogni regione a ogni istante di tempo. Il conteggio degli eventi è un passaggio fondamentale perché fornisce la base per il calcolo delle cumulate e, successivamente, del throughput.
+Per ogni coppia di regione e timestamp, viene calcolato il numero di ingressi avvenuti esattamente in quel momento. Questo ci permette di avere una visione chiara di quanti eventi stanno accadendo in ogni regione a ogni istante di tempo. Il conteggio degli eventi è un passaggio fondamentale perché fornisce la base per il calcolo delle cumulate e, successivamente, del \emph{throughput}.
 
 \begin{lstlisting}[language=Python, caption={}]
 grp = (
@@ -94,15 +94,11 @@ events_counted["N_R"] = events_counted.groupby(
 )["n_R"].cumsum()
 \end{lstlisting}
 
-Si costruisce quindi una griglia completa con tutte le combinazioni di regione e timestamp. Questa griglia serve come base per il calcolo del throughput, permettendo di valutare tutte le finestre temporali di interesse. La griglia di output è essenziale per garantire che ogni finestra temporale e ogni regione siano considerate nel calcolo del throughput, assicurando così una copertura completa.
-\clearpage
-\begin{lstlisting}[language=Python, caption={}]
-t0, t1, Lambda_td, W_td, K, _m = grid_params(
-    tau0, tau1, Lambda, str(W)
-)
-\end{lstlisting}
 
-Per ogni finestra temporale, vengono valutate le cumulate ai bordi sinistro e destro. Questo viene fatto utilizzando operazioni di merge, che permettono di calcolare rapidamente il numero di eventi in ogni finestra. La valutazione delle cumulate ai bordi è cruciale perché permette di determinare il numero di eventi che si verificano all'interno di ogni finestra temporale, che è esattamente ciò che il throughput intende misurare.
+\clearpage
+
+
+Per ogni finestra temporale, vengono valutate le cumulate ai bordi sinistro e destro. Questo viene fatto utilizzando operazioni di merge, che permettono di calcolare rapidamente il numero di eventi in ogni finestra. La valutazione delle cumulate ai bordi permette di determinare il numero di eventi che si verificano all'interno di ogni finestra temporale, che è esattamente ciò che il \emph{throughput} intende misurare.
 
 \begin{lstlisting}[language=Python, caption={}]
 # Tabelle ordinate per merge_asof
@@ -133,7 +129,7 @@ right_merged = pd.merge_asof(
 ).sort_values("idx").reset_index(drop=True)
 \end{lstlisting}
 
-Il throughput viene quindi calcolato come la differenza tra le cumulate ai bordi destro e sinistro di ogni finestra. Questo ci dà una misura del numero di eventi che si verificano in ogni finestra temporale. 
+Il \emph{throughput} viene quindi calcolato come la differenza tra le cumulate ai bordi destro e sinistro di ogni finestra. Questo ci dà una misura del numero di eventi che si verificano in ogni finestra temporale. 
 
 \clearpage
 \begin{lstlisting}[language=Python, caption={}]
@@ -170,13 +166,13 @@ def compute(
     t_out: str = "Exit Time",
 ) -> pd.DataFrame:
 \end{lstlisting}
-Una volta preparata la griglia temporale e filtrati gli eventi, come descritto nella sezione del throughput, il calcolo dell'occupancy procede con il calcolo degli indici \texttt{k\_start} e \texttt{k\_end}.
+Una volta preparata la griglia temporale e filtrati gli eventi, come descritto nella sezione del \emph{throughput}, il calcolo dell'\emph{occupancy} procede con il calcolo degli indici \texttt{k\_start} e \texttt{k\_end}.
 \clearpage
 \begin{lstlisting}[language=Python, caption={}]
 k_start = ceil((t_in - t0)/Delta)
 k_end = floor((t_out - W - t0)/Delta) 
 \end{lstlisting}
-Si costruiscono quindi due DataFrame per rappresentare gli eventi di ingresso e uscita. Ogni evento di ingresso corrisponde a un aumento di 1 nell'occupancy, mentre ogni evento di uscita corrisponde a una diminuzione di 1. Questi eventi vengono quindi aggregati per calcolare le differenze cumulative.
+Si costruiscono quindi due DataFrame per rappresentare gli eventi di ingresso e uscita. Ogni evento di ingresso corrisponde a un aumento di 1 nell'\emph{occupancy}, mentre ogni evento di uscita corrisponde a una diminuzione di 1. Questi eventi vengono quindi aggregati per calcolare le differenze cumulative.
 \begin{lstlisting}[language=Python, caption={}]
 e1 = dfv[[key_col, "k_start"]].rename(columns={"k_start": "k"})
 e1["delta"] = 1
@@ -186,7 +182,7 @@ e2["delta"] = -1
 edges_dd = dd.concat([e1, e2], axis=0)
 edges_dd = edges_dd[(edges_dd["k"] >= 0) & (edges_dd["k"] < K)]
 \end{lstlisting}
-Infine, viene calcolata l'occupancy come la somma cumulativa delle differenze per ogni regione e timestamp. Questo ci dà una misura dell'occupancy in ogni finestra temporale.
+Infine, viene calcolata l'\emph{occupancy} come la somma cumulativa delle differenze per ogni regione e timestamp. 
 \begin{lstlisting}[language=Python, caption={}]
 base = base.merge(edges, how="left", on=[key_col, "k"]).fillna({"delta": 0})
 base = base.sort_values([key_col, "k"]).reset_index(drop=True)
@@ -231,7 +227,7 @@ for region_id, group in df_day.groupby("R"):
 \end{lstlisting}
 Per ogni regione, si applica una sequenza di filtri statistici: eliminazione dei valori nulli, selezione del range interquartile e scarto dei valori sotto la soglia minima configurabile. 
 \clearpage
-\begin{lstlisting}[language=Python, caption={Calcolo capacità base}]
+\begin{lstlisting}[language=Python, caption={}]
     sorted_counts = filtered_counts.sort_values()
     num_top = max(1, int(round(len(sorted_counts) * 0.75)))
     top_counts = sorted_counts.iloc[-num_top:]
@@ -270,8 +266,8 @@ La capacità del pseudo-settore collassato parte dal massimo valore elementare, 
 L'output finale è un dizionario che associa ciascun pseudo-settore collassato alla sua capacità nominale stimata.
 
 \section{Generazione configurazioni di pseudo-settori collassati}
-La generazione delle configurazioni collassate segue l'algoritmo descritto nella Sezione~\ref{subsec:algo-collassati}.
-Il processo inizia con il caricamento dei dati dei settori elementari. La funzione \texttt{load\_fir\_data} legge il dataset delle \gls{fir} da un file CSV compresso.
+La generazione delle configurazioni collassate segue l'Algoritmo \ref{alg:collasso-dfs-prob}.
+Il processo inizia con il caricamento dei dati dei pseudo-settori elementari. La funzione \texttt{load\_fir\_data} legge il dataset delle \gls{fir} da un file CSV compresso.
 \begin{lstlisting}[language=Python, caption={}]
 def load_fir_data() -> gpd.GeoDataFrame:
     df = pd.read_csv(DEFAULT_FIR_FILE, sep=",", compression="gzip",
@@ -366,13 +362,13 @@ def generate(self) -> gpd.GeoDataFrame:
 \end{lstlisting}
 
 \subsection{\gls{dac}}
-L'implementazione operativa del problema del \gls{dac} è stata realizzata in \gls{python}, sfruttando la libreria \texttt{DOcplex} per la modellazione e la risoluzione di problemi di programmazione lineare intera. Il prototipo segue fedelmente la formulazione matematica illustrata in Sezione \ref{sec:dac_math}, traducendo le variabili decisionali, i vincoli di permanenza, quiescenza e compatibilità tra configurazioni in vincoli \gls{cplex}
+L'implementazione operativa del problema del \gls{dac} è stata realizzata sfruttando la libreria \texttt{DOcplex} per la modellazione e la risoluzione di \gls{ilp}. Il prototipo segue la formulazione matematica illustrata in Sezione \ref{sec:dac_math}, traducendo le variabili decisionali, i vincoli di permanenza, quiescenza e compatibilità tra configurazioni in vincoli \gls{cplex}
 
 I dati operativi vengono caricati da file JSON organizzati per configurazione, comprendenti la domanda di traffico prevista, le capacità nominali dei pseudo-settori collassati e le configurazioni ammissibili. La funzione \texttt{load\_data\_for\_config} gestisce il caricamento dei dati, restituendo oggetti \gls{python} direttamente utilizzabili per costruire il modello.
 \begin{lstlisting}[language=Python, caption={}]
 tr, c, dizio_conf = load_data_for_config(config_id, data_dir)
 \end{lstlisting}
-L'eccesso di domanda rispetto alla capacità dei settori viene calcolato con la funzione \texttt{compute\_excess}, che restituisce per ogni settore e intervallo temporale il valore \(\max(\text{traffico} - \text{capacità}, 0)\):
+L'eccesso di domanda rispetto alla capacità dei settori viene calcolato con la funzione \texttt{compute\_excess}.
 
 \begin{lstlisting}[language=Python, caption={}]
 def compute_excess(tr, c, T):
@@ -409,6 +405,7 @@ I vincoli principali del modello vengono aggiunti con la funzione \texttt{add\_c
     \item le transizioni tra intervalli temporali
     \item i vincoli di permanenza e quiescenza
 \end{itemize}
+\clearpage
 \begin{lstlisting}[language=Python, caption={}]
 def add_constraints(model, x, s, CONF_t, CONF_tc, T, tp, tq):
     # Vincolo: assegnazione di una configurazione per ogni istante
