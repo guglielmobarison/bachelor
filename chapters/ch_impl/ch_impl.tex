@@ -34,7 +34,7 @@ L'elaborato è redatto in \LaTeX, utilizzando una classe personalizzata che inte
 
 \clearpage
 \section{Implementazione}
-In questa sezione si descrive come gli schemi algoritmici introdotti nei capitoli precedenti per il calcolo del \emph{throughput}, dell'\emph{occupancy}, delle capacità nominali dei pseudo-settori e della generazione delle configurazioni di pseudo-settori collassati siano stati tradotti in codice \gls{python}.  
+In questa sezione si descrive come gli schemi algoritmici introdotti nei capitoli precedenti per il calcolo del \emph{throughput}, dell'\emph{occupancy}, delle capacità nominali dei pseudo-settori, della generazione delle configurazioni di pseudo-settori collassati e l’implementazione del \gls{dac} siano stati tradotti in codice \gls{python}. 
 \subsection{Throughput}
 La funzione \texttt{compute} implementa l'algoritmo per calcolare il throughput (vedi Algoritmo~\ref{alg:throughput-anyW-naturale}) in una determinata regione temporale. Questa funzione è parte del modulo \texttt{throughput} e utilizza strutture tabellari e strumenti di manipolazione dei dati per ottenere il risultato desiderato.
 
@@ -452,3 +452,22 @@ def add_constraints(model, x, s, CONF_t, CONF_tc, T, tp, tq):
 \end{lstlisting}
 
 La soluzione ottimale viene ottenuta tramite \texttt{model.solve()} e salvata in formato JSON.
+
+\section{Verifica funzionale e analisi prestazionale}
+A conclusione della fase implementativa, è stata condotta un'attività di verifica volta a validare il corretto funzionamento dell'intera pipeline software e la solvibilità del modello del \gls{dac}.
+In assenza delle geometrie ufficiali dei settori elementari, la validazione si è basata su istanze sintetiche, costruite applicando le procedure descritte nei paragrafi precedenti a porzioni di spazio aereo e volumi di traffico realistici.
+
+L'attività ha avuto il duplice obiettivo di confermare la correttezza logica del flusso di dati e di valutare l'efficienza computazionale dei tre stadi principali della pipeline: calcolo delle metriche, generazione delle configurazioni spaziali e risoluzione del problema di ottimizzazione.
+
+Un primo risultato emerge dalla capacità del sistema di processare efficientemente grandi moli di dati. I dataset \gls{adrr} analizzati, relativi ad archi temporali mensili, raggiungono dimensioni considerevoli, contando fino a 7 milioni di record per singola mensilità. 
+Grazie all'architettura basata su \texttt{Dask} e alla parallelizzazione delle operazioni di I/O, i tempi per il calcolo delle metriche di traffico (\emph{throughput} e \emph{occupancy}) e per la stima delle capacità sull'intero arco temporale analizzato (una mensilità) si sono attestati nell'ordine dei minuti ($\le 5$~minuti) su workstation standard. Questo risultato conferma che la scelta di evitare un \gls{dbms} relazionale in favore di un approccio orientato ai file (\emph{Parquet}) e al calcolo \emph{in-memory} è adeguata per trattare scenari su scala nazionale.
+
+\subsection{Scalabilità della generazione degli scenari}
+Anche la fase di costruzione dei pseudo-settori collassati, computazionalmente critica per via delle numerose operazioni geometriche (intersezioni e unioni di poligoni) e della natura combinatoria del problema, ha mostrato una buona scalabilità.
+I test condotti hanno simulato la generazione di spazi delle configurazioni di diversa cardinalità. Anche negli scenari più onerosi i tempi di generazione non hanno superato l'ordine dei minuti ($\le 3$~minuti). Ciò dimostra l'efficacia dell'algoritmo di visita \gls{dfs} e dell'uso degli indici spaziali per abbattere la complessità delle query geometriche.
+
+\subsection{Risoluzione del modello di ottimizzazione}
+Infine, le istanze del problema di \gls{dac} così generate sono state risolte utilizzando il motore \gls{cplex}. I tempi di risoluzione registrati si sono mantenuti nell'ordine dei secondi, confermando che l'approccio \gls{ilp} rimane trattabile per istanze di queste dimensioni.
+
+\subsection{Estensibilità e indipendenza dal dato geometrico}
+La struttura del prototipo è stata progettata per essere indipendente dalla geometria specifica, rendendo la logica applicativa agnostica rispetto alla forma dei settori. Questa flessibilità permetterà l'impiego del software nel contesto reale non appena disponibili le geometrie ufficiali, senza richiedere modifiche sostanziali al codice. Ciò assicura un alto grado di riusabilità dello strumento, ponendo basi solide e scalabili per l'operatività futura.

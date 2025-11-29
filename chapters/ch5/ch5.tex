@@ -63,9 +63,9 @@ Nel dataset considerato la convessità è l’eccezione: su 324 poligoni validi,
 \section{Calcolo delle capacità}
 \label{sec:cap5-capacita}
 L'obiettivo è associare a ciascun pseudo-settore una capacità nominale, cioè un numero intero che rappresenti il volume di traffico ritenuto gestibile in condizioni operative ordinarie.  
-Nel contesto di questa tesi la capacità non è stimata a partire da procedure operative ufficiali, ma tramite regole euristiche costruite sui dati storici \acrshort{adrr} e pensate per generare istanze artificiali realistiche per il problema di \gls{dac}.  
+Nel contesto di questa tesi la capacità non è stimata a partire da procedure operative ufficiali, ma tramite regole euristiche costruite sui dati storici \gls{adrr} e pensate per generare istanze artificiali realistiche per il problema di \gls{dac}.  
 
-Le due procedure descritte in questa sezione (per pseudo-settori elementari e per pseudo-settori collassati) sono state introdotte e impiegate in \cite{galeazzo2024integer} per la valutazione di approcci \gls{ilp} al \gls{dac}. Qui vengono riprese e adattate al dataset \acrshort{adrr} utilizzato nello stage.
+Le due procedure descritte in questa sezione (per pseudo-settori elementari e per pseudo-settori collassati) sono state introdotte e impiegate in \cite{galeazzo2024integer} per la valutazione di approcci \gls{ilp} al \gls{dac}. Qui vengono riprese e adattate al dataset \gls{adrr} utilizzato nello stage.
 
 Per ogni pseudo-settore elementare \(R\) e per ogni giorno campione \(d \in D\) si definisce un traffico giornaliero \(N_R(d)\).  
 Più precisamente, fissiamo una griglia temporale con passo \(\lambda = 5\,\mathrm{min}\) e finestre di lunghezza \(W = 1\,\mathrm{h}\) (vedi Sezione~\ref{subsec:throughput-teoria}). Per ciascun giorno \(d\) e per ciascun settore \(R\) si calcola quindi il \emph{throughput} \(T_R(I_k)\) su tutte le finestre \(I_k = [t_k, t_k+W)\) che cadono nel giorno considerato. La serie \(\{N_R(d)\}_{d \in D}\) fornisce quindi, per ciascun pseudo-settore, un insieme di osservazioni giornaliere su cui costruire una capacità nominale.

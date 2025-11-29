@@ -66,14 +66,14 @@ In particolare, affinché le configurazioni collassate siano attuabili senza gen
 \EnablePunct
 \subsection{Control Area}
 La \gls{cta} costituisce una porzione contigua e coerente di spazio aereo, ottenuta attraverso l’aggregazione di uno o più settori, siano essi elementari o collassati. Essa si configura come una struttura di ordine superiore all’interno dell’architettura gerarchica dello spazio aereo, che include, su livelli inferiori, gli airblocks, i settori e gli airspace.
-Dal punto di vista funzionale, la \acrshort{cta} rappresenta un'entità organizzativa concepita sia per scopi operativi sia per esigenze analitiche. In particolare, essa consente di modellare un’area omogenea in termini di attribuzione della capacità e di gestione del traffico aereo. Ogni \acrshort{cta} è affidata alla supervisione di un \Gls{acc}, gestito da un \Gls{ansp}, il quale è responsabile dell’erogazione dei servizi di controllo all’interno dei volumi di spazio assegnati.
+Dal punto di vista funzionale, la \gls{cta} rappresenta un'entità organizzativa concepita sia per scopi operativi sia per esigenze analitiche. In particolare, essa consente di modellare un’area omogenea in termini di attribuzione della capacità e di gestione del traffico aereo. Ogni \gls{cta} è affidata alla supervisione di un \gls{acc}, gestito da un \gls{ansp}, il quale è responsabile dell’erogazione dei servizi di controllo all’interno dei volumi di spazio assegnati.
 
 Una rappresentazione della \gls{cta} e dei settori collassati è fornita nella Figura~\ref{fig:cta}, derivata da \cite{ehrencrona2014} come esito del lavoro di ricerca sui metodi di formazione delle configurazioni.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.9\textwidth]{chapters/ch1/img/madrid_south_ACC}
-  \caption{Un esempio di \acrshort{cta}: a destra la \acrshort{cta} di ``Madrid South'', a sinistra la sua decomposizione in settori collassati \cite{ehrencrona2014}.}
+  \caption{Un esempio di \gls{cta}: a destra la \gls{cta} di ``Madrid South'', a sinistra la sua decomposizione in settori collassati \cite{ehrencrona2014}.}
   \label{fig:cta}
 \end{figure}
 
@@ -82,7 +82,7 @@ Una rappresentazione della \gls{cta} e dei settori collassati è fornita nella F
 
 La \gls{fir} costituisce la principale suddivisione standardizzata dello spazio aereo, istituita per garantire i servizi di informazione volo e di allarme. Tali servizi comprendono l'assistenza alla navigazione sicura ed efficiente, oltre alla gestione delle emergenze che coinvolgono gli aeromobili noti.
 
-Le \acrshort{fir} corrispondono generalmente ai confini nazionali (cfr.\ Figura~\ref{fig:svizzera_fir}), sebbene possano estendersi su più stati o suddividersi all'interno di ampie nazioni (cfr.\ Figura~\ref{fig:italia_fir}). Ogni \acrshort{fir} rappresenta un'entità stabile e permanente, definita su base strategica e soggetta a modifiche solo in casi eccezionali.
+Le \gls{fir} corrispondono generalmente ai confini nazionali (cfr.\ Figura~\ref{fig:svizzera_fir}), sebbene possano estendersi su più stati o suddividersi all'interno di ampie nazioni (cfr.\ Figura~\ref{fig:italia_fir}). Ogni \gls{fir} rappresenta un'entità stabile e permanente, definita su base strategica e soggetta a modifiche solo in casi eccezionali.
 \clearpage
 \begin{figure}[H]
   \centering
@@ -109,31 +109,22 @@ Le \acrshort{fir} corrispondono generalmente ai confini nazionali (cfr.\ Figura~
   \end{minipage}
 \end{figure}
 
-% ------ da togliere
-\iffalse
-\subsubsection{ATC Unit Airspace}
-
-L'\gls{aua} è un volume di spazio aereo posto sotto la responsabilità di una specifica unità di controllo del traffico aereo, come una torre di controllo aeroportuale o una \acrshort{cta}. All'interno di ciascun \acrshort{aua} vengono garantiti i servizi di gestione e sorveglianza del traffico aereo, assicurando la sicurezza e la regolarità delle operazioni.
-
-Gli \acrshort{aua} sono strutture operative relativamente stabili, organizzate per supportare la divisione gerarchica e funzionale dello spazio aereo.
-\fi
-% ------
 
 %Diversamente dalle \acrshort{fir}, i settori collassati costituiscono configurazioni dinamiche e temporanee dello spazio aereo. Essi derivano dall'aggregazione o dalla divisione di settori elementari in risposta a esigenze operative contingenti, come le variazioni giornaliere nel volume di traffico.
 
 \section{Dynamic Airspace Configuration}
-La gestione dello spazio aereo avviene secondo logiche dinamiche e flessibili, guidate dal principio del \acrfull{fua}, che prevede l’utilizzo ottimizzato delle risorse spaziali in risposta alle variazioni previste nel traffico e integra in modo coordinato le esigenze civili e militari~\citep{ec2150_2005,eurocontrol_ans_fua}.
+La gestione dello spazio aereo avviene secondo logiche dinamiche e flessibili, guidate dal principio del \gls{fua}, che prevede l’utilizzo ottimizzato delle risorse spaziali in risposta alle variazioni previste nel traffico e integra in modo coordinato le esigenze civili e militari~\citep{ec2150_2005,eurocontrol_ans_fua}.
 
 In ambito operativo, ciò si realizza attraverso configurazioni settoriali che evolvono nel corso della giornata. Ogni configurazione è costituita da una combinazione di settori attivi (vedi Sezioni~\ref{subsec:settore-elementare} e~\ref{subsec:settore-collassato}), selezionati secondo un \emph{opening scheme} che ne determina la temporizzazione. Chiamiamo \emph{opening scheme} di un dato \gls{acc}, per un dato giorno, la descrizione delle diverse configurazioni che si susseguono nel corso della giornata~\citep{opscheme1, opscheme2}. A ciascun settore attivo è associata una capacità nominale, definita come il numero massimo di voli che possono essere gestiti per unità di tempo, determinata sulla base della complessità operativa e delle risorse disponibili.
 
-Il problema del \acrfull{dac} consiste nel determinare la sequenza ottimale delle configurazioni dello spazio aereo in un intervallo temporale, con l'obiettivo di minimizzare l’eccedenza della domanda di traffico rispetto alla capacità disponibile. Nel contesto operativo utilizzato in \citep{galeazzo2024integer}, il problema assume di disporre di:
+Il problema del \gls{dac} consiste nel determinare la sequenza ottimale delle configurazioni dello spazio aereo in un intervallo temporale, con l'obiettivo di minimizzare l’eccedenza della domanda di traffico rispetto alla capacità disponibile. Nel contesto operativo utilizzato in \citep{galeazzo2024integer}, il problema assume di disporre di:
 \begin{itemize}
     \item un insieme finito di configurazioni ammissibili
     \item la domanda di traffico prevista su ciascun settore e la sua evoluzione temporale
     \item la capacità nominale di ciascun settore
 \end{itemize}
 % TODO si ripete quello scritto sopra?
-Data tale situazione operativa, l'obiettivo del \acrshort{dac} diventa quello di individuare la successione temporale delle configurazioni che consenta di gestire al meglio il traffico atteso, minimizzando eventuali sovraccarichi (eccessi di domanda) e rispettando vincoli operativi quali:
+Data tale situazione operativa, l'obiettivo del \gls{dac} diventa quello di individuare la successione temporale delle configurazioni che consenta di gestire al meglio il traffico atteso, minimizzando eventuali sovraccarichi (eccessi di domanda) e rispettando vincoli operativi quali:
 \begin{itemize}
     \item l’intervallo minimo di permanenza (permanence) in ogni configurazione, evitando cambiamenti frequenti e complessi per i controllori
     \item l’intervallo di quiescenza (quiescence), ovvero il tempo minimo che deve trascorrere prima di poter riattivare una configurazione precedentemente disattivata

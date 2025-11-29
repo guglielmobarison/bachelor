@@ -17,7 +17,7 @@ Ogni dominio descrive un particolare aspetto del sistema \gls{atm} ad esempio ae
   \item[Supporto alla cooperazione] Il catalogo dei domini è utilizzato da team di progetto, fornitori e utilizzatori dei servizi \gls{adr} come strumento di comunicazione per chiarire ruoli e responsabilità~\citep[Sez.~1.3]{eurocontrol2025adr}.
 \end{description}
 
-Il modello \gls{adr} individua undici domini logici (cfr. Tabella~\ref{tab:domini}) ciascuno modellato secondo lo schema \acrshort{aixm}\,5.1, che variano da informazioni statiche a entità che possono cambiare più volte al giorno~\citep{eurocontrol2025adr}.
+Il modello \gls{adr} individua undici domini logici (cfr. Tabella~\ref{tab:domini}) ciascuno modellato secondo lo schema \gls{aixm}\,5.1, che variano da informazioni statiche a entità che possono cambiare più volte al giorno~\citep{eurocontrol2025adr}.
 
 \begin{table}[htbp]
   \centering
@@ -25,17 +25,17 @@ Il modello \gls{adr} individua undici domini logici (cfr. Tabella~\ref{tab:domin
     \toprule
     \textbf{Dominio} & \textbf{Esempi di oggetti/attributi}\\
     \midrule
-    Aerodrome & Indicatore \acrshort{icao}, \acrshort{arp}, configurazioni pista\\
-    Aircraft Type & Codici \acrshort{icao}/\acrshort{iata}\\
-    Airspace & \gls{fir}, settori, aree \acrshort{fua}\\
+    Aerodrome & Indicatore \gls{icao}, \gls{arp}, configurazioni pista\\
+    Aircraft Type & Codici \gls{icao}/\gls{iata}\\
+    Airspace & \gls{fir}, settori, aree \gls{fua}\\
     \gls{atfcm} Scenario & Regolazioni, configurazioni di rete\\
     Authority & Ente normativo o gestore\\
     Capacity & Volumi di traffico, regolazioni\\
-    Route & \acrshort{ats}, \acrshort{cdr}, rotte oceaniche \acrshort{nat}\\
-    Significant Point & \acrshort{navaid}, punti \acrshort{rnav}\\
-    Terminal Procedures & \acrshort{sid}, \acrshort{star}, avvicinamenti\\
-    Flight Restrictions & \acrshort{rad}, \acrshort{dct}, \acrshort{fra}\\
-    Organisational Unit & \gls{acc}, \acrshort{fmp}, \acrshort{aro}\\
+    Route & \gls{ats}, \gls{cdr}, rotte oceaniche \gls{nat}\\
+    Significant Point & \gls{navaid}, punti \gls{rnav}\\
+    Terminal Procedures & \gls{sid}, \gls{star}, avvicinamenti\\
+    Flight Restrictions & \gls{rad}, \gls{dct}, \gls{fra}\\
+    Organisational Unit & \gls{acc}, \gls{fmp}, \gls{aro}\\
     \bottomrule
   \end{tabular}
   \caption{Domini informativi principali del repository \gls{adr} \citep{eurocontrol2025adr}.}
@@ -70,15 +70,15 @@ Il repository \gls{adr} è concepito per il supporto operativo e fornisce dati q
 Il repository \gls{adrr}, al contrario, è pensato per analisi storiche e studi di ricerca. Esso raccoglie dati di traffico dal 2015 al 2023, per un totale di circa 23{,}3 milioni di voli, organizzati in mesi campione (marzo, giugno, settembre e dicembre) per ciascun anno disponibile. La pubblicazione dei dati avviene con un ritardo di circa due anni rispetto al periodo osservato, in modo da garantire l'anonimizzazione e la tutela della privacy dei soggetti coinvolti.
 
 \section{Struttura \gls{adrr}}
-Ogni rilascio di \acrshort{adrr} viene distribuito come archivio compresso in formato \texttt{zip}, che raccoglie un insieme di file CSV organizzati in tabelle logicamente correlate.  
-La struttura del database è descritta in modo esaustivo in~\cite{rnd2023}; in questa sezione si fornisce una panoramica delle sole componenti rilevanti per il lavoro svolto, raggruppate nelle macro-aree \texttt{FLIGHTS}, \texttt{FLIGHT POINTS}, \texttt{FLIGHT AIRSPACES} e \texttt{\acrshort{atm} ENVIRONMENT DATA}.
+Ogni rilascio di \gls{adrr} viene distribuito come archivio compresso in formato \texttt{zip}, che raccoglie un insieme di file CSV organizzati in tabelle logicamente correlate.  
+La struttura del database è descritta in modo esaustivo in~\cite{rnd2023}; in questa sezione si fornisce una panoramica delle sole componenti rilevanti per il lavoro svolto, raggruppate nelle macro-aree \texttt{FLIGHTS}, \texttt{FLIGHT POINTS}, \texttt{FLIGHT AIRSPACES} e \texttt{\gls{atm} ENVIRONMENT DATA}.
 
 \subsection{FLIGHTS}
 \label{sec:flights}
 La tabella \texttt{FLIGHTS} contiene, per ciascun volo commerciale registrato nel sistema \gls{adrr}, gli attributi che ne descrivono identità, origine/destinazione, aeromobile e collocazione temporale.
 
-Ogni riga corrisponde a un volo identificato da un codice numerico univoco (\texttt{ECTL\_ID}), ereditato dal sistema \acrshort{prisme}. Ad esso sono associati gli aeroporti di partenza e arrivo (codici \acrshort{icao} \texttt{ADEP} e \texttt{ADES}, con relative coordinate geografiche), gli orari pianificati ed effettivi di uscita dallo stand e di arrivo (\texttt{Filed/Actual Off Block Time}, \texttt{Filed/Actual Arrival Time}, in UTC), le informazioni sull’aeromobile (\texttt{AC Type}, \texttt{AC Operator}, \texttt{AC Registration}) e il segmento di mercato \acrshort{statfor}.  
-Sono inoltre disponibili indicatori di profilo quali il livello di volo richiesto nel piano di volo (\texttt{Requested \acrshort{fl}}) e la distanza effettivamente percorsa (\texttt{Actual Distance Flown}).
+Ogni riga corrisponde a un volo identificato da un codice numerico univoco (\texttt{ECTL\_ID}), ereditato dal sistema \gls{prisme}. Ad esso sono associati gli aeroporti di partenza e arrivo (codici \gls{icao} \texttt{ADEP} e \texttt{ADES}, con relative coordinate geografiche), gli orari pianificati ed effettivi di uscita dallo stand e di arrivo (\texttt{Filed/Actual Off Block Time}, \texttt{Filed/Actual Arrival Time}, in UTC), le informazioni sull’aeromobile (\texttt{AC Type}, \texttt{AC Operator}, \texttt{AC Registration}) e il segmento di mercato \gls{statfor}.  
+Sono inoltre disponibili indicatori di profilo quali il livello di volo richiesto nel piano di volo (\texttt{Requested \gls{fl}}) e la distanza effettivamente percorsa (\texttt{Actual Distance Flown}).
 
 \subsection{FLIGHT POINTS}
 \label{sec:flight_points}
@@ -95,12 +95,12 @@ Le tabelle \texttt{FLIGHT FIRs FILED} e \texttt{FLIGHT FIRs ACTUAL} descrivono, 
 
 In entrambi i casi ogni record è associato a un identificativo di volo (\texttt{ECTL\_ID}) e a un numero di sequenza (\texttt{Sequence Number}) che ne stabilisce l’ordine cronologico. Sono inoltre specificati l’identificativo della regione informativa di volo interessata e gli orari di ingresso e uscita dal volume (\texttt{Entry Time}, \texttt{Exit Time}, in UTC).
 
-\subsection{\acrshort{atm} ENVIRONMENT DATA}
+\subsection{\gls{atm} ENVIRONMENT DATA}
 \label{sec:atm_env}
-La macro-area \texttt{\acrshort{atm} ENVIRONMENT DATA} raccoglie le informazioni di contesto sullo spazio aereo e sulle procedure, necessarie per interpretare correttamente i dati di traffico.
+La macro-area \texttt{\gls{atm} ENVIRONMENT DATA} raccoglie le informazioni di contesto sullo spazio aereo e sulle procedure, necessarie per interpretare correttamente i dati di traffico.
 
-\subsubsection{Tabella AIRAC}
-La tabella \texttt{AIRAC} contiene l’elenco dei cicli AIRAC che ricadono nel periodo coperto dal dataset.  
+\subsubsection{Tabella \gls{airac}}
+La tabella \texttt{\gls{airac}} contiene l’elenco dei cicli AIRAC che ricadono nel periodo coperto dal dataset.  
 Per ciascun ciclo vengono riportati l’identificativo esterno (\texttt{External ID}) e le date di inizio e fine validità (\texttt{Date From}, \texttt{Date To}, in UTC). 
 \subsubsection{Tabella ROUTES}
 La tabella \texttt{ROUTES} definisce le rotte \gls{ats} come sequenze ordinate di punti geografici, dal tratto “a monte” fino a quello “a valle” della rotta.  
@@ -160,7 +160,7 @@ L’accesso ai dati è quindi subordinato all’accettazione delle condizioni d�
 \section{Origine e qualità dei dati}
 I dataset \gls{adrr} derivano principalmente da due fonti principali:
 \begin{description}
-  \item[\gls{nm},] fornisce dati relativi ai piani di volo \acrshort{ifr} e alle strutture dello spazio aereo.
+  \item[\gls{nm},] fornisce dati relativi ai piani di volo \gls{ifr} e alle strutture dello spazio aereo.
   \item[\gls{crco},] contribuisce con aggiornamenti specifici riguardanti gli operatori e la registrazione degli aeromobili.
 \end{description}
 \clearpage
@@ -170,7 +170,7 @@ I dati resi disponibili tramite il repository \gls{adrr} provengono da diverse s
 \begin{itemize}
 \item \textbf{Dati di volo}
 \begin{itemize}
-\item \textbf{Dettagli dei voli (vedi Sezione \ref{sec:flights})}: provengono dai piani di volo \acrshort{ifr} depositati presso il \gls{nm}. Quando disponibili, le informazioni relative all'operatore e alla registrazione dell'aeromobile vengono integrate e corrette tramite aggiornamenti provenienti dal \gls{crco}.
+\item \textbf{Dettagli dei voli (vedi Sezione \ref{sec:flights})}: provengono dai piani di volo \gls{ifr} depositati presso il \gls{nm}. Quando disponibili, le informazioni relative all'operatore e alla registrazione dell'aeromobile vengono integrate e corrette tramite aggiornamenti provenienti dal \gls{crco}.
 \item \textbf{Profili di volo (vedi Sezioni \ref{sec:flight_points} e~\ref{sec:flight_airspace})}: i profili \textit{filed} derivano direttamente dai piani di volo presentati al \gls{nm}, mentre i profili \textit{actual} sono ottenuti tramite osservazioni radar e messaggi \gls{atfcm} gestiti dal \gls{nm}.
 \end{itemize}
 
