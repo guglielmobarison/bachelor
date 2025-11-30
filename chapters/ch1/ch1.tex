@@ -1,10 +1,10 @@
-Nel contesto della gestione dell'\Gls{atm}, lo spazio aereo viene modellato attraverso un insieme di entità geometriche e funzionali che ne descrivono l’organizzazione e le modalità operative. Al fine di rappresentare in maniera accurata le configurazioni spaziali e temporali utilizzate nella gestione della capacità e del controllo del traffico, è utile introdurre alcune definizioni fondamentali che costituiscono la base del modello adottato da \citet{eurocontrol2025}.
+Nel contesto della gestione dell'\gls{atm}, lo spazio aereo viene modellato attraverso un insieme di entità geometriche e funzionali che ne descrivono l’organizzazione e le modalità operative. Al fine di rappresentare in maniera accurata le configurazioni spaziali e temporali utilizzate nella gestione della capacità e del controllo del traffico, è utile introdurre alcune definizioni fondamentali che costituiscono la base del modello adottato da \citet{eurocontrol2025}.
 
 \section{Definizioni preliminari}
-Lo spazio aereo è rappresentato attraverso unità di controllo elementari che possono essere aggregate su più livelli, secondo gli schemi descritti nelle sottosezioni che seguono. In questa sezione si introducono le principali entità geometriche e funzionali del modello, che verranno poi richiamate nella definizione delle metriche di capacità e nelle formulazioni di ottimizzazione.
+Lo spazio aereo è rappresentato attraverso unità di controllo elementari che possono essere aggregate su più livelli, secondo gli schemi descritti nelle sottosezioni che seguono. Si introdurranno le principali entità geometriche e funzionali, che verranno poi richiamate nella definizione delle metriche di capacità.
 
 \subsection{Airblock}
-L’airblock è l’unità spaziale di base del modello. Esso è definito come un poligono chiuso in due dimensioni (2D), rappresentato come una sequenza ordinata di punti in coordinate geografiche. Ogni airblock delimita una porzione dello spazio aereo e costituisce la tessera elementare (o tassello) del mosaico bidimensionale che modella il dominio orizzontale dello spazio aereo. L’insieme completo degli airblock fornisce dunque una partizione esaustiva e non sovrapposta dello spazio aereo orizzontale.
+L’airblock è l’unità spaziale di base. Esso è definito come un poligono chiuso in due dimensioni (2D), rappresentato come una sequenza ordinata di punti in coordinate geografiche. Ogni airblock delimita una porzione dello spazio aereo e costituisce la tessera elementare (o tassello) del mosaico bidimensionale che modella il dominio orizzontale dello spazio aereo. L’insieme completo degli airblock fornisce dunque una partizione esaustiva e non sovrapposta dello spazio aereo orizzontale.
 \clearpage
 \subsection{Settore elementare (\emph{elementary sector})}
 \label{subsec:settore-elementare}
@@ -73,7 +73,7 @@ Una rappresentazione della \gls{cta} e dei settori collassati è fornita nella F
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.9\textwidth]{chapters/ch1/img/madrid_south_ACC}
-  \caption{Un esempio di \gls{cta}: a destra la \gls{cta} di ``Madrid South'', a sinistra la sua decomposizione in settori collassati \cite{ehrencrona2014}.}
+  \caption{Un esempio di Control Area: a destra quella di ``Madrid South'', a sinistra la sua decomposizione in settori collassati \cite{ehrencrona2014}.}
   \label{fig:cta}
 \end{figure}
 
@@ -131,9 +131,6 @@ Data tale situazione operativa, l'obiettivo del \gls{dac} diventa quello di indi
     \item la compatibilità tra configurazioni consecutive, in modo da consentire transizioni fluide
 \end{itemize}
 
-
-Tale problema può essere formulato matematicamente mediante un modello di \Gls{ilp}, come formulato in \cite{galeazzo2024integer} e riportato nella sezione seguente.
-
 \subsection{Formulazione matematica}
 \label{sec:dac_math}
 La formulazione matematica del problema del \gls{dac} può essere rappresentata attraverso un modello di \gls{ilp} introdotto da \citet{galeazzo2024integer}. Tale modello consente di determinare la successione ottimale delle configurazioni spaziali del traffico aereo lungo un orizzonte temporale discreto, minimizzando l'eccesso di domanda rispetto alla capacità disponibile, nel rispetto dei vincoli operativi richiesti per una gestione sicura ed efficiente del traffico aereo.\\\\
@@ -152,7 +149,7 @@ Si introducono di seguito le notazioni adottate nel modello:
         \item $x^c_t$: variabile binaria che assume valore 1 se la configurazione $c \in C^t$ è attiva nel periodo $t$, e 0 altrimenti
         \item $s^c_t$: variabile binaria che assume valore 1 se avviene una transizione alla configurazione $c$ al tempo $t$ (ossia $c$ è attiva al periodo $t$ e non al periodo $t-1$), e 0 altrimenti
     \end{itemize}
-    Formalmente, il modello ILP può essere espresso nel modo seguente:
+    Formalmente, il modello \gls{ilp} può essere espresso nel modo seguente:
     \begin{subequations}\label{eq:modello}
     \begin{align}
     \min\;& \sum_{t \in T} E^c_t\, x^c_{t} \label{eq:objfun}\\
@@ -171,4 +168,4 @@ Si introducono di seguito le notazioni adottate nel modello:
     \end{align}
     \end{subequations}
 
-I vincoli operativi del modello ILP sono interpretati come segue. Il vincolo (\ref{eq:unicaconf}) assicura l’unicità della configurazione attiva in ciascun periodo temporale. Il vincolo (\ref{eq:transizioni}) definisce le condizioni di transizione ammissibili tra configurazioni consecutive. Il vincolo (\ref{eq:minpermanenza}) impone che, una volta attivata, una configurazione resti attiva per almeno $t_p$ periodi consecutivi, prevenendo transizioni troppo frequenti. Il vincolo (\ref{eq:quiescenza}) garantisce che una configurazione disattivata non venga riattivata prima del trascorrere del periodo minimo di quiescenza $t_q$. Infine, il vincolo (\ref{eq:transizione}) collega le variabili decisionali $x^c_t$ e $s^c_t$, registrando esplicitamente l’attivazione di una configurazione.
+I vincoli operativi del modello \gls{ilp} sono interpretati come segue. Il vincolo (\ref{eq:unicaconf}) assicura l’unicità della configurazione attiva in ciascun periodo temporale. Il vincolo (\ref{eq:transizioni}) definisce le condizioni di transizione ammissibili tra configurazioni consecutive. Il vincolo (\ref{eq:minpermanenza}) impone che, una volta attivata, una configurazione resti attiva per almeno $t_p$ periodi consecutivi, prevenendo transizioni troppo frequenti. Il vincolo (\ref{eq:quiescenza}) garantisce che una configurazione disattivata non venga riattivata prima del trascorrere del periodo minimo di quiescenza $t_q$. Infine, il vincolo (\ref{eq:transizione}) collega le variabili decisionali $x^c_t$ e $s^c_t$, registrando esplicitamente l’attivazione di una configurazione.

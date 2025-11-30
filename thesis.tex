@@ -30,8 +30,8 @@
 
         \section*{Abstract}      
         Il presente documento descrive il lavoro svolto durante il periodo di stage dal laureando Guglielmo Barison presso l'Università degli Studi di Padova. Lo stage è stato svolto al termine del percorso di studi della laurea triennale in Informatica, ed ha avuto la durata di circa trecento ore.\\
-        L'obiettivo della stage è stato esplorare e analizzare i dati relativi al traffico e alla configurazione dello spazio aereo europeo, resi disponibili da \citet{eurocontrol2025} tramite il repository \Gls{adrr}. La ricerca ha inizialmente coinvolto lo studio approfondito dei formati e delle caratteristiche dei dati \gls{adrr}, ponendo particolare attenzione a informazioni rilevanti quali configurazioni spaziali, domanda di traffico e occupazione degli spazi aerei. 
-        Successivamente è stata progettata e implementata, mediante il linguaggio Python, una procedura per esportare tali dati nel formato richiesto dai modelli matematici utilizzati per affrontare il problema del \Gls{dac}. 
+        L'obiettivo della stage è stato esplorare e analizzare i dati relativi al traffico e alla configurazione dello spazio aereo europeo, resi disponibili da \citet{eurocontrol2025} tramite il repository \acrfull{adrr}. La ricerca ha inizialmente coinvolto lo studio approfondito dei formati e delle caratteristiche dei dati acrfull{adrr}, ponendo particolare attenzione a informazioni rilevanti quali configurazioni spaziali, domanda di traffico e occupazione degli spazi aerei. 
+        Successivamente è stata progettata e implementata, mediante il linguaggio Python, una procedura per esportare tali dati nel formato richiesto dai modelli matematici utilizzati per affrontare il problema del \acrfull{dac}. 
         \newpage
         
         % Indice, figure, tabelle, nomenclatura
@@ -50,10 +50,10 @@
     \label{ch:obiettivi}
     \input{chapters/ch2/ch2.tex}
     \cleardoublepage
-    \chapter{Caratteristiche dei dati \gls{adrr}}
+    \chapter{Caratteristiche dell'Aviation Data Repository for Research}
     \input{chapters/ch3/ch3.tex}
     \cleardoublepage
-    \chapter{Procedure tecniche di acquisizione e analisi preliminare}
+    \chapter{Procedure tecniche di acquisizione e definizione delle metriche}
     \input{chapters/ch4/ch4.tex}
     \cleardoublepage
     \chapter{Criticità riscontrate e generazione di istanze fittizie}
@@ -66,7 +66,7 @@
     \input{chapters/ch6/ch6.tex}
     \cleardoublepage
     % TODO fix definitivo thesis.cls riga 12
-    %\printnoidxglossary[type=\acronymtype, title=Acronimi]
+    \printnoidxglossary[type=\acronymtype, title=Acronimi]
     \cleardoublepage
     \printnoidxglossary[type=main, title=Glossario]
 

@@ -1,6 +1,6 @@
-Nei capitoli precedenti sono stati introdotti il modello temporale e le metriche di traffico, la costruzione delle porzioni di spazio aereo e dei pseudo-settori collassati, la definizione delle capacità nominali e la formulazione del problema de \gls{dac} come modello di programmazione lineare intera.  
-In questo capitolo si passa dal piano teorico a quello realizzativo, descrivendo come le procedure progettate siano state effettivamente implementate in un prototipo software basato su \gls{python}.  
-L’obiettivo non è fornire una documentazione esaustiva del codice, ma chiarire le scelte progettuali, le librerie utilizzate e l’organizzazione complessiva della pipeline, mostrando in che modo le competenze informatiche sono state applicate al caso di studio.
+Nei capitoli precedenti sono stati introdotti il modello temporale e le metriche di traffico, la costruzione delle porzioni di spazio aereo e degli \emph{pseudo-settori collassati}, la definizione delle capacità nominali e la formulazione del problema de \gls{dac} come modello di programmazione lineare intera.  
+In questo capitolo si passa dal piano teorico e progettuale a quello realizzativo, descrivendo come le procedure progettate siano state effettivamente implementate in un prototipo software basato su \gls{python}.  
+L’obiettivo non è fornire una documentazione esaustiva del codice, ma chiarire le scelte progettuali, le librerie utilizzate e l’organizzazione complessiva della pipeline.
 \section{Ambiente di sviluppo e strumenti}
 In questa sezione si descrive l'ambiente di sviluppo e l'insieme di strumenti software utilizzati per costruire la pipeline di elaborazione dei dati \gls{adrr} e il prototipo di risolutore per il problema di \gls{dac}.  
 
@@ -34,11 +34,11 @@ L'elaborato è redatto in \LaTeX, utilizzando una classe personalizzata che inte
 
 \clearpage
 \section{Implementazione}
-In questa sezione si descrive come gli schemi algoritmici introdotti nei capitoli precedenti per il calcolo del \emph{throughput}, dell'\emph{occupancy}, delle capacità nominali dei pseudo-settori, della generazione delle configurazioni di pseudo-settori collassati e l’implementazione del \gls{dac} siano stati tradotti in codice \gls{python}. 
+In questa sezione si descrive come siano stati tradotti in codice \gls{python} gli schemi algoritmici introdotti nei Capitoli \ref{ch:ch4} e \ref{ch:ch5} per il calcolo del \emph{throughput} (vedi Sezione \ref{subsec:throughput-teoria}), dell'\emph{occupancy} (vedi Sezione \ref{subsec:occupancy-teoria}), delle capacità nominali dei pseudo-settori, le procedure per la generazione delle configurazioni di \emph{pseudo-settori collassati}, e l’implementazione del modello di \gls{ilp} per il \gls{dac}.
 \subsection{Throughput}
 La funzione \texttt{compute} implementa l'algoritmo per calcolare il throughput (vedi Algoritmo~\ref{alg:throughput-anyW-naturale}) in una determinata regione temporale. Questa funzione è parte del modulo \texttt{throughput} e utilizza strutture tabellari e strumenti di manipolazione dei dati per ottenere il risultato desiderato.
 
-La funzione accetta diversi parametri, tra cui un DataFrame di eventi \texttt{E}, un timestamp di inizio \texttt{tau0}, un timestamp di fine \texttt{tau1}, un intervallo di tempo \texttt{Lambda}, una finestra di tempo \texttt{W}, e altre opzioni. Questi parametri corrispondono agli oggetti matematici utilizzati nell'algoritmo originale.
+La funzione accetta diversi parametri, tra cui un DataFrame di eventi \texttt{E}, un timestamp di inizio \texttt{tau0}, un timestamp di fine \texttt{tau1}, un intervallo di tempo \texttt{Lambda}, una finestra di tempo \texttt{W}, e altre opzioni. Questi parametri corrispondono agli oggetti matematici utilizzati nell'algoritmo originale. Segue la definizione della funzione in \gls{python}
 
 \begin{lstlisting}[language=Python, caption={}]
 def compute(
@@ -54,7 +54,7 @@ def compute(
 ) -> pd.DataFrame:
 \end{lstlisting}
 
-Il primo passo consiste nel preparare la griglia temporale. Questa griglia è determinata dai parametri \texttt{tau0}, \texttt{tau1} e \texttt{Lambda}, che definiscono l'intervallo di tempo e la granularità della griglia. La funzione \texttt{grid\_params} viene utilizzata per calcolare il numero di intervalli \texttt{K} tra \texttt{tau0} e \texttt{tau1}. Questo è essenziale per suddividere il periodo di interesse in intervalli gestibili e uniformi, che faciliteranno il calcolo del throughput per ciascuna finestra temporale.
+Il primo passo consiste nel preparare la griglia temporale. Questa griglia è determinata dai parametri \texttt{tau0}, \texttt{tau1} e \texttt{Lambda}, che definiscono l'intervallo di tempo e la granularità della griglia. La seguente funzione \texttt{grid\_params} viene utilizzata per calcolare il numero di intervalli \texttt{K} tra \texttt{tau0} e \texttt{tau1}. Questo è essenziale per suddividere il periodo di interesse in intervalli gestibili e uniformi, che faciliteranno il calcolo del throughput per ciascuna finestra temporale.
 
 \begin{lstlisting}[language=Python, caption={}]
 t0, t1, Lambda_td, W_td, K, _m = grid_params(
@@ -361,7 +361,7 @@ def generate(self) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(merged_records, crs=self.sectors.crs)
 \end{lstlisting}
 
-\subsection{\gls{dac}}
+\subsection{Dynamic Airspace Configuration}
 L'implementazione operativa del problema del \gls{dac} è stata realizzata sfruttando la libreria \texttt{DOcplex} per la modellazione e la risoluzione di \gls{ilp}. Il prototipo segue la formulazione matematica illustrata in Sezione \ref{sec:dac_math}, traducendo le variabili decisionali, i vincoli di permanenza, quiescenza e compatibilità tra configurazioni in vincoli \gls{cplex}
 
 I dati operativi vengono caricati da file JSON organizzati per configurazione, comprendenti la domanda di traffico prevista, le capacità nominali dei pseudo-settori collassati e le configurazioni ammissibili. La funzione \texttt{load\_data\_for\_config} gestisce il caricamento dei dati, restituendo oggetti \gls{python} direttamente utilizzabili per costruire il modello.

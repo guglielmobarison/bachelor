@@ -159,7 +159,7 @@
 \ProcessOptions \relax
 \LoadClass{report}
 \PassOptionsToPackage{breaklinks}{hyperref}
-\RequirePackage[a-1b]{pdfx}
+%\RequirePackage[a-1b]{pdfx}
 
 \RequirePackage[a4paper,inner=4cm,outer=3cm,top=4cm,bottom=3.5cm,pdftex]{geometry}
 
@@ -415,7 +415,7 @@ showstringspaces=false
 \RequirePackage{minitoc}
 \RequirePackage{ifpdf}
 \RequirePackage{nomencl}
-
+\RequirePackage{hyperref}
 \usepackage{courier}
 
 
@@ -434,7 +434,7 @@ showstringspaces=false
 \RequirePackage{makeidx}
 \makeindex
 
-\RequirePackage[toc,numberedsection=autolabel]{glossaries}
+\RequirePackage[toc,numberedsection=autolabel, acronym]{glossaries}
 \renewcommand*{\glsautoprefix}{gl:}
 
 % 1) Registra la chiave addizionale “glossterm”
@@ -467,20 +467,25 @@ showstringspaces=false
 }
 
 \newcommand{\newdualentry}[4]{%
-  \newglossaryentry{#1@main}{%
-    name        = {#2},%
-    description = {#4}%
-  }%
-   \newacronym[%
-    glossterm   = {#1@main}
-  ]{#1}{#2}{#3}%
-}
+  % Parametri:
+  % #1 = label (es. cta)
+  % #2 = acronimo breve (es. CTA)
+  % #3 = forma estesa (es. Control Area)
+  % #4 = descrizione lunga (es. Spazio aereo controllato esteso da...)
 
-\renewcommand{\newdualentry}[4]{%
-  \newglossaryentry{#1}{%
-    name        = {#2},%
-    description = {(#3). #4}%  % Forma estesa in corsivo + descrizione
+  % --- 1. Definizione per il GLOSSARIO (type=main) ---
+  \newglossaryentry{#1@main}{%
+    type=main,        % Va nel glossario principale
+    name={#3},        % <--- QUI IL CAMBIAMENTO: Usa la forma ESTESA come titolo
+    description={#4}, % Usa la descrizione lunga
+    sort={#3}         % Ordina alfabeticamente in base alla forma estesa
   }%
+
+  % --- 2. Definizione per gli ACRONIMI (type=\acronymtype) ---
+  \newacronym[%
+    type=\acronymtype,   % Va nella lista acronimi
+    glossterm={#1@main}  % Mantiene il tuo link interno
+  ]{#1}{#2}{#3}%
 }
 
 \makeatletter

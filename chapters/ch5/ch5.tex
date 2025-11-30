@@ -1,8 +1,9 @@
-In questo capitolo si analizza il divario tra l’impianto teorico del problema del \gls{dac}, così come formulato nel modello di \gls{ilp}, e il livello di dettaglio effettivamente offerto dal repository \gls{adrr}. Il modello assume di poter operare su una descrizione già strutturata dello spazio aereo e della sua gestione nel tempo, mentre \gls{adrr} è concepito come base dati orientata ai voli, centrata sui profili di attraversamento e sulle \gls{fir} come principali entità geometriche osservabili.
+\label{ch:ch5}
+In questo capitolo si analizza il divario tra l’impianto teorico del problema del \gls{dac}, così come formulato nel modello di \gls{ilp}, proposto in \cite{galeazzo2024integer}, e il livello di dettaglio effettivamente offerto dal repository \gls{adrr}. Il modello di \gls{ilp} assume di poter operare su una descrizione già strutturata dello spazio aereo e della sua gestione nel tempo, mentre \gls{adrr} è concepito come base dati orientata ai voli, centrata sui profili di attraversamento e sulle \gls{fir} come principali entità geometriche osservabili.
 
-Questa asimmetria informativa rende necessario introdurre uno strato intermedio di modellizzazione, capace di trasformare le \gls{fir} in un insieme di oggetti utilizzabili nel contesto del \gls{dac}: porzioni di spazio aereo con capacità nominali derivate dal traffico storico e configurazioni su cui valutare domanda ed eccedenze. Nei paragrafi che seguono si rendono espliciti, da un lato, i limiti strutturali di \gls{adrr} rispetto alle esigenze del problema del \gls{dac} e, dall’altro, le soluzioni adottate per costruire, a partire da tali dati, una famiglia di istanze artificiali su cui sperimentare le procedure di soluzione.
+Questa asimmetria informativa rende il repository \gls{adrr} inadatto alla collezione dei dati necessari per risolver il \gls{dac}, che richiede profili di attraversamento dettagliati a livello di settore. Procediamo pertanto alla definizione di istanze fittizie per il \gls{dac}, a partire dal dettaglio disponibile in \gls{adrr}. Allo scopo, è pertanto necessario introdurre uno strato intermedio di modellizzazione, capace di trasformare le \gls{fir} in un insieme di oggetti utilizzabili nel contesto del \gls{dac}: porzioni di spazio aereo con capacità nominali derivate dal traffico storico e configurazioni su cui valutare domanda ed eccedenze. Nei paragrafi che seguono si rendono espliciti, da un lato, i limiti strutturali di \gls{adrr} rispetto alle esigenze del problema del \gls{dac} e, dall’altro, le soluzioni adottate per costruire, a partire da tali dati, una famiglia di istanze artificiali su cui sperimentare le procedure di soluzione.
 
-\section{Limiti struttrali di \gls{adrr} e solutioni adottate}
+\section{Limiti strutturali dell'Aviation Data Repository for Research e soluzioni adottate}
 Dal punto di vista concettuale, la risoluzione del problema del \gls{dac} richiede almeno:
 \begin{itemize}
   \item la descrizione geometrica dei settori elementari
@@ -20,20 +21,20 @@ Le tabelle sui profili di attraversamento mettono a disposizione esclusivamente:
 
 Mancano quindi sia la definizione delle porzioni di spazio aereo corrispondenti ai settori di controllo, sia gli \emph{opening scheme} che ne descrivono l’evoluzione temporale, sia i valori di capacità ufficialmente dichiarati per tali settori.
 
-Durante lo stage sono state esplorate diverse strade per arricchire \gls{adrr} con informazioni settoriali: dall’analisi di ulteriori tabelle del repository, al tentativo di estrapolare indirettamente dalle metriche di traffico indizi sulla struttura effettiva delle porzioni di spazio aereo.  
+Durante lo stage, sono state esplorate diverse strade per arricchire \gls{adrr} con informazioni settoriali, dall’analisi di ulteriori tabelle del repository, al tentativo di estrapolare indirettamente, dalle metriche di traffico, indizi sulla struttura effettiva delle porzioni di spazio aereo.  
 Nessuna di queste soluzioni ha tuttavia consentito di ricostruire in modo generalizzabile e robusto il grafo dei settori operativi, le relative porzioni di spazio aereo e gli \emph{opening scheme} associati. Ciò impone di adottare una modellizzazione semplificata, costruita unicamente sulla base delle informazioni geometriche effettivamente disponibili.
 
 \subsection{Pseudo-settori elementari e collassati}
-Per superare questo limite, si introduce un’ipotesi di lavoro allineata all’unica componente geometrica osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, ogni \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile nei dati).  
+Per superare questo limite, si introduce un’ipotesi di lavoro allineata all’unica componente geometrica osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, ogni \gls{fir} è trattata come regione atomica, dato che nessuna ulteriore sotto–settorizzazione è osservabile nei dati.  
 
-A partire da questa assunzione, costruiamo istanze coerenti con la geografia del repository: i settori elementari coincidono con singole \gls{fir}, mentre i settori collassati sono definiti  come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini. Nel seguito chiameremo tali porzioni, rispettivamente, pseudo-settore elementare (una singola \gls{fir}) e pseudo-settore collassato (una porzione connessa ottenuta come unione di più \gls{fir}).  
+A partire da questa assunzione, costruiamo istanze coerenti con la geografia del repository: i settori elementari coincidono con singole \gls{fir}, mentre i settori collassati sono definiti  come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini. Nel seguito chiameremo tali porzioni, rispettivamente, \emph{pseudo-settore elementare} (una singola \gls{fir}) e \emph{pseudo-settore collassato} (una porzione connessa ottenuta come unione di più \gls{fir}).  
 
 Nel prosieguo del capitolo si formalizza l’impiego delle \gls{fir} come ``mattoni'' geometrici per definire pseudo-settori elementari e pseudo-settori collassati, si introducono i criteri di assegnazione della capacità a queste porzioni di spazio aereo e si specificano i corrispondenti vincoli geometrici.
 
 \subsection{Portata e riutilizzabilità delle procedure}
 È importante sottolineare che questa modellizzazione non coincide con l’assetto informativo richiesto per risolvere il problema di \gls{dac} in un contesto operativo reale: i pseudo-settori non rappresentano i settori effettivamente utilizzati, né i valori di capacità che vi sono associati.    
 
-Quando saranno disponibili dati completi sulla settorizzazione operativa (geometrie dei settori reali, \emph{opening scheme}, capacità dichiarate), le stesse procedure potranno quindi essere riutilizzate sostituendo ai pseudo-settori elementari e collassati le corrispondenti entità reali, con modifiche limitate agli strati di caricamento e mappatura dei dati.
+L'analisi, la progettazione e l'implementazione delle procedure di creazione delle istanze sono state condotte in modo che, quando saranno disponibili dati completi sulla settorizzazione operativa (geometrie dei settori reali, \emph{opening scheme}, capacità dichiarate), le stesse procedure potranno essere riutilizzate, sostituendo ai \emph{pseudo-settori elementari} e \emph{pseudo-settori collassati} le corrispondenti entità reali, con modifiche limitate agli strati di caricamento e mappatura dei dati.
     %Per superare tale limite, adottiamo un’ipotesi di lavoro allineata all’unica componente geometrica effettivamente osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, una \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile). A partire da questa assunzione, costruiamo istanze coerenti con la geografia dei dati: le configurazioni ``elementari'' coincidono con singole \gls{fir}, mentre i ``collassati'' sono definiti come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini.
 
     %TODO cambiare configurazioni elementari e collassate
@@ -45,12 +46,12 @@ A partire dal quadro definitorio del Capitolo~\ref{ch:introduzione-contesto} e, 
 
 \subsection{Vincoli imposti (osservabili e applicati)}
 \paragraph{Connettività.}
-Richiediamo che l’aggregazione tra settori elementari avvenga esclusivamente quando sono soddisfatte entrambe le seguenti condizioni:
+Per soddisfare il requisito di connettività, richiediamo che l’aggregazione tra settori elementari avvenga esclusivamente quando sono soddisfatte entrambe le seguenti condizioni:
 \begin{itemize}
-  \item \textbf{Contatto planimetrico:} i confini dei due settori sono a contatto
-  \item \textbf{Compatibilità verticale:} gli intervalli di quota operativa si sovrappongono almeno di un margine prefissato
+  \item \textbf{contatto planimetrico:} i confini dei due settori sono a contatto
+  \item \textbf{compatibilità verticale:} gli intervalli di quota operativa si sovrappongono almeno di un margine prefissato
 \end{itemize}
-Nel seguito, consideriamo ammissibili soltanto quelle unioni di settori elementari per le quali esiste una catena di accostamenti che rispetta, passo dopo passo, entrambi i vincoli sopra elencati; in tal modo l’insieme risultante è connesso e coerente sia sul piano geometrico sia su quello altimetrico.
+Nel seguito, consideriamo ammissibili soltanto quelle unioni di \emph{pseudo-settori elementari} per le quali esiste una catena di accostamenti che rispetta, passo dopo passo, entrambi i vincoli sopra elencati; in tal modo l’insieme risultante è connesso e coerente sia sul piano geometrico sia su quello altimetrico.
 
 \subsection{Vincoli non osservabili}
 Di seguito documentiamo i vincoli concettualmente previsti ma non verificabili operativamente in \gls{adrr}.
@@ -65,13 +66,13 @@ Nel dataset considerato la convessità è l’eccezione: su 324 poligoni validi,
 L'obiettivo è associare a ciascun pseudo-settore una capacità nominale, cioè un numero intero che rappresenti il volume di traffico ritenuto gestibile in condizioni operative ordinarie.  
 Nel contesto di questa tesi la capacità non è stimata a partire da procedure operative ufficiali, ma tramite regole euristiche costruite sui dati storici \gls{adrr} e pensate per generare istanze artificiali realistiche per il problema di \gls{dac}.  
 
-Le due procedure descritte in questa sezione (per pseudo-settori elementari e per pseudo-settori collassati) sono state introdotte e impiegate in \cite{galeazzo2024integer} per la valutazione di approcci \gls{ilp} al \gls{dac}. Qui vengono riprese e adattate al dataset \gls{adrr} utilizzato nello stage.
+Le due procedure descritte in questa sezione (per pseudo-settori elementari e per pseudo-settori collassati) sono state introdotte e impiegate in \cite{galeazzo2024integer} per la valutazione di approcci \gls{ilp} al \gls{dac} sulla porzione dello spazio aereo relativo alla \gls{acc} di Madrid, per la quale erano disponibili, in forma riservata, dati completi al livello di dettaglio richiesto. Qui vengono riprese e adattate al dataset \gls{adrr} utilizzato nello stage.
 
 Per ogni pseudo-settore elementare \(R\) e per ogni giorno campione \(d \in D\) si definisce un traffico giornaliero \(N_R(d)\).  
 Più precisamente, fissiamo una griglia temporale con passo \(\lambda = 5\,\mathrm{min}\) e finestre di lunghezza \(W = 1\,\mathrm{h}\) (vedi Sezione~\ref{subsec:throughput-teoria}). Per ciascun giorno \(d\) e per ciascun settore \(R\) si calcola quindi il \emph{throughput} \(T_R(I_k)\) su tutte le finestre \(I_k = [t_k, t_k+W)\) che cadono nel giorno considerato. La serie \(\{N_R(d)\}_{d \in D}\) fornisce quindi, per ciascun pseudo-settore, un insieme di osservazioni giornaliere su cui costruire una capacità nominale.
 
     \subsection{Capacità del pseudo-settore elementare}
-    Nel caso di un pseudo-settore elementare \(E\), l’idea è stimare una capacità a partire dalla distribuzione dei picchi giornalieri \(N_E(d)\) osservati nel periodo di analisi \(D\), filtrando gli outlier (ossia osservazioni anomale che si discostano nettamente dai valori tipici) e concentrandosi sui giorni tipicamente più carichi.  
+    Nel caso di un \emph{pseudo-settore elementare} \(E\), si utilizza l'Algoritmo \ref{alg:cap-elementare-naturale}. L'idea è stimare una capacità a partire dalla distribuzione dei picchi giornalieri \(N_E(d)\) osservati nel periodo di analisi \(D\), filtrando gli outlier (ossia osservazioni anomale che si discostano nettamente dai valori tipici) e concentrandosi sui giorni tipicamente più carichi.  
 Questa scelta consente di ottenere un valore coerente con le condizioni di traffico più impegnative, senza farsi dominare da pochi giorni eccezionali (molto scarichi o eccezionalmente congestionati).
 
 In primo luogo si calcolano il decimo e il novantesimo percentile della distribuzione \(\{N_E(d)\}_{d \in D}\) e si scartano i giorni che cadono al di fuori di questo intervallo. In questo modo si eliminano sia i giorni atipicamente scarichi (ad esempio per chiusure o riduzioni temporanee dello spazio aereo) sia quelli con valori eccezionalmente alti legati a fenomeni puntuali.  
@@ -95,10 +96,10 @@ Eventuali piccoli aggiustamenti aleatori servono unicamente a introdurre una lie
     \end{algorithm}
     
     \subsection{Capacità del pseudo-settore collassato}
-    Un pseudo-settore collassato \(G\) è ottenuto come unione di più pseudo-settore elementari. Anche in questo caso occorre assegnare un valore di capacità \(C_G\) da utilizzare nel modello di \gls{dac}.  
-Sommarne semplicemente le capacità porterebbe a valori irrealistici, perché il carico di lavoro di un singolo controllore non cresce linearmente con il numero di pseudo-settori accorpati. Si adotta quindi una regola più conservativa, che prende come riferimento la capacità del pseudo-settore più “numeroso” e la incrementa in modo moderato man mano che si aggregano ulteriori componenti.
+    Un \emph{pseudo-settore collassato} \(G\) è ottenuto come unione di più \emph{pseudo-settore elementari}. Anche in questo caso occorre assegnare un valore di capacità \(C_G\) da utilizzare nel modello di \gls{dac}.  
+Sommarne semplicemente le capacità porterebbe a valori irrealistici, perché il carico di lavoro di un singolo controllore non cresce linearmente con il numero di pseudo-settori accorpati. Si adotta quindi una regola più conservativa, che prende come riferimento la capacità del pseudo-settore più “numeroso” e la incrementa in modo moderato man mano che si aggregano ulteriori componenti: questa idea è alla base dell'Algoritmo \ref{alg:cap-collassato-naturale}.
 
-Sia dunque \(G\) un pseudo-settore collassato costituito da un insieme di pseudo-settori elementari \(\{E\}_{E \in G}\) per i quali è già stata calcolata la capacità \(C_E\) secondo l’Algoritmo~\ref{alg:cap-elementare-naturale}. Nel caso di \(G\) si procede nel modo seguente: si assume come riferimento iniziale la capacità massima tra quelle dei pseudo-settori elementari che lo compongono. Per ciascun ulteriore componente si incrementa tale valore di una percentuale prefissata. Infine si impone un limite superiore globale, espresso come percentuale rispetto alla base, in modo da evitare che pseudo-settori collassati molto estesi producano capacità eccessivamente elevate.
+Sia dunque \(G\) un \emph{pseudo-settore collassato} costituito da un insieme di pseudo-settori elementari \(\{E\}_{E \in G}\) per i quali è già stata calcolata la capacità \(C_E\) secondo l’Algoritmo~\ref{alg:cap-elementare-naturale}. Nel caso di \(G\) si procede nel modo seguente: si assume come riferimento iniziale la capacità massima tra quelle dei pseudo-settori elementari che lo compongono. Per ciascun ulteriore componente si incrementa tale valore di una percentuale prefissata. Infine si impone un limite superiore globale, espresso come percentuale rispetto alla base, in modo da evitare che pseudo-settori collassati molto estesi producano capacità eccessivamente elevate.
     
     \begin{algorithm}[H]
       \caption{Capacità di un pseudo-settore collassato.}
@@ -125,7 +126,7 @@ Le scelte numeriche adottate seguono l’impostazione proposta in \cite{galeazzo
 \clearpage
 \section{Generazione configurazioni di pseudo-settori collassati}
 \label{subsec:algo-collassati}
-L'algoritmo genera configurazioni di pseudo-settori collassati (cfr.\ Figura \ref{fig:rassegna-collassati}) attraverso un processo di aggregazione dei pseudo-settori elementari. Consiste in una visita \gls{dfs} modificata che esplora le relazioni di vicinato spaziale tra i poligoni, combinando gradualmente quelli compatibili secondo specifici criteri.
+L'Algoritmo \ref{alg:collasso-dfs-prob} genera configurazioni di \emph{pseudo-settori collassati} (cfr.\ Figura \ref{fig:rassegna-collassati}) attraverso un processo di aggregazione dei \emph{pseudo-settori elementari}. Consiste in una visita \gls{dfs} modificata che esplora le relazioni di vicinato spaziale tra i poligoni, combinando gradualmente quelli compatibili secondo specifici criteri.
 La fase iniziale prevede una preparazione delle geometrie: per ogni \gls{fir}, i vertici del poligono vengono ordinati e, se necessario, si applica una correzione per garantire la chiusura della geometria. Ciascun poligono così ottenuto viene associato al proprio intervallo verticale di quote e marcato come non visitato.
 L'algoritmo si sviluppa attraverso cicli di esplorazione che partono da poligoni non visitati. Per ciascuno di essi:
 \DisablePunct
@@ -147,8 +148,8 @@ La probabilità di inclusione \(p(|G|)\) decresce linearmente con la dimensione 
 \[
 p(|G|) = \frac{N_{\text{max}} - |G| + 1}{N_{\text{max}} + 1}
 \]
-La probabilità diminuisce perché a gruppi piccoli serve forte spinta all'espansione, mentre a gruppi grandi serve controllo per prevenire aggregati eccessivi. La decrescita bilancia queste due esigenze: alta probabilità iniziale (\(p \approx 1\) per \(|G|=1\)) favorisce crescita rapida, bassa probabilità finale (\(p \approx 0\) per \(|G|=N_{\max}\)) frena l'espansione.
-Ogni nuovo elemento incluso riduce \(p\) di un valore costante \(\Delta p = \frac{1}{N_{\max}+1}\). Alternativi non lineari (es. esponenziali) introdurrebbero comportamenti bruschi o parametri aggiuntivi senza vantaggi pratici, mentre la linearità offre il miglior compromesso tra semplicità computazionale ed efficacia operativa.
+La probabilità diminuisce perché a gruppi piccoli serve forte spinta all'espansione, mentre a gruppi grandi serve controllo per prevenire aggregati eccessivi. La decrescita bilancia queste due esigenze: l'alta probabilità iniziale (\(p \approx 1\) per \(|G|=1\)) favorisce crescita rapida, la bassa probabilità finale (\(p \approx 0\) per \(|G|=N_{\max}\)) frena l'espansione.
+Ogni nuovo elemento incluso riduce \(p\) di un valore costante \(\Delta p = \frac{1}{N_{\max}+1}\). Alternative non lineari (es. esponenziali) introdurrebbero comportamenti bruschi o parametri aggiuntivi senza vantaggi pratici, mentre la linearità offre il miglior compromesso tra semplicità computazionale ed efficacia operativa.
     \begin{algorithm}[H]
       \caption{Generazione configurazione di pseudo-settori collassati.}
       \label{alg:collasso-dfs-prob}
@@ -216,7 +217,7 @@ Ogni nuovo elemento incluso riduce \(p\) di un valore costante \(\Delta p = \fra
       \begin{subfigure}[t]{\linewidth}
         \centering
         \includegraphics[width=\linewidth]{chapters/ch5/img/Q74CLL_panel_optimized.png}
-        \caption{Vista esplosa del pseudo-settore collassato (da sinistra a destra): DTTCFIR (Tunisi), LFFFUIR (Parigi), LFMMFIR (Marsiglia), LIRRFIR (Roma), LIRRUIR (Roma).}
+        \caption{Vista esplosa dello pseudo-settore collassato (da sinistra a destra): DTTCFIR (Tunisi), LFFFUIR (Parigi), LFMMFIR (Marsiglia), LIRRFIR (Roma), LIRRUIR (Roma).}
         \label{fig:collassato-q74cll-exploded}
       \end{subfigure}
     
