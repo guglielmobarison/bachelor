@@ -4,6 +4,7 @@ In questo capitolo si analizza il divario tra l’impianto teorico del problema 
 Questa asimmetria informativa rende il repository \gls{adrr} inadatto alla collezione dei dati necessari per risolver il \gls{dac}, che richiede profili di attraversamento dettagliati a livello di settore. Procediamo pertanto alla definizione di istanze fittizie per il \gls{dac}, a partire dal dettaglio disponibile in \gls{adrr}. Allo scopo, è pertanto necessario introdurre uno strato intermedio di modellizzazione, capace di trasformare le \gls{fir} in un insieme di oggetti utilizzabili nel contesto del \gls{dac}: porzioni di spazio aereo con capacità nominali derivate dal traffico storico e configurazioni su cui valutare domanda ed eccedenze. Nei paragrafi che seguono si rendono espliciti, da un lato, i limiti strutturali di \gls{adrr} rispetto alle esigenze del problema del \gls{dac} e, dall’altro, le soluzioni adottate per costruire, a partire da tali dati, una famiglia di istanze artificiali su cui sperimentare le procedure di soluzione.
 
 \section{Limiti strutturali dell'Aviation Data Repository for Research e soluzioni adottate}
+\label{sec:limitiadrr}
 Dal punto di vista concettuale, la risoluzione del problema del \gls{dac} richiede almeno:
 \begin{itemize}
   \item la descrizione geometrica dei settori elementari
@@ -35,10 +36,6 @@ Nel prosieguo del capitolo si formalizza l’impiego delle \gls{fir} come ``matt
 È importante sottolineare che questa modellizzazione non coincide con l’assetto informativo richiesto per risolvere il problema di \gls{dac} in un contesto operativo reale: i pseudo-settori non rappresentano i settori effettivamente utilizzati, né i valori di capacità che vi sono associati.    
 
 L'analisi, la progettazione e l'implementazione delle procedure di creazione delle istanze sono state condotte in modo che, quando saranno disponibili dati completi sulla settorizzazione operativa (geometrie dei settori reali, \emph{opening scheme}, capacità dichiarate), le stesse procedure potranno essere riutilizzate, sostituendo ai \emph{pseudo-settori elementari} e \emph{pseudo-settori collassati} le corrispondenti entità reali, con modifiche limitate agli strati di caricamento e mappatura dei dati.
-    %Per superare tale limite, adottiamo un’ipotesi di lavoro allineata all’unica componente geometrica effettivamente osservabile in \gls{adrr}: le \gls{fir} sono assimilate a unità settoriali elementari. In concreto, una \gls{fir} è trattata come regione atomica (nessuna ulteriore sotto–settorizzazione osservabile). A partire da questa assunzione, costruiamo istanze coerenti con la geografia dei dati: le configurazioni ``elementari'' coincidono con singole \gls{fir}, mentre i ``collassati'' sono definiti come unioni connesse di più \gls{fir}, rispettando connettività e aderenza ai confini.
-
-    %TODO cambiare configurazioni elementari e collassate
-    %Nel seguito si formalizza l’impiego delle \gls{fir} come ``mattoni'' geometrici per definire configurazioni elementari e collassate; si introducono i criteri di assegnazione della capacità e i corrispondenti vincoli geometrici.
 
 \section{Vincoli geometrici}
 \label{sec:geometria}

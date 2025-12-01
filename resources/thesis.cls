@@ -14,7 +14,6 @@
 % (inputenc)                not set up for use with LaTeX.
 % …
 % l.56 ...ntnoidxglossary[type=main,title=Glossario]
-
 \usepackage{etoolbox}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta}
@@ -24,7 +23,6 @@
 \usetikzlibrary{decorations.pathreplacing}
 \usepackage{tikz-3dplot}
 \usetikzlibrary{intersections,calc}
-
 
 \tikzset{ % cancella se non ti serve, è un rimasuglio della mia tesi per gli stili dei miei grafici 
   timeline/.style={-Latex, thick},
@@ -159,7 +157,7 @@
 \ProcessOptions \relax
 \LoadClass{report}
 \PassOptionsToPackage{breaklinks}{hyperref}
-%\RequirePackage[a-1b]{pdfx}
+\RequirePackage[a-1b]{pdfx}
 
 \RequirePackage[a4paper,inner=4cm,outer=3cm,top=4cm,bottom=3.5cm,pdftex]{geometry}
 
