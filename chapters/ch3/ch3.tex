@@ -105,7 +105,7 @@ Per ciascun ciclo vengono riportati l’identificativo esterno (\texttt{External
 La tabella \texttt{ROUTES} definisce le rotte \gls{ats} come sequenze ordinate di punti geografici, dal tratto “a monte” fino a quello “a valle” della rotta.  
 Ogni rotta è identificata da un codice alfanumerico (\texttt{Route ID}) e descritta da una lista di vertici numerati (\texttt{Sequence Number}) con latitudine e longitudine associate. In combinazione con le informazioni di \texttt{FLIGHT POINTS}, ciò permette di valutare il grado di aderenza degli aeromobili alle rotte pubblicate.
 
-\subsubsection{Tabella \gls{fir}}
+\subsubsection{Tabella FIR}
 \label{sec:table_fir}
 La tabella \gls{fir} descrive i volumi di spazio aereo in termini geometrici e verticali.  
 Per ciascun \texttt{Airspace ID} viene fornito il poligono che ne approssima il confine laterale, rappresentato come una sequenza ordinata di vertici (\texttt{Sequence Number}) con coordinate geografiche, insieme ai livelli di volo minimo e massimo (\texttt{Min Flight Level}, \texttt{Max Flight Level}) che delimitano estensione verticale del volume.  
@@ -162,7 +162,6 @@ I dataset \gls{adrr} derivano principalmente da due fonti principali:
   \item[\gls{nm},] fornisce dati relativi ai piani di volo \gls{ifr} e alle strutture dello spazio aereo;
   \item[\gls{crco},] contribuisce con aggiornamenti specifici riguardanti gli operatori e la registrazione degli aeromobili.
 \end{description}
-\clearpage
 \subsection{Origine dei dati}
 I dati resi disponibili tramite il repository \gls{adrr} provengono da diverse sorgenti operative, che possono essere ricondotte alle seguenti categorie principali:
 \DisablePunct

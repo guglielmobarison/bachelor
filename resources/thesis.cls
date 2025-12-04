@@ -604,6 +604,12 @@ showstringspaces=false
 \department{Dipartimento di Esempio}
 \university{Università di Esempio}
 
+\renewcommand{\bibsection}{
+    \chapter*{Riferimenti bibliografici e sitografici}
+    \addcontentsline{toc}{chapter}{Riferimenti bibliografici e sitografici}
+    \markboth{Riferimenti bibliografici e sitografici}{Riferimenti bibliografici e sitografici}
+}
+
 \renewcommand{\maketitle}{%
   {
     \newgeometry{top=4cm, bottom=3.5cm, left=3.5cm, right=3.5cm} % margini simmetrici

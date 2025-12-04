@@ -1,7 +1,7 @@
 Nei capitoli precedenti è stato definito il quadro teorico di riferimento: dal modello temporale e le metriche di traffico (vedi Capitolo \ref{ch:ch4}), alla costruzione geometrica degli \emph{pseudo-settori collassati} (vedi Sezione \ref{subsec:algo-collassati}), fino alla formulazione del modello del \gls{dac} come modello di \gls{ilp} (vedi Sezione \ref{sec:dac_math}).
 
-In questo capitolo si affronta la traduzione operativa di tali concetti, descrivendo l'architettura del prototipo software sviluppato per validare la metodologia proposta. L'attenzione si sposta quindi dal piano progettuale a quello realizzativo: l'obiettivo non è fornire una documentazione esaustiva del codice sorgente, bensì motivare le scelte tecnologiche, illustrare l'integrazione delle librerie e descrivere l'organizzazione della pipeline di elaborazione dei dati.
-Verranno dapprima presentati l'ambiente di sviluppo e gli strumenti adottati, per poi analizzare l'implementazione degli algoritmi di calcolo delle metriche e di generazione degli scenari, concludendo con una disamina delle prestazioni e della verifica funzionale .
+In questo capitolo si affronta la traduzione operativa di tali concetti, descrivendo l'architettura del prototipo software sviluppato per validare la metodologia proposta. L'attenzione si sposta quindi dal piano progettuale a quello realizzativo: l'obiettivo del capitolo non è fornire una documentazione esaustiva del codice sorgente, bensì motivare le scelte tecnologiche, illustrare l'integrazione delle librerie e descrivere l'organizzazione della pipeline di elaborazione dei dati.
+Verranno dapprima presentati l'ambiente di sviluppo e gli strumenti adottati, per poi analizzare l'implementazione degli algoritmi di calcolo delle metriche e di generazione degli scenari, concludendo con una disamina delle prestazioni e della verifica funzionale.
 
 \section{Ambiente di sviluppo e strumenti}
 In questa sezione si descrive l'ambiente di sviluppo e l'insieme di strumenti software utilizzati per costruire la pipeline di elaborazione dei dati \gls{adrr} e il prototipo di risolutore per il problema di \gls{dac}.  
@@ -14,8 +14,8 @@ La scelta del linguaggio di riferimento è ricaduta su \gls{python} (versione 3.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.25\textwidth]{chapters/ch_impl/img/python.pdf} 
-    \caption{Logo ufficiale di Python.}
+    \includegraphics[width=0.2\textwidth]{chapters/ch_impl/img/python.pdf} 
+    \caption{Logo di Python.}
     \label{fig:python_logo}
 \end{figure}
 
@@ -26,6 +26,7 @@ L'intero progetto è stato organizzato come applicazione a riga di comando (\acr
 
 \subsection{Librerie per l'elaborazione dei dati}
 
+I rilasci \gls{adrr} sono disponibili in formato \acrshort{csv} compresso, che costituisce il formato di input obbligato. Per i risultati intermedi sono stati invece adottati file \texttt{Parquet}, che offrono una lettura più efficiente, una migliore compressione e un’integrazione diretta con \texttt{pandas} e \texttt{Dask}. Non è stato introdotto un \gls {dbms} relazionale: l’onere di modellazione e caricamento non sarebbe stato compensato, nel contesto dello stage, da vantaggi concreti rispetto a una pipeline basata su file e prevalentemente \emph{read–only}.
 La gestione dei dati \gls{adrr}, che costituiscono l'input del sistema, richiede strumenti capaci di manipolare strutture tabellari complesse e di gestire volumi di dati che possono superare la memoria disponibile su una singola workstation (Figura~\ref{fig:data_libs}).
 
 \subsubsection{Pandas}
@@ -76,7 +77,7 @@ L'uso di \texttt{GeoPandas} ha permesso di trattare le regioni dello spazio aere
 \end{figure}
 
 \subsection{Ottimizzazione matematica}
-Il cuore algoritmico del lavoro consiste nella risoluzione del problema \gls{dac}, modellato come problema di \gls{ilp}.
+Lo scopo finale dei dati elaborati consiste nella risoluzione del problema \gls{dac}, modellato come problema di \gls{ilp}.
 
 \subsubsection{IBM ILOG CPLEX}
 \gls{cplex} è uno dei solutori di ottimizzazione più potenti e diffusi in ambito accademico e industriale \cite{cplex} (Figura~\ref{fig:cplex_logo}). È progettato per risolvere problemi di programmazione lineare e mista-intera di grandi dimensioni con elevata efficienza. È stato preferito a soluzioni \gls{open source} per le sue prestazioni superiori su istanze complesse e per la disponibilità di una licenza accademica.
@@ -92,7 +93,6 @@ Per interfacciare il modello matematico con il motore di risoluzione, è stata u
     \label{fig:cplex_logo}
 \end{figure}
 
-\clearpage
 \subsection{Controllo di versione: Git}
 
 La gestione del ciclo di vita del software è stata affidata a \gls{git} (Figura~\ref{fig:git_logo}), il sistema di controllo di versione distribuito standard per lo sviluppo moderno \cite{git}.
@@ -122,14 +122,13 @@ La stesura del presente elaborato è stata realizzata mediante \LaTeX (Figura~\r
 A differenza dei tradizionali elaboratori di testo \gls{wysiwyg}, \LaTeX\ adotta un approccio basato sulla separazione tra contenuto e stile. Questa caratteristica lo rende lo strumento ideale per la redazione scientifica, garantendo una gestione automatizzata e coerente di riferimenti incrociati, bibliografia (tramite Bib\TeX), glossario e formule matematiche complesse.
 Per questo progetto è stata utilizzata una classe personalizzata per garantire la conformità agli standard dell'ateneo e l'accessibilità del documento finale (PDF/A).
 
-\clearpage
 \section{Implementazione}
 In questa sezione si descrive come siano stati tradotti in codice \gls{python} gli schemi algoritmici introdotti nei Capitoli \ref{ch:ch4} e \ref{ch:ch5} per il calcolo del \emph{throughput} (vedi Sezione \ref{subsec:throughput-teoria}), dell'\emph{occupancy} (vedi Sezione \ref{subsec:occupancy-teoria}), delle capacità nominali dei pseudo-settori, le procedure per la generazione delle configurazioni di \emph{pseudo-settori collassati}, e l’implementazione del modello di \gls{ilp} per il \gls{dac}.
 
 \subsection{Throughput}
-La funzione \texttt{compute}, appartenente al modulo \texttt{throughput}, orchestra l'implementazione dell'Algoritmo~\ref{alg:throughput-anyW-naturale}. Essa traduce i parametri matematici in oggetti \gls{python}: l'orizzonte temporale $[\tau_0, \tau_1]$, il parametro di discretizzazione $\lambda$ e la finestra $W$ sono mappati rispettivamente sugli argomenti \texttt{tau0}, \texttt{tau1}, \texttt{Lambda} e \texttt{W}. Il DataFrame \texttt{E} rappresenta l'insieme degli eventi in ingresso.
+La funzione \texttt{compute}, appartenente al modulo \texttt{throughput}, orchestra l'implementazione dell'Algoritmo~\ref{alg:throughput-anyW-naturale}. Essa traduce i parametri matematici in oggetti \gls{python}: l'orizzonte temporale $[\tau_0, \tau_1]$, il parametro di discretizzazione $\lambda$ e la finestra $W$ sono mappati rispettivamente sugli argomenti \texttt{tau0}, \texttt{tau1}, \texttt{lambda} e \texttt{W}. Il DataFrame \texttt{E} rappresenta l'insieme degli eventi in ingresso.
 
-La firma della funzione evidenzia come la logica sia incapsulata per restituire un DataFrame strutturato contenente il calcolo finale:
+La firma di seguito riportata evidenzia come la logica sia incapsulata per restituire un DataFrame strutturato contenente il calcolo finale:
 
 \begin{lstlisting}[language=Python, caption={}]
 def compute(
@@ -146,7 +145,7 @@ def compute(
 \end{lstlisting}
 
 La prima fase operativa consiste nella costruzione della griglia temporale. Attraverso la funzione ausiliaria \texttt{grid\_params}, vengono derivati i limiti operativi \texttt{t0} e \texttt{t1} e il numero di intervalli \texttt{K}. È fondamentale notare come l'orizzonte venga esteso fino a $\tau_1 + W$ (gestito internamente da \texttt{W\_td}) per garantire la corretta valutazione delle finestre che si sovrappongono al termine dell'osservazione. Sulla base di questi estremi, si procede alla creazione di \texttt{E\_filtered}, un sottoinsieme del DataFrame originale che trattiene esclusivamente gli eventi utili al calcolo corrente, riducendo il carico di memoria. Il seguente listato illustra la procedura di inizializzazione e filtraggio:
-\clearpage
+
 \begin{lstlisting}[language=Python, caption={}]
 t0, t1, Lambda_td, W_td, K, _m = grid_params(
     tau0, tau1, lambda, str(W)
@@ -161,9 +160,7 @@ E_filtered = E_filtered[
 
 Una volta isolati i dati pertinenti, il flusso si sposta sull'aggregazione. Poiché l'algoritmo richiede la valutazione della funzione di conteggio $N_R(t)$, è necessario prima ridurre gli eventi a una serie temporale di conteggi discreti. Utilizzando un'operazione di \texttt{groupby} sulle colonne chiave e temporali (rispettivamente \texttt{R\_col}, \texttt{t\_in\_col}), si ottiene la variabile \texttt{events\_counted}, che contiene la cardinalità $n_R$ per ogni istante univoco.
 
-A questo punto, sono necessarie due operazioni preliminari per garantire la coerenza matematica del calcolo successivo. In primo luogo, la colonna identificativa \texttt{R\_col} viene normalizzata al tipo \texttt{object} per prevenire conflitti durante le operazioni di unione. In secondo luogo, il DataFrame viene esplicitamente ordinato temporalmente tramite \texttt{sort\_values}. Questo ordinamento è un prerequisito stringente: affinché la somma cumulativa (\texttt{cumsum}) abbia senso fisico e affinché la successiva unione asincrona funzioni, la sequenza degli eventi deve essere rigorosamente cronologica.
-
-Solo a valle di questa preparazione viene calcolata la colonna \texttt{N\_R}, che rappresenta la cumulata degli eventi osservati fino a quel momento. Il codice che realizza tale aggregazione e il successivo conteggio è riportato di seguito:
+A questo punto, sono necessarie due operazioni preliminari per garantire la coerenza matematica del calcolo successivo. In primo luogo, la colonna identificativa \texttt{R\_col} viene normalizzata al tipo \texttt{object} per prevenire conflitti durante le operazioni di unione. In secondo luogo, il DataFrame viene esplicitamente ordinato temporalmente tramite \texttt{sort\_values}. Questo ordinamento è un prerequisito stringente: affinché la somma cumulativa (\texttt{cumsum}) abbia senso fisico e affinché la successiva unione asincrona funzioni, la sequenza degli eventi deve essere rigorosamente cronologica. Solo a valle di questa preparazione viene calcolata la colonna \texttt{N\_R}, che rappresenta la cumulata degli eventi osservati fino a quel momento. Il codice che realizza tale aggregazione e il successivo conteggio è riportato di seguito:
 
 \begin{lstlisting}[language=Python, caption={}]
 events_counted = (
@@ -173,7 +170,6 @@ events_counted = (
         .reset_index()
         .compute()  # Esecuzione del calcolo
 )
-
 events_counted[R_col] = events_counted[R_col].astype("object")
 events_counted = events_counted.sort_values(t_in_col).reset_index(drop=True)
 events_counted["N_R"] = events_counted.groupby(
@@ -181,7 +177,6 @@ events_counted["N_R"] = events_counted.groupby(
 )["n_R"].cumsum()
 \end{lstlisting}
 
-\clearpage
 Il cuore della funzione risiede nella necessità di riconciliare due assi temporali disallineati:
 \begin{itemize}
     \item La griglia di misurazione, definita dagli istanti artificiali ed equispaziati $t_k$
@@ -248,7 +243,8 @@ return T_output[[R_col, "t_k", "t_k_plus_W", "T_R"]]
 Analogamente a quanto visto per il \emph{throughput}, la funzione \texttt{compute} del modulo \texttt{occupancy} traduce l'Algoritmo~\ref{alg:occupancy-anyW-diff} in istruzioni vettoriali ottimizzate per \texttt{Dask} e \texttt{Pandas}.
 L'obiettivo è calcolare l'occupazione $O_R(k)$, intesa come il numero di velivoli che risultano presenti in \(R\) per tutta la finestra $[t_k, t_k + W)$:
 
-La firma della funzione riflette la necessità di mappare i concetti teorici (l'insieme degli eventi $E$, il parametro di discretizzazione $\lambda$ e la finestra $W$) sui tipi di dati \gls{python}:
+La firma della funzione di seguito riportata riflette la necessità di mappare i concetti teorici (l'insieme degli eventi $E$, il parametro di discretizzazione $\lambda$ e la finestra $W$) sui tipi di dati \gls{python}:
+\clearpage
 
 \begin{lstlisting}[language=Python, caption={}]
 def compute(
@@ -333,6 +329,7 @@ Per determinare la capacità di un \emph{pseudo-settore elementare}, non è suff
 Inizialmente, vengono scartati gli intervalli a traffico nullo. Successivamente, per rimuovere sia il rumore di fondo che i picchi anomali non sostenibili, si considerano solo i valori di throughput compresi tra il 10° e il 90° percentile (\texttt{p\_10} e \texttt{p\_90}). Un ulteriore filtro scarta i valori inferiori a una soglia minima (\texttt{threshold}), utile per evitare stime falsate in settori scarsamente utilizzati.
 
 La capacità viene stimata calcolando la media del quartile superiore (il top 25\% dei valori ordinati). Il valore finale include un termine di aggiustamento aleatorio (\texttt{random\_adjustment}) per introdurre variabilità realistica nelle simulazioni, con un meccanismo di fallback (distribuzione uniforme) qualora i dati storici fossero insufficienti. L'implementazione iterativa di questa procedura di calcolo è mostrata nel seguente listato:
+\clearpage
 \begin{lstlisting}[language=Python, caption={}]
 capacities = {}
 for region_id, group in df_day.groupby("R"):
@@ -398,13 +395,12 @@ for key, info in global_collapsed_info.items():
     
     global_capacities[info["collapsed_sector"]] = int(round(collapsed_capacity))
 \end{lstlisting}
-\clearpage
 \subsection{Generazione configurazioni di pseudo-settori collassati}
 \label{sec:gen}
 La procedura di generazione delle configurazioni collassate traduce l'Algoritmo~\ref{alg:collasso-dfs-prob} in una pipeline di elaborazione spaziale. Il processo inizia con la ricostruzione della geometria dei pseudo-settori elementari a partire dai dati grezzi.
 
 La funzione \texttt{load\_fir\_data} legge il file CSV, raggruppa le coordinate per identificativo (\texttt{Airspace ID}) e le converte in poligoni chiusi. Durante questa fase, vengono estratti gli attributi verticali (\gls{fl} minimi e massimi) e le geometrie vengono proiettate in un sistema di riferimento metrico (EPSG:3035) per consentire calcoli di adiacenza precisi. L'uso di \texttt{unary\_union} assicura che eventuali geometrie frammentate vengano consolidate in un unico oggetto spaziale valido. Il codice seguente implementa la funzione di importazione e normalizzazione geometrica appena descritta:
-
+\clearpage
 \begin{lstlisting}[language=Python, caption={}]
 def load_fir_data() -> gpd.GeoDataFrame:
     df = pd.read_csv(DEFAULT_FIR_FILE, sep=",", compression="gzip",
@@ -500,14 +496,13 @@ def generate(self) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(merged_records, crs=self.sectors.crs)
 \end{lstlisting}
 
-\clearpage
-\subsection{Implmentazione del modello di ILP per il DAC}
-L'implementazione del risolutore per il \gls{dac} traduce la formulazione matematica presentata nella Sezione \ref{sec:dac_math} in un modello esecutivo, sfruttando la libreria \texttt{DOcplex} di \acrshort{ibm}. 
+\subsection{Implementazione del modello di ILP per il DAC}
+L'implementazione del modello per il \gls{dac} traduce la formulazione matematica presentata nella Sezione \ref{sec:dac_math} in un linguaggio di programmazione, sfruttando la libreria \texttt{DOcplex} di \acrshort{ibm}. 
 
 Il flusso di lavoro inizia con l'ingestione dei dati operativi. Per ogni scenario di simulazione, identificato da un \texttt{config\_id}, il sistema carica la domanda di traffico, le capacità stimate dei pseudo-settori e il grafo delle transizioni ammissibili. Questi dati grezzi vengono processati per quantificare il sovraccarico locale (eccesso di domanda rispetto alla capacità) e aggregarlo a livello di configurazione, ottenendo i costi che guideranno l'ottimizzazione.
 
 Segue l'implementazione delle funzioni per il calcolo dell'eccesso di domanda e dei coefficienti di costo:
-
+\clearpage
 \begin{lstlisting}[language=Python, caption={}]
 tr, c, dizio_conf = load_data_for_config(config_id, data_dir)
 
@@ -547,6 +542,8 @@ I vincoli principali del modello vengono aggiunti con la funzione \texttt{add\_c
     \item le transizioni tra intervalli temporali
     \item i vincoli di permanenza e quiescenza
 \end{itemize}
+\clearpage
+
 L'implementazione dei vincoli descritti è realizzata come segue:
 \begin{lstlisting}[language=Python, caption={}]
 def add_constraints(model, x, s, CONF_t, CONF_tc, T, tp, tq):

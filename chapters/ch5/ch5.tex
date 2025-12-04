@@ -41,12 +41,11 @@ L'analisi, la progettazione e l'implementazione delle procedure di creazione del
 \label{sec:geometria}
 A partire dal quadro definitorio del Capitolo~\ref{ch:introduzione-contesto} e, in particolare, dalla nozione di settori collassati, riprendiamo i vincoli che rendono attuabili le configurazioni collassate e ne discutiamo la traduzione operativa sui dati \gls{adrr}, nei quali le \gls{fir} costituiscono le sole entità geometriche direttamente osservabili.
 
-\subsection{Vincoli imposti (osservabili e applicati)}
-\paragraph{Connettività.}
-Per soddisfare il requisito di connettività, richiediamo che l’aggregazione tra settori elementari avvenga esclusivamente quando sono soddisfatte entrambe le seguenti condizioni:
+\subsection{Vincoli impost osservabili: connettività}
+Il solo vincolo osservabile dai dati disponibili tramite \gls{adrr} è relativo alla connettività. Per soddisfarlo, richiediamo che l’aggregazione tra settori elementari avvenga esclusivamente quando sono soddisfatte entrambe le seguenti condizioni:
 \begin{itemize}
-  \item \textbf{contatto planimetrico:} i confini dei due settori sono a contatto
-  \item \textbf{compatibilità verticale:} gli intervalli di quota operativa si sovrappongono almeno di un margine prefissato
+  \item \textbf{contatto planimetrico}, i confini dei due settori sono a contatto
+  \item \textbf{compatibilità verticale}, gli intervalli di quota operativa si sovrappongono almeno di un margine prefissato
 \end{itemize}
 Nel seguito, consideriamo ammissibili soltanto quelle unioni di \emph{pseudo-settori elementari} per le quali esiste una catena di accostamenti che rispetta, passo dopo passo, entrambi i vincoli sopra elencati; in tal modo l’insieme risultante è connesso e coerente sia sul piano geometrico sia su quello altimetrico.
 
@@ -63,7 +62,7 @@ Nel dataset considerato la convessità è l’eccezione: su 324 poligoni validi,
 L'obiettivo è associare a ciascun pseudo-settore una capacità nominale, cioè un numero intero che rappresenti il volume di traffico ritenuto gestibile in condizioni operative ordinarie.  
 Nel contesto di questa tesi la capacità non è stimata a partire da procedure operative ufficiali, ma tramite regole euristiche costruite sui dati storici \gls{adrr} e pensate per generare istanze artificiali realistiche per il problema di \gls{dac}.  
 
-Le due procedure descritte in questa sezione (per pseudo-settori elementari e per pseudo-settori collassati) sono state introdotte e impiegate in \cite{galeazzo2024integer} per la valutazione di approcci \gls{ilp} al \gls{dac} sulla porzione dello spazio aereo relativo alla \gls{acc} di Madrid, per la quale erano disponibili, in forma riservata, dati completi al livello di dettaglio richiesto. Qui vengono riprese e adattate al dataset \gls{adrr} utilizzato nello stage.
+Le due procedure descritte in questa sezione (per pseudo-settori elementari e per pseudo-settori collassati) sono state introdotte e impiegate in \cite{galeazzo2024integer} per la valutazione di approcci \gls{ilp} al \gls{dac} applicati alla porzione dello spazio aereo relativo alla \gls{acc} di Madrid, per la quale erano disponibili, in forma riservata, dati completi al livello di dettaglio richiesto. Qui vengono riprese e adattate al dataset \gls{adrr} utilizzato nello stage.
 
 Per ogni pseudo-settore elementare \(R\) e per ogni giorno campione \(d \in D\) si definisce un traffico giornaliero \(N_R(d)\).  
 Più precisamente, fissiamo una griglia temporale con passo \(\lambda = 5\,\mathrm{min}\) e finestre di lunghezza \(W = 1\,\mathrm{h}\) (vedi Sezione~\ref{subsec:throughput-teoria}). Per ciascun giorno \(d\) e per ciascun settore \(R\) si calcola quindi il \emph{throughput} \(T_R(I_k)\) su tutte le finestre \(I_k = [t_k, t_k+W)\) che cadono nel giorno considerato. La serie \(\{N_R(d)\}_{d \in D}\) fornisce quindi, per ciascun pseudo-settore, un insieme di osservazioni giornaliere su cui costruire una capacità nominale.

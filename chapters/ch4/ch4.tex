@@ -329,7 +329,6 @@ Questo schema è indipendente dalla tecnologia utilizzata e si presta a un’imp
     \Return $T$.
   \end{algorithmic}
 \end{algorithm}
-\clearpage
 \subsection{Occupancy}
 \label{subsec:occupancy-impl}
 Dal punto di vista algoritmico, il calcolo dell’\emph{occupancy} introdotto in Sezione~\ref{subsec:occupancy-teoria} parte da una tabella di attraversamenti \(D\), in cui ogni riga rappresenta un volo \(f\) che entra in una regione \(R\) al tempo \(t^{\mathrm{in}}_{f,R}\) ed esce al tempo \(t^{\mathrm{out}}_{f,R}\).  
@@ -340,10 +339,7 @@ L’algoritmo lavora sugli indici discreti della griglia. Per ogni volo filtrato
   \item l’indice \(k_e\) dell’ultima finestra da considerare
 \end{itemize}
 Invece di aggiornare direttamente \(O_R(k)\) per tutti gli indici \(k_s \le k \le k_e\), registra soltanto due variazioni: un incremento che fa crescere l’occupancy a partire da \(k_s\), e un decremento che la fa diminuire dopo l’ultima finestra influenzata dal volo.  
-Aggregando queste variazioni per coppia \((R,k)\) si ottiene, per ciascuna regione, un array di differenze \(D_R(k)\); calcolandone la somma cumulata rispetto a \(k\) si ricostruiscono i valori \(O_R(k)\).
-
-L’Algoritmo~\ref{alg:occupancy-anyW-diff} implementa questo schema: prepara la griglia temporale e filtra i voli che non possono contribuire ad alcuna finestra dell’orizzonte considerato (righe~1–2), costruisce l’array di differenze aggiungendo per ogni volo gli eventi di ingresso e uscita (righe~4–10), aggrega le variazioni per regione e indice \(k\) (righe~11–12) e, infine, per ciascuna regione, scorre gli indici in ordine crescente accumulando le differenze per ottenere l’occupancy \(O_R(k)\) e popolare la tabella di output \(O\) (righe~14–20).
-\clearpage
+Aggregando queste variazioni per coppia \((R,k)\) si ottiene, per ciascuna regione, un array di differenze \(D_R(k)\); calcolandone la somma cumulata rispetto a \(k\) si ricostruiscono i valori \(O_R(k)\).  L’Algoritmo~\ref{alg:occupancy-anyW-diff} implementa questo schema: prepara la griglia temporale e filtra i voli che non possono contribuire ad alcuna finestra dell’orizzonte considerato (righe~1–2), costruisce l’array di differenze aggiungendo per ogni volo gli eventi di ingresso e uscita (righe~4–10), aggrega le variazioni per regione e indice \(k\) (righe~11–12) e, infine, per ciascuna regione, scorre gli indici in ordine crescente accumulando le differenze per ottenere l’occupancy \(O_R(k)\) e popolare la tabella di output \(O\) (righe~14–20).
 
 \begin{algorithm}[H]
   \caption{Occupancy per regione.}
