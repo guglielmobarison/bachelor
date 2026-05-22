@@ -1,11 +1,5 @@
-This repository contains the LaTeX source files and the final PDF document for the Bachelor's Degree Thesis in Computer Science, presented at the University of Padua (Università degli Studi di Padova, Dipartimento di Matematica "Tullio Levi-Civita").
+This repository contains the LaTeX source files and the final PDF document for the Bachelor's Degree Thesis in Computer Science presented at the University of Padua (Dipartimento di Matematica "Tullio Levi-Civita") by Guglielmo Barison during the academic year 2024/2025. Developed under the supervision of Prof. Luigi De Giovanni, the work is titled "Development of a Software Module for Access and Analysis of Air Traffic Data from EUROCONTROL’s 'Aviation Data for Research' Repository".
 
-## Technical Specifications
-* **Title:** Sviluppo di un modulo software per l'accesso e l'analisi dei dati di traffico aereo dal repository "Aviation Data for Research" di EUROCONTROL
-* **Author:** Guglielmo Barison
-* **Supervisor:** Prof. Luigi De Giovanni
-* **Academic Year:** 2024/2025
-* **Institution:** Università degli Studi di Padova
+### Abstract
 
-## Abstract
-This thesis describes the work carried out during an internship at the “Tullio Levi-Civita” Department of Mathematics, University of Padua. Procedures were developed for the exploration, ingestion, and analysis of data related to European air traffic and airspace configuration, made available by EUROCONTROL through the Aviation Data Repository for Research (ADRR). The internship initially involved an in-depth study of ADRR data formats and characteristics, with particular attention to airspace configurations, traffic demand, and air traffic control sector occupancy. Subsequently, a procedure was designed and implemented in Python to export these data into the format required by the mathematical models used to address the Dynamic Airspace Configuration problem, which is an active research topic within the same Department.
+The document describes the research and development carried out during an academic internship focused on data engineering and operational research methodologies applied to Air Traffic Management (ATM). The project outlines the architectural design of a Python data pipeline optimized for the exploration, ingestion, and analysis of large-scale historical flight datasets provided by the EUROCONTROL Aviation Data Repository for Research (ADRR). Following an structural analysis of airspace configurations, traffic demand, and air traffic control sector occupancy, the framework processes and transforms these core metrics into the exact data structures required by mathematical optimization models. Ultimately, this pipeline serves as an operational bridge to feed an Integer Linear Programming (ILP) framework resolved via IBM ILOG CPLEX to address the Dynamic Airspace Configuration (DAC) problem, aligning with active research initiatives within the Department.
