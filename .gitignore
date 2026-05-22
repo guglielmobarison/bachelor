@@ -36,4 +36,5 @@ output/
 *.DS_Store
 *.idea/
 *.vscode/
-.texpadtmp
+*.texpadtmp/
+thesis.xmpdata
